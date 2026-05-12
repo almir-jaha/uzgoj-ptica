@@ -11,6 +11,9 @@ export const translations = {
         ringing: "Prstenovanje",
         finish: "Isprazni / Kraj",
         alarm_status: "HITNO"
+        tour: "Tura",
+        history: "Istorija uzgoja",
+        confirm_finish: "Završiti trenutnu turu i spremiti podatke?"
     },
     es: { // Španski
         flag: "🇪🇸",
@@ -23,7 +26,10 @@ export const translations = {
         hatching: "Eclosión",
         ringing: "Anillamiento",
         finish: "Terminar / Limpiar",
-        alarm_status: "URGENTE"
+        alarm_status: "URGENTE",
+        tour: "Tour",
+        history: "Historial de cría",
+        confirm_finish: "¿Terminar la ronda actual y guardar los datos?"
     },
     it: { // Italijanski
         flag: "🇮🇹",
@@ -36,7 +42,10 @@ export const translations = {
         hatching: "Schiusa",
         ringing: "Anellamento",
         finish: "Finisci / Svuota",
-        alarm_status: "URGENTE"
+        alarm_status: "URGENTE",
+        tour: "Tour",
+        history: "Storia dell'allevamento",
+        confirm_finish: "Confermare il completamento del turno corrente e salvare i dati?"
     },
     pt: { // Portugalski
         flag: "🇵🇹",
@@ -49,7 +58,10 @@ export const translations = {
         hatching: "Eclosão",
         ringing: "Anilhagem",
         finish: "Finalizar / Limpar",
-        alarm_status: "URGENTE"
+        alarm_status: "URGENTE",
+        tour: "Tour",
+        history: "Histórico de criação",
+        confirm_finish: "Finalizar a rodada atual e salvar os dados?"
     },
     en: { // Engleski
         flag: "🇬🇧",
@@ -62,7 +74,10 @@ export const translations = {
         hatching: "Hatching",
         ringing: "Ringing",
         finish: "Finish / Clear",
-        alarm_status: "URGENT"
+        alarm_status: "URGENT",
+        tour: "Tour",
+        history: "Breeding history",
+        confirm_finish: "Finish current round and save data?"      
     },
     fr: { // Francuski
         flag: "🇫🇷",
@@ -75,7 +90,10 @@ export const translations = {
         hatching: "Éclosion",
         ringing: "Baguaqe",
         finish: "Terminer / Vider",
-        alarm_status: "URGENT"
+        alarm_status: "URGENT",
+        tour: "Tour",
+        history: "Historique de reproduction",
+        confirm_finish: "Terminer le tour actuel et enregistrer les données?"  
     },
     de: { // Njemački
         flag: "🇩🇪",
@@ -88,7 +106,10 @@ export const translations = {
         hatching: "Schlüpfen",
         ringing: "Beringen",
         finish: "Beenden / Leeren",
-        alarm_status: "DRINGEND"
+        alarm_status: "DRINGEND",
+        tour: "Tour",
+        history: "Zuchtgeschichte",
+        confirm_finish: "Aktuelle Runde beenden und Daten speichern?"
     },
     nl: { // Holandski
         flag: "🇳🇱",
@@ -101,7 +122,10 @@ export const translations = {
         hatching: "Uitkomen",
         ringing: "Ringen",
         finish: "Voltoojen / Leegmaken",
-        alarm_status: "DRINGEND"
+        alarm_status: "DRINGEND",
+        tour: "Tour",
+        history: "Historiek van fokken",
+        confirm_finish: "Huidige ronde beëindigen en gegevens opslaan?"
     },
     pl: { // Poljski
         flag: "🇵🇱",
@@ -114,7 +138,10 @@ export const translations = {
         hatching: "Wylęg",
         ringing: "Obrączkowanie",
         finish: "Zakończ / Wyczyść",
-        alarm_status: "PILNE"
+        alarm_status: "PILNE",
+        tour: "Tour",
+        history: "Historia hodowli",
+        confirm_finish: "Zakończyć bieżący okrąg i zapisać dane?"
     },
     tr: { // Turski
         flag: "🇹🇷",
@@ -127,7 +154,10 @@ export const translations = {
         hatching: "Yumurtadan çıkma",
         ringing: "Bilezik takma",
         finish: "Bitir / Temizle",
-        alarm_status: "ACİL"
+        alarm_status: "ACİL",
+        tour: "Tour",
+        history: "Tarih",
+        confirm_finish: "Mevcut turu bitir ve verileri kaydet?"
     },
     cn: { // Kineski (Pojednostavljeni)
         flag: "🇨🇳",
@@ -140,6 +170,9 @@ export const translations = {
         hatching: "孵化",
         ringing: "戴脚环",
         finish: "结束 / 清空",
-        alarm_status: "紧急"
+        alarm_status: "紧急",
+        tour: "Tour",
+        history: "Breeding history",
+        confirm_finish: "Finish current round and save data?"
     }
 };
