@@ -1,6 +1,8 @@
 export const translations = {
     bs: {
+        flag: "🇧🇦",
         title: "Moja Uzgajivačnica",
+        settings: "Postavke",
         empty_cage: "Kavez je spreman.",
         first_egg: "Datum prvog jajeta:",
         start_cycle: "Započni ciklus",
@@ -8,11 +10,12 @@ export const translations = {
         hatching: "Izlijeganje",
         ringing: "Prstenovanje",
         finish: "Isprazni / Kraj",
-        confirm_delete: "Da li ste sigurni?",
         alarm_status: "HITNO"
     },
-     es: { // Španski - ogromno tržište (Španija, Argentina, Meksiko)
+    es: { // Španski
+        flag: "🇪🇸",
         title: "Mi Aviario",
+        settings: "Ajustes",
         empty_cage: "Jaula lista.",
         first_egg: "Fecha del primer huevo:",
         start_cycle: "Iniciar ciclo",
@@ -22,32 +25,23 @@ export const translations = {
         finish: "Terminar / Limpiar",
         alarm_status: "URGENTE"
     },
-    en: {
-        title: "My Aviary",
-        empty_cage: "Cage is ready.",
-        first_egg: "First egg date:",
-        start_cycle: "Start cycle",
-        check_eggs: "Egg candling",
-        hatching: "Hatching",
-        ringing: "Ringing",
-        finish: "Finish / Clear",
-        confirm_delete: "Are you sure?",
-        alarm_status: "URGENT"
-    },
-    it: {
+    it: { // Italijanski
+        flag: "🇮🇹",
         title: "Il Mio Allevamento",
-        empty_cage: "Gabbia è pronta.",
+        settings: "Impostazioni",
+        empty_cage: "Gabbia pronta.",
         first_egg: "Data del primo uovo:",
         start_cycle: "Inizia ciclo",
         check_eggs: "Speratura uova",
         hatching: "Schiusa",
         ringing: "Anellamento",
         finish: "Finisci / Svuota",
-        confirm_delete: "Sei sicuro?",
         alarm_status: "URGENTE"
     },
-    pt: { // Portugalski (Brazil je ogroman u uzgoju)
+    pt: { // Portugalski
+        flag: "🇵🇹",
         title: "Meu Criadouro",
+        settings: "Configurações",
         empty_cage: "Gaiola pronta.",
         first_egg: "Data do primeiro ovo:",
         start_cycle: "Iniciar ciclo",
@@ -56,5 +50,96 @@ export const translations = {
         ringing: "Anilhagem",
         finish: "Finalizar / Limpar",
         alarm_status: "URGENTE"
-    } 
+    },
+    en: { // Engleski
+        flag: "🇬🇧",
+        title: "My Aviary",
+        settings: "Settings",
+        empty_cage: "Cage ready.",
+        first_egg: "First egg date:",
+        start_cycle: "Start cycle",
+        check_eggs: "Egg candling",
+        hatching: "Hatching",
+        ringing: "Ringing",
+        finish: "Finish / Clear",
+        alarm_status: "URGENT"
+    },
+    fr: { // Francuski
+        flag: "🇫🇷",
+        title: "Mon Volière",
+        settings: "Réglages",
+        empty_cage: "Cage prête.",
+        first_egg: "Date du premier œuf:",
+        start_cycle: "Démarrer le cycle",
+        check_eggs: "Mirage des œufs",
+        hatching: "Éclosion",
+        ringing: "Baguaqe",
+        finish: "Terminer / Vider",
+        alarm_status: "URGENT"
+    },
+    de: { // Njemački
+        flag: "🇩🇪",
+        title: "Meine Voliere",
+        settings: "Einstellungen",
+        empty_cage: "Käfig ist bereit.",
+        first_egg: "Datum des ersten Eies:",
+        start_cycle: "Zyklus starten",
+        check_eggs: "Schieren der Eier",
+        hatching: "Schlüpfen",
+        ringing: "Beringen",
+        finish: "Beenden / Leeren",
+        alarm_status: "DRINGEND"
+    },
+    nl: { // Holandski
+        flag: "🇳🇱",
+        title: "Mijn Volière",
+        settings: "Instellingen",
+        empty_cage: "Kooi is klaar.",
+        first_egg: "Datum eerste ei:",
+        start_cycle: "Cyclus starten",
+        check_eggs: "Eieren schouwen",
+        hatching: "Uitkomen",
+        ringing: "Ringen",
+        finish: "Voltoojen / Leegmaken",
+        alarm_status: "DRINGEND"
+    },
+    pl: { // Poljski
+        flag: "🇵🇱",
+        title: "Moja Woliera",
+        settings: "Ustawienia",
+        empty_cage: "Klatka gotowa.",
+        first_egg: "Data pierwszego jajka:",
+        start_cycle: "Rozpocznij cykl",
+        check_eggs: "Prześwietlanie jaj",
+        hatching: "Wylęg",
+        ringing: "Obrączkowanie",
+        finish: "Zakończ / Wyczyść",
+        alarm_status: "PILNE"
+    },
+    tr: { // Turski
+        flag: "🇹🇷",
+        title: "Kuşhanem",
+        settings: "Ayarlar",
+        empty_cage: "Kafes hazır.",
+        first_egg: "İlk yumurta tarihi:",
+        start_cycle: "Döngüyü başlat",
+        check_eggs: "Yumurta kontrolü",
+        hatching: "Yumurtadan çıkma",
+        ringing: "Bilezik takma",
+        finish: "Bitir / Temizle",
+        alarm_status: "ACİL"
+    },
+    cn: { // Kineski (Pojednostavljeni)
+        flag: "🇨🇳",
+        title: "我的鸟舍",
+        settings: "设置",
+        empty_cage: "笼子已准备好。",
+        first_egg: "第一枚蛋日期:",
+        start_cycle: "开始周期",
+        check_eggs: "验蛋",
+        hatching: "孵化",
+        ringing: "戴脚环",
+        finish: "结束 / 清空",
+        alarm_status: "紧急"
+    }
 };

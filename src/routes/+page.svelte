@@ -12,51 +12,38 @@
     // Pomoćna funkcija za vizuelni alarm u HTML-u
     const jeLiDanas = (d) => d === new Date().toISOString().split('T')[0];
 
+     const postaviDanas = () => {
+        odabraniDatum = new Date().toISOString().split('T')[0];
+    };
+
+
     onMount(() => {
         akcije.azurirajAlarme();
     });
 </script>
 
-<main>
-    <!-- ZAGLAVLJE SA SETTINGS DUGMETOM -->
+<main class={darkMode ? 'dark-mode' : ''}>
     <header>
         <h1>{$t('title')} 🐦</h1>
-        <button class="settings-btn" on:click={() => settingsOpen = !settingsOpen} aria-label="Settings">
-            ⚙️
-        </button>
+        <button class="settings-btn" on:click={() => settingsOpen = true}>⚙️</button>
     </header>
 
-    <!-- STALAŽA SA KAVEZIMA -->
     <div class="stalaža">
-        {#each $kavezi as kavez (kavez.id)}
+        {#each $kavezi as kavez}
             <div class="kavez-kartica {kavez.status}">
-                <div class="header-kartice">
-                    <h3>{kavez.oznaka}</h3>
-                    {#if kavez.status !== 'prazno'}
-                        <span class="ikona-statusa">🪺</span>
-                    {/if}
-                </div>
-
+                <h3>{kavez.oznaka}</h3>
                 <div class="info">
                     {#if kavez.status === 'prazno'}
-                        <p class="uputstvo">{$t('empty_cage')}</p>
-                        <label for="date-{kavez.id}">{$t('first_egg')}</label>
-                        <input 
-                            id="date-{kavez.id}" 
-                            type="date" 
-                            bind:value={odabraniDatum} 
-                        />
-                    {:else}
-                        <div class="detalji-ciklusa">
-                            <p>🥚 {$t('check_eggs')}: <b>{kavez.ciklus.provjeraJaja}</b></p>
-                            <p>🐥 {$t('hatching')}: <b>{kavez.ciklus.izlijeganje}</b></p>
-                            <p class="prsten-red {jeLiDanas(kavez.ciklus.prstenovanje) ? 'hitno' : ''}">
-                                💍 {$t('ringing')}: <b>{kavez.ciklus.prstenovanje}</b>
-                            </p>
+                        <div class="input-grupa">
+                            <input type="date" bind:value={odabraniDatum} />
+                            <button class="today-btn" on:click={postaviDanas}>📅 {$t('today') || 'Danas'}</button>
                         </div>
+                    {:else}
+                        <!-- Info o ciklusu kao i ranije -->
+                        <p>🐥 {$t('hatching')}: <b>{kavez.ciklus.izlijeganje}</b></p>
+                        <p>💍 {$t('ringing')}: <b>{kavez.ciklus.prstenovanje}</b></p>
                     {/if}
                 </div>
-
                 <div class="akcije">
                     {#if kavez.status === 'prazno'}
                         <button class="glavni-btn" on:click={() => akcije.zapocniCiklus(kavez.id, odabraniDatum)}>
@@ -72,33 +59,27 @@
         {/each}
     </div>
 
-    <!-- SETTINGS OVERLAY (ISKAČUĆI MENI) -->
+    <!-- SETTINGS MODAL -->
     {#if settingsOpen}
-        <div class="settings-overlay" on:click={() => settingsOpen = false} transition:fade={{ duration: 200 }}>
-            <div class="settings-content" on:click|stopPropagation>
-                <h3>{$t('settings') || 'Language / Jezik'}</h3>
-                <div class="lang-grid">
-                    {#each Object.keys(translations) as lang}
-                        <button 
-                            class="lang-select { $currentLang === lang ? 'active' : '' }"
-                            on:click={() => { $currentLang = lang; settingsOpen = false; }}
-                        >
-                            {lang.toUpperCase()}
-                        </button>
-                    {/each}
-                </div>
+        <div class="overlay" on:click={() => settingsOpen = false}>
+            <div class="modal" on:click|stopPropagation>
+                <h3>{$t('settings')}</h3>
                 
-                <!-- Dark Mode Toggle (opciono) -->
-                <div class="extra-settings">
-                    <label>
-                        <input type="checkbox" bind:checked={darkMode} /> 
-                        🌙 Dark Mode (Uskoro)
-                    </label>
+                <div class="setting-item">
+                    <label>Jezik / Language:</label>
+                    <select bind:value={$currentLang}>
+                        {#each Object.entries(translations) as [kod, sadrzaj]}
+                            <option value={kod}>{sadrzaj.flag} {kod.toUpperCase()}</option>
+                        {each}
+                    </select>
                 </div>
 
-                <button class="close-btn" on:click={() => settingsOpen = false}>
-                    ✕ Close
-                </button>
+                <div class="setting-item">
+                    <label>Dark Mode 🌙</label>
+                    <input type="checkbox" bind:checked={darkMode} />
+                </div>
+
+                <button class="close-btn" on:click={() => settingsOpen = false}>OK</button>
             </div>
         </div>
     {/if}
@@ -106,6 +87,31 @@
 
 
 <style>
+
+/* DARK MODE STILOV */
+    .dark-mode {
+        background-color: #121212;
+        color: white;
+        min-height: 100vh;
+    }
+    .dark-mode .kavez-kartica {
+        background: #1e1e1e;
+        color: #eee;
+    }
+    .dark-mode header { background: #1a1a1a; border-bottom: 1px solid #333; }
+    .dark-mode h1 { color: #fff; }
+
+    /* DANAS DUGME STIL */
+    .input-grupa { display: flex; gap: 5px; margin-bottom: 10px; }
+    .today-btn { background: #e67e22; padding: 5px; font-size: 0.8rem; flex-shrink: 0; width: auto; }
+
+    /* MODAL STIL */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: grid; place-items: center; z-index: 100; }
+    .modal { background: white; padding: 20px; border-radius: 15px; width: 85%; max-width: 320px; color: #333; }
+    .setting-item { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; }
+    select { padding: 8px; border-radius: 5px; font-size: 1rem; }
+
+    
     /* Kontejner koji pravi dvije kolone na mobitelu */
     .stalaža {
         display: grid;
@@ -266,5 +272,7 @@
         color: #333;
         margin-top: 10px;
     }
+
+
 
 </style>
