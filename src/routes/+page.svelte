@@ -102,8 +102,31 @@
     .dark-mode h1 { color: #fff; }
 
     /* DANAS DUGME STIL */
-    .input-grupa { display: flex; gap: 5px; margin-bottom: 10px; }
-    .today-btn { background: #e67e22; padding: 5px; font-size: 0.8rem; flex-shrink: 0; width: auto; }
+     .input-grupa { 
+        display: flex; 
+        gap: 8px; 
+        margin-bottom: 10px;
+        align-items: center; /* Poravnava ih po visini */
+    }
+
+    input[type="date"] {
+        flex: 1; /* Datum zauzima sav preostali prostor */
+        min-width: 0; /* Sprečava 'virenje' van kartice na jako malim ekranima */
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .today-btn { 
+        background: #e67e22; 
+        color: white;
+        padding: 8px 12px; 
+        font-size: 0.8rem; 
+        white-space: nowrap; /* Sprečava da tekst ode u dva reda */
+        flex-shrink: 0; /* Ne dopušta dugmetu da se smanji i nestane */
+        width: auto;
+        border-radius: 6px;
+        border: none;
+    }
 
     /* MODAL STIL */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: grid; place-items: center; z-index: 100; }
