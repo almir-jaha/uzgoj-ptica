@@ -11,6 +11,17 @@ export const translations = {
         confirm_delete: "Da li ste sigurni?",
         alarm_status: "HITNO"
     },
+     es: { // Španski - ogromno tržište (Španija, Argentina, Meksiko)
+        title: "Mi Aviario",
+        empty_cage: "Jaula lista.",
+        first_egg: "Fecha del primer huevo:",
+        start_cycle: "Iniciar ciclo",
+        check_eggs: "Miraje de huevos",
+        hatching: "Eclosión",
+        ringing: "Anillamiento",
+        finish: "Terminar / Limpiar",
+        alarm_status: "URGENTE"
+    },
     en: {
         title: "My Aviary",
         empty_cage: "Cage is ready.",
@@ -34,5 +45,16 @@ export const translations = {
         finish: "Finisci / Svuota",
         confirm_delete: "Sei sicuro?",
         alarm_status: "URGENTE"
-    }
+    },
+    pt: { // Portugalski (Brazil je ogroman u uzgoju)
+        title: "Meu Criadouro",
+        empty_cage: "Gaiola pronta.",
+        first_egg: "Data do primeiro ovo:",
+        start_cycle: "Iniciar ciclo",
+        check_eggs: "Ovoscopia",
+        hatching: "Eclosão",
+        ringing: "Anilhagem",
+        finish: "Finalizar / Limpar",
+        alarm_status: "URGENTE"
+    } 
 };

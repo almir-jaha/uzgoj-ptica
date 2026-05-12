@@ -1,64 +1,109 @@
 <script>
-    import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
     import { currentLang, t } from '$lib/langStore.js';
     import { kavezi, akcije } from '$lib/birdStore.js';
+    import { translations } from '$lib/translations.js';
+    import { onMount } from 'svelte';
 
+    let settingsOpen = false;
     let odabraniDatum = new Date().toISOString().split('T')[0];
+    let darkMode = false;
+
+    // Pomoćna funkcija za vizuelni alarm u HTML-u
+    const jeLiDanas = (d) => d === new Date().toISOString().split('T')[0];
 
     onMount(() => {
         akcije.azurirajAlarme();
     });
-
-     function promijeniJezik(noviLang) {
-        $currentLang = noviLang;
-    }
-
 </script>
 
-<header>
-    <h1>{$t('title')} 🐦</h1>
-    <div class="lang-switcher">
-        <button on:click={() => promijeniJezik('bs')}>BS</button>
-        <button on:click={() => promijeniJezik('en')}>EN</button>
-        <button on:click={() => promijeniJezik('it')}>IT</button>
+<main>
+    <!-- ZAGLAVLJE SA SETTINGS DUGMETOM -->
+    <header>
+        <h1>{$t('title')} 🐦</h1>
+        <button class="settings-btn" on:click={() => settingsOpen = !settingsOpen} aria-label="Settings">
+            ⚙️
+        </button>
+    </header>
+
+    <!-- STALAŽA SA KAVEZIMA -->
+    <div class="stalaža">
+        {#each $kavezi as kavez (kavez.id)}
+            <div class="kavez-kartica {kavez.status}">
+                <div class="header-kartice">
+                    <h3>{kavez.oznaka}</h3>
+                    {#if kavez.status !== 'prazno'}
+                        <span class="ikona-statusa">🪺</span>
+                    {/if}
+                </div>
+
+                <div class="info">
+                    {#if kavez.status === 'prazno'}
+                        <p class="uputstvo">{$t('empty_cage')}</p>
+                        <label for="date-{kavez.id}">{$t('first_egg')}</label>
+                        <input 
+                            id="date-{kavez.id}" 
+                            type="date" 
+                            bind:value={odabraniDatum} 
+                        />
+                    {:else}
+                        <div class="detalji-ciklusa">
+                            <p>🥚 {$t('check_eggs')}: <b>{kavez.ciklus.provjeraJaja}</b></p>
+                            <p>🐥 {$t('hatching')}: <b>{kavez.ciklus.izlijeganje}</b></p>
+                            <p class="prsten-red {jeLiDanas(kavez.ciklus.prstenovanje) ? 'hitno' : ''}">
+                                💍 {$t('ringing')}: <b>{kavez.ciklus.prstenovanje}</b>
+                            </p>
+                        </div>
+                    {/if}
+                </div>
+
+                <div class="akcije">
+                    {#if kavez.status === 'prazno'}
+                        <button class="glavni-btn" on:click={() => akcije.zapocniCiklus(kavez.id, odabraniDatum)}>
+                            {$t('start_cycle')}
+                        </button>
+                    {:else}
+                        <button class="secondary-btn" on:click={() => akcije.isprazniKavez(kavez.id)}>
+                            {$t('finish')}
+                        </button>
+                    {/if}
+                </div>
+            </div>
+        {/each}
     </div>
-</header>
 
-<main class="stalaža">
-    {#each $kavezi as kavez}
-        <div class="kavez-kartica {kavez.status}">
-            <div class="header-kartice">
-                <h3>Kavez {kavez.oznaka}</h3>
-                {#if kavez.status !== 'prazno'}<span>🪺</span>{/if}
-            </div>
+    <!-- SETTINGS OVERLAY (ISKAČUĆI MENI) -->
+    {#if settingsOpen}
+        <div class="settings-overlay" on:click={() => settingsOpen = false} transition:fade={{ duration: 200 }}>
+            <div class="settings-content" on:click|stopPropagation>
+                <h3>{$t('settings') || 'Language / Jezik'}</h3>
+                <div class="lang-grid">
+                    {#each Object.keys(translations) as lang}
+                        <button 
+                            class="lang-select { $currentLang === lang ? 'active' : '' }"
+                            on:click={() => { $currentLang = lang; settingsOpen = false; }}
+                        >
+                            {lang.toUpperCase()}
+                        </button>
+                    {/each}
+                </div>
+                
+                <!-- Dark Mode Toggle (opciono) -->
+                <div class="extra-settings">
+                    <label>
+                        <input type="checkbox" bind:checked={darkMode} /> 
+                        🌙 Dark Mode (Uskoro)
+                    </label>
+                </div>
 
-            <div class="info">
-                {#if kavez.status === 'prazno'}
-                    <label>Datum prvog jajeta:</label>
-                    <input type="date" bind:value={odabraniDatum} />
-                {:else}
-                    <p>🥚 Provjera: <b>{kavez.ciklus.provjeraJaja}</b></p>
-                    <p>🐥 Izlijeganje: <b>{kavez.ciklus.izlijeganje}</b></p>
-                    <p class={kavez.status === 'alarm' ? 'hitno' : ''}>
-                        💍 Prsten: <b>{kavez.ciklus.prstenovanje}</b>
-                    </p>
-                {/if}
-            </div>
-
-            <div class="akcije">
-                {#if kavez.status === 'prazno'}
-                    <button on:click={() => akcije.zapocniCiklus(kavez.id, odabraniDatum)}>
-                        Započni ciklus
-                    </button>
-                {:else}
-                    <button class="secondary" on:click={() => akcije.isprazniKavez(kavez.id)}>
-                        Isprazni / Kraj
-                    </button>
-                {/if}
+                <button class="close-btn" on:click={() => settingsOpen = false}>
+                    ✕ Close
+                </button>
             </div>
         </div>
-    {/each}
+    {/if}
 </main>
+
 
 <style>
     /* Kontejner koji pravi dvije kolone na mobitelu */
@@ -155,4 +200,71 @@
     }
     .hitno { color: #e74c3c; font-weight: bold; text-decoration: underline; }
     .header-kartice { display: flex; justify-content: space-between; align-items: center; }
+
+     header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background: #fff;
+        border-bottom: 1px solid #eee;
+    }
+
+    .settings-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* Stilovi za Settings prozor koji "iskače" */
+    .settings-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .settings-content {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        width: 80%;
+        max-width: 300px;
+        text-align: center;
+    }
+
+    .lang-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+    .lang-select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #f9f9f9;
+        font-weight: bold;
+    }
+
+    .lang-select.active {
+        background: #3498db;
+        color: white;
+        border-color: #2980b9;
+    }
+
+    .close-btn {
+        background: #eee;
+        color: #333;
+        margin-top: 10px;
+    }
+
 </style>

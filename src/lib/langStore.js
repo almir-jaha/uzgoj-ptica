@@ -1,21 +1,27 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { translations } from './translations.js';
 
-// Učitaj jezik iz memorije ili postavi defaultni (bs)
-const initialLang = (typeof window !== 'undefined' && localStorage.getItem('app_lang')) || 'bs';
+// 1. Detekcija jezika
+const getInitialLang = () => {
+    if (typeof window === 'undefined') return 'en';
+    
+    // Prvo gledamo da li je korisnik već ranije sam izabrao jezik
+    const saved = localStorage.getItem('app_lang');
+    if (saved && translations[saved]) return saved;
 
-export const currentLang = writable(initialLang);
+    // Ako nije, gledamo jezik telefona/browsera
+    const browserLang = navigator.language.split('-')[0]; // Uzima npr. 'es' iz 'es-ES'
+    return translations[browserLang] ? browserLang : 'en'; // Ako imamo taj jezik - super, ako ne - engleski
+};
 
-// Funkcija za prevod (t-funkcija)
-export const t = writable((key) => {
-    let lang;
-    currentLang.subscribe(val => lang = val)();
-    return translations[lang][key] || key;
+export const currentLang = writable(getInitialLang());
+
+// 2. Automatsko spašavanje izbora
+currentLang.subscribe(val => {
+    if (typeof window !== 'undefined') localStorage.setItem('app_lang', val);
 });
 
-// Snimi jezik u telefon kad god se promijeni
-currentLang.subscribe(val => {
-    if (typeof window !== 'undefined') {
-        localStorage.setItem('app_lang', val);
-    }
+// 3. Optimizovana t-funkcija (automatski se osvježava)
+export const t = derived(currentLang, ($currentLang) => {
+    return (key) => translations[$currentLang][key] || key;
 });
