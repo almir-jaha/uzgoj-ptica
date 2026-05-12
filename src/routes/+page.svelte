@@ -5,10 +5,14 @@
     import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
 
+    import { currentLang, t } from '$lib/langStore.js';
+    import { store, akcije } from '$lib/birdStore.js';
+    
     let settingsOpen = false;
     let darkMode = false;
     let odabraniDatum = new Date().toISOString().split('T')[0];
     let odabranaVrsta = "";
+    
     
     const popularneVrste = ["Kanarinac boja", "Kanarinac stasa", "Štiglić", "Zeba", "Papagaj"];
 
