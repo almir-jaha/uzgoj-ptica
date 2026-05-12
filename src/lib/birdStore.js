@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
 
-// 1. POMOĆNE FUNKCIJE
 const izracunajTermine = (datum) => {
     if (!datum) return null;
     let start = new Date(datum);
@@ -18,21 +17,12 @@ const izracunajTermine = (datum) => {
     };
 };
 
-// 2. INICIJALIZACIJA PODATAKA
 const ISSERVER = typeof window === 'undefined';
 
 const kreirajPocetneKaveze = () => {
     let kavezi = [];
     for (let i = 1; i <= 20; i++) {
-        kavezi.push({ 
-            id: i, 
-            oznaka: i.toString(), 
-            status: 'prazno', 
-            tura: 1, 
-            ciklus: null, 
-            vrsta: '', 
-            tempVrsta: '' 
-        });
+        kavezi.push({ id: i, oznaka: i.toString(), status: 'prazno', tura: 1, ciklus: null, vrsta: '', tempVrsta: '' });
     }
     return kavezi;
 };
@@ -44,114 +34,66 @@ if (!ISSERVER) {
     if (snimljeno) {
         try {
             const parsirano = JSON.parse(snimljeno);
-            if (parsirano && parsirano.kavezi && parsirano.kavezi.length > 0) {
-                pocetnoStanje = parsirano;
-            }
-        } catch (e) {
-            console.error("Greška pri učitavanju podataka:", e);
-        }
+            if (parsirano && parsirano.kavezi) pocetnoStanje = parsirano;
+        } catch (e) { console.error(e); }
     }
 }
 
-// 3. KREIRANJE STORE-A
 export const store = writable(pocetnoStanje);
 
-// Automatsko spašavanje pri svakoj promjeni (samo na klijentu)
 if (!ISSERVER) {
-    store.subscribe(v => {
-        localStorage.setItem('bird_app_v2', JSON.stringify(v));
-    });
+    store.subscribe(v => localStorage.setItem('bird_app_v2', JSON.stringify(v)));
 }
 
-// 4. AKCIJE (LOGIKA BIZNISA)
 export const akcije = {
     zapocniCiklus: (id, datum, vrsta) => {
         store.update(s => {
-            s.kavezi = s.kavezi.map(k => {
-                if (k.id === id) {
-                    return { 
-                        ...k, 
-                        status: 'jaja', 
-                        vrsta: vrsta || k.tempVrsta || '', 
-                        ciklus: izracunajTermine(datum) 
-                    };
-                }
-                return k;
-            });
+            s.kavezi = s.kavezi.map(k => k.id === id ? { ...k, status: 'jaja', vrsta: vrsta || k.tempVrsta, ciklus: izracunajTermine(datum) } : k);
             return s;
         });
-        akcije.azurirajAlarme();
     },
-
     zavrsiTuru: (id) => {
-        if (!confirm("Završiti trenutnu turu i arhivirati podatke?")) return;
+        if (!confirm("Arhivirati i završiti turu?")) return;
         store.update(s => {
-            const kavezIndex = s.kavezi.findIndex(k => k.id === id);
-            if (kavezIndex !== -1) {
-                const kavez = s.kavezi[kavezIndex];
-                // Dodaj u istoriju
-                s.istorija.push({ 
-                    ...kavez, 
-                    datum_arhiva: new Date().toISOString() 
-                });
-                // Resetuj kavez za novu turu
-                s.kavezi[kavezIndex] = { 
-                    ...kavez, 
-                    status: 'prazno', 
-                    tura: kavez.tura + 1, 
-                    ciklus: null,
-                    tempVrsta: kavez.vrsta // Zadrži vrstu kao prijedlog za sljedeću turu
-                };
+            const kIndex = s.kavezi.findIndex(k => k.id === id);
+            if (kIndex !== -1) {
+                const k = s.kavezi[kIndex];
+                s.istorija.push({ ...k, datum_arhiva: new Date().toISOString() });
+                s.kavezi[kIndex] = { ...k, status: 'prazno', tura: k.tura + 1, ciklus: null, tempVrsta: k.vrsta };
             }
             return s;
         });
     },
-
     azurirajAlarme: () => {
         if (ISSERVER) return;
         const danas = new Date().toISOString().split('T')[0];
         store.update(s => {
             s.kavezi = s.kavezi.map(k => {
                 if (!k.ciklus) return k;
-                const hitno = k.ciklus.provjeraJaja === danas || 
-                             k.ciklus.izlijeganje === danas || 
-                             k.ciklus.prstenovanje === danas;
+                const hitno = [k.ciklus.provjeraJaja, k.ciklus.izlijeganje, k.ciklus.prstenovanje].includes(danas);
                 return { ...k, status: hitno ? 'alarm' : 'jaja' };
             });
             return s;
         });
     },
-
     exportPodataka: () => {
-        let trenutniPodaci;
-        store.subscribe(v => trenutniPodaci = v)();
-        const blob = new Blob([JSON.stringify(trenutniPodaci)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
+        let podaci; store.subscribe(v => podaci = v)();
+        const blob = new Blob([JSON.stringify(podaci)], { type: 'application/json' });
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `uzgoj_backup_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a);
+        a.href = URL.createObjectURL(blob);
+        a.download = `backup_ptica.json`;
         a.click();
-        document.body.removeChild(a);
     },
-
-    importPodataka: (event) => {
-        const fajl = event.target.files[0];
-        if (!fajl) return;
+    importPodataka: (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = (ev) => {
             try {
-                const uvezeniPodaci = JSON.parse(e.target.result);
-                if (uvezeniPodaci.kavezi && Array.isArray(uvezeniPodaci.kavezi)) {
-                    store.set(uvezeniPodaci);
-                    alert("✅ Podaci su uspješno uvezeni!");
-                } else {
-                    alert("❌ Greška: Neispravan format backup fajla.");
-                }
-            } catch (err) {
-                alert("❌ Greška pri čitanju fajla.");
-            }
+                const p = JSON.parse(ev.target.result);
+                if (p.kavezi) store.set(p);
+            } catch (err) { alert("Greška!"); }
         };
-        reader.readAsText(fajl);
+        reader.readAsText(file);
     }
 };
