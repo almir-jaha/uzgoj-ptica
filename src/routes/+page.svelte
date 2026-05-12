@@ -70,7 +70,7 @@
                     <select bind:value={$currentLang}>
                         {#each Object.entries(translations) as [kod, sadrzaj]}
                             <option value={kod}>{sadrzaj.flag} {kod.toUpperCase()}</option>
-                        {each}
+                        {/each}
                     </select>
                 </div>
 
