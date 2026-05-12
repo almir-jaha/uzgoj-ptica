@@ -280,7 +280,6 @@
         margin-top: 10px;
     }
 
-<style>
     :global(body) { margin: 0; font-family: sans-serif; background: #f0f2f5; }
     main { min-height: 100vh; padding-bottom: 50px; }
     main.dark { background: #121212; color: white; }
