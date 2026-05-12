@@ -13,7 +13,15 @@ export const translations = {
         alarm_status: "HITNO",
         tour: "Tura",
         history: "Istorija uzgoja",
-        confirm_finish: "Završiti trenutnu turu i spremiti podatke?"
+        confirm_finish: "Završiti trenutnu turu i spremiti podatke?",
+        bird_type: "Vrsta/Mutacija:",
+        select_type: "Izaberi ili upiši vrstu",
+        export_data: "Izvezi podatke (Backup)",
+        import_data: "Uvezi podatke (Restore)",
+        backup_desc: "Preuzmite fajl i pošaljite ga na svoj mail.",
+        restore_desc: "Izaberite .json fajl sa vašeg telefona.",
+        save_success: "Podaci uspješno učitani!",
+        save_error: "Greška pri učitavanju fajla."
     },
     es: { // Španski
         flag: "🇪🇸",
@@ -29,7 +37,15 @@ export const translations = {
         alarm_status: "URGENTE",
         tour: "Tour",
         history: "Historial de cría",
-        confirm_finish: "¿Terminar la ronda actual y guardar los datos?"
+        confirm_finish: "¿Terminar la ronda actual y guardar los datos?",
+        bird_type: "Especie/Mutación:",
+        select_type: "Selecciona o escribe la especie",
+        export_data: "Exportar datos (Backup)",
+        import_data: "Importar datos (Restore)",
+        backup_desc: "Descarga el archivo y envíalo a tu correo.",
+        restore_desc: "Selecciona un archivo .json desde tu teléfono.",
+        save_success: "¡Datos cargados con éxito!",
+        save_error: "Error al cargar el archivo."
     },
     it: { // Italijanski
         flag: "🇮🇹",
@@ -45,7 +61,15 @@ export const translations = {
         alarm_status: "URGENTE",
         tour: "Tour",
         history: "Storia dell'allevamento",
-        confirm_finish: "Confermare il completamento del turno corrente e salvare i dati?"
+        confirm_finish: "Confermare il completamento del turno corrente e salvare i dati?",
+        bird_type: "Specie/Mutazione:",
+        select_type: "Seleziona o digita la specie",
+        export_data: "Esporta dati (Backup)",
+        import_data: "Importa dati (Restore)",
+        backup_desc: "Scarica il file e invialo alla tua mail.",
+        restore_desc: "Seleziona un file .json dal tuo telefono.",
+        save_success: "Dati caricati con successo!",
+        save_error: "Errore durante il caricamento del file."
     },
     pt: { // Portugalski
         flag: "🇵🇹",
@@ -61,7 +85,15 @@ export const translations = {
         alarm_status: "URGENTE",
         tour: "Tour",
         history: "Histórico de criação",
-        confirm_finish: "Finalizar a rodada atual e salvar os dados?"
+        confirm_finish: "Finalizar a rodada atual e salvar os dados?",
+        bird_type: "Espécie/Mutação:",
+        select_type: "Selecione ou digite a espécie",
+        export_data: "Exportar dados (Backup)",
+        import_data: "Importar dados (Restore)",
+        backup_desc: "Baixe o arquivo e envie para seu email.",
+        restore_desc: "Selecione um arquivo .json do seu telefone.",
+        save_success: "Dados carregados com sucesso!",
+        save_error: "Erro ao carregar o arquivo."
     },
     en: { // Engleski
         flag: "🇬🇧",
@@ -77,7 +109,15 @@ export const translations = {
         alarm_status: "URGENT",
         tour: "Tour",
         history: "Breeding history",
-        confirm_finish: "Finish current round and save data?"      
+        confirm_finish: "Finish current round and save data?",
+        bird_type: "Species/Mutation:",
+        select_type: "Select or type species",
+        export_data: "Export data (Backup)",
+        import_data: "Import data (Restore)",
+        backup_desc: "Download the file and send it to your mail.",
+        restore_desc: "Select a .json file from your phone.",
+        save_success: "Data loaded successfully!",
+        save_error: "Error loading file."      
     },
     fr: { // Francuski
         flag: "🇫🇷",
@@ -93,7 +133,15 @@ export const translations = {
         alarm_status: "URGENT",
         tour: "Tour",
         history: "Historique de reproduction",
-        confirm_finish: "Terminer le tour actuel et enregistrer les données?"  
+        confirm_finish: "Terminer le tour actuel et enregistrer les données?",
+        bird_type: "Espèce/Mutation:",
+        select_type: "Sélectionnez ou tapez l'espèce",
+        export_data: "Exporter les données (Backup)",
+        import_data: "Importer les données (Restore)",
+        backup_desc: "Téléchargez le fichier et envoyez-le à votre mail.",
+        restore_desc: "Sélectionnez un fichier .json depuis votre téléphone.",
+        save_success: "Données chargées avec succès!",
+        save_error: "Erreur lors du chargement du fichier."  
     },
     de: { // Njemački
         flag: "🇩🇪",
@@ -109,7 +157,15 @@ export const translations = {
         alarm_status: "DRINGEND",
         tour: "Tour",
         history: "Zuchtgeschichte",
-        confirm_finish: "Aktuelle Runde beenden und Daten speichern?"
+        confirm_finish: "Aktuelle Runde beenden und Daten speichern?",
+        bird_type: "Art/Mutation:",
+        select_type: "Art auswählen oder eingeben",
+        export_data: "Daten exportieren (Backup)",
+        import_data: "Daten importieren (Restore)",
+        backup_desc: "Laden Sie die Datei herunter und senden Sie sie an Ihre Mail.",
+        restore_desc: "Wählen Sie eine .json-Datei von Ihrem Telefon aus.",
+        save_success: "Daten erfolgreich geladen!",
+        save_error: "Fehler beim Laden der Datei."
     },
     nl: { // Holandski
         flag: "🇳🇱",
@@ -125,7 +181,15 @@ export const translations = {
         alarm_status: "DRINGEND",
         tour: "Tour",
         history: "Historiek van fokken",
-        confirm_finish: "Huidige ronde beëindigen en gegevens opslaan?"
+        confirm_finish: "Huidige ronde beëindigen en gegevens opslaan?",
+        bird_type: "Soort/Mutatie:",
+        select_type: "Selecteer of typ soort",
+        export_data: "Gegevens exporteren (Backup)",
+        import_data: "Gegevens importeren (Restore)",
+        backup_desc: "Download het bestand en stuur het naar je mail.",
+        restore_desc: "Selecteer een .json-bestand van je telefoon.",
+        save_success: "Gegevens succesvol geladen!",
+        save_error: "Fout bij het laden van het bestand."
     },
     pl: { // Poljski
         flag: "🇵🇱",
@@ -141,7 +205,15 @@ export const translations = {
         alarm_status: "PILNE",
         tour: "Tour",
         history: "Historia hodowli",
-        confirm_finish: "Zakończyć bieżący okrąg i zapisać dane?"
+        confirm_finish: "Zakończyć bieżący okrąg i zapisać dane?",
+        bird_type: "Gatunek/Mutacja:",
+        select_type: "Wybierz lub wpisz gatunek",
+        export_data: "Eksportuj dane (Backup)",
+        import_data: "Importuj dane (Restore)",
+        backup_desc: "Pobierz plik i wyślij go na swój mail.",
+        restore_desc: "Wybierz plik .json z telefonu.",
+        save_success: "Dane zostały pomyślnie załadowane!",
+        save_error: "Błąd podczas ładowania pliku."
     },
     tr: { // Turski
         flag: "🇹🇷",
@@ -157,7 +229,15 @@ export const translations = {
         alarm_status: "ACİL",
         tour: "Tour",
         history: "Tarih",
-        confirm_finish: "Mevcut turu bitir ve verileri kaydet?"
+        confirm_finish: "Mevcut turu bitir ve verileri kaydet?",
+        bird_type: "Tür/Mutasyon:",
+        select_type: "Tür seçin veya yazın",
+        export_data: "Verileri dışa aktar (Yedekleme)",
+        import_data: "Verileri içe aktar (Geri Yükleme)",
+        backup_desc: "Dosyayı indirin ve mailinize gönderin.",
+        restore_desc: "Telefonunuzdan bir .json dosyası seçin.",
+        save_success: "Veriler başarıyla yüklendi!",
+        save_error: "Dosya yüklenirken hata oluştu."
     },
     cn: { // Kineski (Pojednostavljeni)
         flag: "🇨🇳",
@@ -173,6 +253,14 @@ export const translations = {
         alarm_status: "紧急",
         tour: "Tour",
         history: "Breeding history",
-        confirm_finish: "Finish current round and save data?"
+        confirm_finish: "Finish current round and save data?",
+        bird_type: "Species/Mutation:",
+        select_type: "Select or type species",
+        export_data: "Export data (Backup)",
+        import_data: "Import data (Restore)",
+        backup_desc: "Download the file and send it to your mail.",
+        restore_desc: "Select a .json file from your phone.",
+        save_success: "Data loaded successfully!",
+        save_error: "Error loading file."
     }
 };

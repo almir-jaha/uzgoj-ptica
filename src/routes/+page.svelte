@@ -7,6 +7,10 @@
     let settingsOpen = false;
     let darkMode = false;
     let odabraniDatum = new Date().toISOString().split('T')[0];
+    
+    let odabranaVrsta = "";
+    const popularneVrste = ["Kanarinac boja", "Kanarinac stasa", "Štiglić", "Zeba", "Papagaj"];
+<    
 
     onMount(() => { akcije.azurirajAlarme(); });
 </script>
@@ -24,21 +28,27 @@
                     <span class="broj">{kavez.oznaka}</span>
                     <span class="tura">{$t('tour')} {kavez.tura}</span>
                 </div>
-
                 <div class="sadrzaj">
                     {#if kavez.status === 'prazno'}
                         <div class="input-polje">
+                            <label>{$t('bird_type')}</label>
+                            <input list="vrste-list" bind:value={kavez.tempVrsta} placeholder={$t('select_type')} />
+                            <datalist id="vrste-list">
+                                {#each popularneVrste as v} <option value={v} /> {/each}
+                            </datalist>
+
                             <label>{$t('first_egg')}</label>
                             <input type="date" bind:value={odabraniDatum} />
                         </div>
                     {:else}
                         <div class="podaci">
+                            <p class="vrsta-label">🏷️ {kavez.vrsta || '---'}</p>
                             <p>🥚 {$t('check_eggs')}: <b>{kavez.ciklus.provjeraJaja}</b></p>
-                            <p>🐥 {$t('hatching')}: <b>{kavez.ciklus.izlijeganje}</b></p>
-                            <p>💍 {$t('ringing')}: <b>{kavez.ciklus.prstenovanje}</b></p>
+                            <!-- ... ostali datumi ... -->
                         </div>
                     {/if}
                 </div>
+              
 
                 <div class="footer">
                     {#if kavez.status === 'prazno'}
@@ -66,6 +76,15 @@
                             <option value={kod}>{s.flag} {kod.toUpperCase()}</option>
                         {/each}
                     </select>
+                </div>
+                <div class="backup-zona">
+                    <hr />
+                    <button class="btn-export" on:click={akcije.exportPodataka}>📥 {$t('export_data')}</button>
+                    
+                    <label class="btn-import">
+                        📤 {$t('import_data')}
+                        <input type="file" accept=".json" on:change={akcije.importPodataka} hidden />
+                    </label>
                 </div>
                 <div class="red">
                     <label>Tamni način:</label>
@@ -318,4 +337,12 @@
         100% { transform: scale(1); } 
     }
 
+ .vrsta-label { font-weight: bold; color: #3498db; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    .backup-zona { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .btn-export { background: #3498db; color: white; }
+    .btn-import { background: #95a5a6; color: white; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; cursor: pointer; }
+    
+    /* Datalist styling za mobilne */
+    input[list] { padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; }
+    
 </style>
