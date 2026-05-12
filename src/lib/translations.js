@@ -10,7 +10,7 @@ export const translations = {
         hatching: "Izlijeganje",
         ringing: "Prstenovanje",
         finish: "Isprazni / Kraj",
-        alarm_status: "HITNO"
+        alarm_status: "HITNO",
         tour: "Tura",
         history: "Istorija uzgoja",
         confirm_finish: "Završiti trenutnu turu i spremiti podatke?"
