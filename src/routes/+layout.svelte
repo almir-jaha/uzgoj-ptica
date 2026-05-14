@@ -78,6 +78,14 @@
 						>
 							📋 Aktivnosti
 						</a>
+						<a
+							href="/statistike"
+							class="btn btn-sm {$page.url.pathname.startsWith('/statistike')
+								? 'variant-filled-primary'
+								: 'variant-ghost-surface'}"
+						>
+							📊 Statistike
+						</a>
 						<button
 							class="btn btn-sm variant-ghost-surface ml-1"
 							on:click={auth.signOut}
