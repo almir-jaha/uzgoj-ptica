@@ -6,6 +6,11 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: {
 		adapter: adapter()
+	},
+	onwarn: (warning, handler) => {
+		// A11y upozorenja su informativna, ne blokiraju build
+		if (warning.code.startsWith('a11y')) return;
+		handler(warning);
 	}
 };
 

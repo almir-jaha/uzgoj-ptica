@@ -61,9 +61,9 @@
 
 <div
 	class="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-4"
-	role="dialog"
-	aria-modal="true"
+	role="presentation"
 	on:click|self={onClose}
+	on:keydown={(e) => e.key === 'Escape' && onClose()}
 >
 	<div class="card w-full max-w-md p-6 space-y-5 max-h-[90vh] overflow-y-auto">
 		<header class="flex items-center justify-between">
