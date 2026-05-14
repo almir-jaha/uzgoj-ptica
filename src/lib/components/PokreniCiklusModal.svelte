@@ -1,0 +1,146 @@
+<script lang="ts">
+	import { parovi } from '$lib/stores/parovi';
+	import { ciklusi, createCiklus, getFazeZaVrstu } from '$lib/stores/ciklus';
+	import { ptice } from '$lib/stores/ptice';
+	import { updateKavezStatus } from '$lib/stores/sezona';
+	import type { Par } from '$lib/db/schema';
+
+	export let kavezId: string;
+	export let sezonaId: string;
+	export let onClose: () => void;
+	export let onSuccess: () => void;
+
+	// Parovi koji su aktivni i nisu već u aktivnom ciklusu
+	$: zauzetiParIds = $ciklusi.filter((c) => c.status === 'aktivan').map((c) => c.par_id);
+	$: slobodniParovi = $parovi.filter(
+		(p) => p.status === 'aktivan' && !zauzetiParIds.includes(p.id)
+	);
+
+	function parLabel(par: Par): string {
+		const p1 = $ptice.find((p) => p.id === par.ptica1_id);
+		const p2 = $ptice.find((p) => p.id === par.ptica2_id);
+		const l1 = p1?.naziv || p1?.prstena_oznaka || '?';
+		const l2 = p2?.naziv || p2?.prstena_oznaka || '?';
+		return `${l1} / ${l2}`;
+	}
+
+	let odabraniParId = '';
+	let datumPrvogJajeta = new Date().toISOString().split('T')[0];
+	let loading = false;
+	let errorMsg = '';
+
+	async function handleSubmit() {
+		if (!odabraniParId) return;
+		loading = true;
+		errorMsg = '';
+
+		try {
+			const par = $parovi.find((p) => p.id === odabraniParId);
+			if (!par) throw new Error('Par nije pronađen');
+
+			const ptica1 = $ptice.find((p) => p.id === par.ptica1_id);
+			if (!ptica1) throw new Error('Ptica nije pronađena — provjerite ptice');
+
+			const vrstaId = ptica1.vrsta_ptica_id;
+
+			await createCiklus({
+				par_id: odabraniParId,
+				kavez_id: kavezId,
+				sezona_id: sezonaId,
+				vrsta_ptica_id: vrstaId,
+				datum_prvog_jajeta: datumPrvogJajeta,
+				status: 'aktivan'
+			});
+
+			const fazeZaVrstu = await getFazeZaVrstu(vrstaId);
+			const prvaFaza = fazeZaVrstu[0];
+
+			await updateKavezStatus(kavezId, 'aktivan', prvaFaza?.id);
+			onSuccess();
+		} catch (err) {
+			errorMsg = err instanceof Error ? err.message : 'Greška pri pokretanju ciklusa';
+		} finally {
+			loading = false;
+		}
+	}
+</script>
+
+<!-- Backdrop -->
+<div
+	class="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-4"
+	role="dialog"
+	aria-modal="true"
+	on:click|self={onClose}
+>
+	<div class="card w-full max-w-md p-6 space-y-5">
+		<header class="flex items-center justify-between">
+			<h3 class="h4 font-bold">Pokreni ciklus</h3>
+			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose} disabled={loading}>
+				✕
+			</button>
+		</header>
+
+		{#if slobodniParovi.length === 0}
+			<aside class="alert variant-soft-warning">
+				<div class="alert-message">
+					<p class="font-semibold">Nema slobodnih parova</p>
+					<p class="text-sm">Dodajte parove na stranici Parovi, pa pokrenite ciklus.</p>
+				</div>
+			</aside>
+			<div class="flex gap-3">
+				<button class="btn variant-ghost flex-1" on:click={onClose}>Zatvori</button>
+				<a class="btn variant-filled-primary flex-1" href="/parovi">Idi na Parove</a>
+			</div>
+		{:else}
+			<form class="space-y-4" on:submit|preventDefault={handleSubmit}>
+				<label class="label">
+					<span class="text-sm font-medium">Odaberite par</span>
+					<select class="select" bind:value={odabraniParId} required disabled={loading}>
+						<option value="" disabled>— Odaberite par —</option>
+						{#each slobodniParovi as par (par.id)}
+							<option value={par.id}>{parLabel(par)}</option>
+						{/each}
+					</select>
+				</label>
+
+				<label class="label">
+					<span class="text-sm font-medium">Datum prvog jajeta</span>
+					<input
+						class="input"
+						type="date"
+						bind:value={datumPrvogJajeta}
+						required
+						disabled={loading}
+					/>
+				</label>
+
+				{#if errorMsg}
+					<aside class="alert variant-filled-error py-2 px-3 text-sm">
+						<p>{errorMsg}</p>
+					</aside>
+				{/if}
+
+				<div class="flex gap-3 pt-1">
+					<button
+						class="btn variant-ghost flex-1"
+						type="button"
+						on:click={onClose}
+						disabled={loading}
+					>
+						Odustani
+					</button>
+					<button
+						class="btn variant-filled-primary flex-1"
+						type="submit"
+						disabled={loading || !odabraniParId}
+					>
+						{#if loading}
+							<span class="animate-spin mr-2">↻</span>
+						{/if}
+						Pokreni
+					</button>
+				</div>
+			</form>
+		{/if}
+	</div>
+</div>
