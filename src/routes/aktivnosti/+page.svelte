@@ -8,6 +8,7 @@
 	import { ciklusi, faze, loadCiklusi, loadFaze, updateAktivnost } from '$lib/stores/ciklus';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
+	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
 
 	type Hitnost = 'zakasnila' | 'danas' | 'uskoro' | 'buducnost';
 
@@ -101,13 +102,22 @@
 		const currentUser = get(user);
 		if (!currentUser) return;
 
-		await loadSezone(currentUser.id);
+		// Brzo iz Dexie — prikaži odmah
+		await lokalnoSezone(currentUser.id);
 		const sezona = get(aktivnaSezona);
 		if (!sezona) { loading = false; return; }
 
-		await Promise.all([loadKavezi(sezona.id), loadCiklusi(sezona.id), loadFaze()]);
+		await lokalnoPodaci(sezona.id, currentUser.id);
 		await ucitajAktivnosti();
 		loading = false;
+
+		// Background Supabase sync
+		Promise.all([
+			loadSezone(currentUser.id),
+			loadKavezi(sezona.id),
+			loadCiklusi(sezona.id),
+			loadFaze()
+		]).then(() => ucitajAktivnosti()).catch(console.error);
 	});
 
 	function otvoriObavljanje(id: string) {

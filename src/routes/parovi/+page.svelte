@@ -8,6 +8,7 @@
 	import { ptice, loadPtice } from '$lib/stores/ptice';
 
 	import NovParModal from '$lib/components/NovParModal.svelte';
+	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
 
 	let loading = true;
 	let novParOpen = false;
@@ -22,13 +23,18 @@
 		const currentUser = get(user);
 		if (!currentUser) return;
 
-		await loadPtice(currentUser.id);
-		await loadSezone(currentUser.id);
-
+		// Brzo iz Dexie — prikaži odmah
+		await lokalnoSezone(currentUser.id);
 		const sezona = get(aktivnaSezona);
-		if (sezona) await loadParovi(sezona.id);
-
+		if (sezona) await lokalnoPodaci(sezona.id, currentUser.id);
 		loading = false;
+
+		// Background Supabase sync
+		if (sezona) {
+			loadPtice(currentUser.id);
+			loadSezone(currentUser.id);
+			loadParovi(sezona.id);
+		}
 	});
 
 	async function handleNovPar() {

@@ -9,6 +9,7 @@
 	import { ciklusi, faze, loadCiklusi, loadFaze } from '$lib/stores/ciklus';
 	import { ptice, pticeMuzjaci, pticeSenke, loadPtice } from '$lib/stores/ptice';
 	import { db } from '$lib/db/dexie';
+	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
 
 	let loading = true;
 	let sveAktivnosti: AktivnostCiklusa[] = [];
@@ -17,16 +18,20 @@
 		const currentUser = get(user);
 		if (!currentUser) return;
 
-		await loadSezone(currentUser.id);
+		// Brzo iz Dexie
+		await lokalnoSezone(currentUser.id);
 		const sezona = get(aktivnaSezona);
+		if (sezona) await lokalnoPodaci(sezona.id, currentUser.id);
 
-		await Promise.all([
-			loadPtice(currentUser.id),
-			loadFaze(),
-			...(sezona
-				? [loadKavezi(sezona.id), loadParovi(sezona.id), loadCiklusi(sezona.id)]
-				: [])
-		]);
+		// Background Supabase sync
+		loadSezone(currentUser.id);
+		if (sezona) {
+			loadPtice(currentUser.id);
+			loadFaze();
+			loadKavezi(sezona.id);
+			loadParovi(sezona.id);
+			loadCiklusi(sezona.id);
+		}
 
 		// Aktivnosti za sve cikluse ove sezone
 		if (sezona) {

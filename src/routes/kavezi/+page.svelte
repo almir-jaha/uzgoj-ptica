@@ -16,6 +16,7 @@
 	import { ptice, loadPtice } from '$lib/stores/ptice';
 	import { listenToKavezi, listenToCiklusi, unsubscribe } from '$lib/supabase/realtime';
 	import { getKavezWithDetails } from '$lib/db/dexie';
+	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
 	import type { KavezWithDetails } from '$lib/db/schema';
 
 	import KavezKartica from '$lib/components/KavezKartica.svelte';
@@ -69,16 +70,25 @@
 		const currentUser = get(user);
 		if (!currentUser) return;
 
-		await loadSezone(currentUser.id);
-
+		// 1. Brzo — samo Dexie (< 100ms za povratne korisnike)
+		await lokalnoSezone(currentUser.id);
 		const sezona = get(aktivnaSezona);
-		if (sezona) {
-			await ucitajSezonuPodatke(sezona.id, currentUser.id);
-		} else {
+
+		if (!sezona) {
+			// Nema lokalne sezone — čekamo Supabase samo ovaj put
+			pageLoading = false;
 			novaSezonaOpen = true;
+			loadSezone(currentUser.id); // background
+			return;
 		}
 
+		// 2. Ostali podaci iz Dexie — prikaži UI odmah
+		await lokalnoPodaci(sezona.id, currentUser.id);
+		await ucitajDetalje();
 		pageLoading = false;
+
+		// 3. Supabase sync u pozadini — reaktivno ažurira UI
+		ucitajSezonuPodatke(sezona.id, currentUser.id).catch(console.error);
 	});
 
 	onDestroy(() => {

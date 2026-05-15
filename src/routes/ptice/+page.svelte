@@ -34,8 +34,19 @@
 	onMount(async () => {
 		const currentUser = get(user);
 		if (!currentUser) return;
-		await Promise.all([loadPtice(currentUser.id), loadVrstePtica()]);
+
+		// Brzo iz Dexie
+		const [localPtice, localVrste] = await Promise.all([
+			db.ptice.where('user_id').equals(currentUser.id).toArray(),
+			db.vrsta_ptica.toArray()
+		]);
+		ptice.set(localPtice);
+		vrstePtica = localVrste.sort((a, b) => a.naziv.localeCompare(b.naziv));
 		loading = false;
+
+		// Background Supabase sync
+		loadPtice(currentUser.id);
+		loadVrstePtica();
 	});
 
 	async function handleSacuvano() {
