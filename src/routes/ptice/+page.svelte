@@ -9,6 +9,7 @@
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
 
 	import NovaPticaModal from '$lib/components/NovaPticaModal.svelte';
+	import { t } from '$lib/i18n';
 
 	type Filter = 'sve' | 'muzjaci' | 'zenke';
 
@@ -100,17 +101,17 @@
 </script>
 
 <svelte:head>
-	<title>Ptice – Uzgoj ptica</title>
+	<title>{t.ptice.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-4 max-w-2xl">
 
 	<!-- Header -->
 	<div class="flex items-center justify-between">
-		<h2 class="h3 font-bold">Ptice</h2>
+		<h2 class="h3 font-bold">{t.ptice.title}</h2>
 		{#if !loading}
 			<button class="btn variant-filled-primary btn-sm" on:click={otvoriNova}>
-				+ Nova ptica
+				{t.ptice.novaPtica}
 			</button>
 		{/if}
 	</div>
@@ -118,7 +119,7 @@
 	<!-- Filter tabovi -->
 	{#if !loading && $ptice.length > 0}
 		<div class="flex gap-2">
-			{#each [['sve', 'Sve', $ptice.length], ['muzjaci', '♂ Mužjaci', $pticeMuzjaci.length], ['zenke', '♀ Ženke', $pticeSenke.length]] as [val, label, count]}
+			{#each [['sve', t.ptice.filtar.sve, $ptice.length], ['muzjaci', t.ptice.filtar.muzjaci, $pticeMuzjaci.length], ['zenke', t.ptice.filtar.zenke, $pticeSenke.length]] as [val, label, count]}
 				<button
 					class="btn btn-sm {filter === val ? 'variant-filled-primary' : 'variant-soft'}"
 					on:click={() => (filter = val)}
@@ -144,18 +145,18 @@
 	{:else if $ptice.length === 0}
 		<div class="flex flex-col items-center justify-center py-16 space-y-4">
 			<span class="text-6xl">🐦</span>
-			<p class="h4 text-center">Nema unesenih ptica</p>
+			<p class="h4 text-center">{t.ptice.nemaPtica}</p>
 			<p class="text-surface-500 text-sm text-center max-w-xs">
-				Dodajte ptice koje planirate upariti ove sezone.
+				{t.ptice.nemaPticaOpis}
 			</p>
 			<button class="btn variant-filled-primary" on:click={otvoriNova}>
-				Dodaj prvu pticu
+				{t.ptice.dodajPrvu}
 			</button>
 		</div>
 
 	<!-- Lista ptica -->
 	{:else if filtriranePtice.length === 0}
-		<p class="text-center text-surface-500 py-8">Nema ptica za odabrani filter.</p>
+		<p class="text-center text-surface-500 py-8">{t.ptice.filtar.nemaPticaZaFilter}</p>
 
 	{:else}
 		<div class="space-y-2">
@@ -177,7 +178,7 @@
 									class="btn btn-sm variant-ghost-surface shrink-0"
 									on:click={() => otvoriUredi(ptica)}
 								>
-									Uredi
+									{t.ptice.uredi}
 								</button>
 							</div>
 

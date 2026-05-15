@@ -4,6 +4,7 @@
 	import { db, addOfflineAction } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import type { KavezWithDetails } from '$lib/db/schema';
+	import { t } from '$lib/i18n';
 
 	export let details: KavezWithDetails;
 	export let onClose: () => void;
@@ -49,7 +50,7 @@
 			await updateKavezStatus(details.id, 'prazan');
 			onSuccess();
 		} catch (err) {
-			errorMsg = err instanceof Error ? err.message : 'Greška pri završetku ciklusa';
+			errorMsg = err instanceof Error ? err.message : t.modali.ciklus.gresakZavrsetka;
 		} finally {
 			loading = false;
 		}
@@ -70,20 +71,20 @@
 	<div class="card w-full max-w-md p-6 space-y-5">
 		<header class="flex items-center justify-between">
 			<div>
-				<h3 class="h4 font-bold">Završi ciklus</h3>
+				<h3 class="h4 font-bold">{t.modali.ciklus.zavrsiTitle}</h3>
 				<p class="text-sm text-surface-500">
-					Kavez {details.oznaka} — {ptica1Label} / {ptica2Label}
+					{t.modali.ciklus.kavez} {details.oznaka} — {ptica1Label} / {ptica2Label}
 				</p>
 			</div>
 			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose} disabled={loading}>
-				✕
+				{t.modali.zatvoriBtnTitle}
 			</button>
 		</header>
 
 		<form class="space-y-4" on:submit|preventDefault={handleSubmit}>
 			<!-- Status izbor -->
 			<fieldset class="space-y-2">
-				<legend class="text-sm font-medium">Rezultat legla</legend>
+				<legend class="text-sm font-medium">{t.modali.ciklus.rezultatLegla}</legend>
 				<label class="flex items-center gap-3 p-3 card variant-soft cursor-pointer hover:variant-soft-success">
 					<input
 						type="radio"
@@ -92,7 +93,7 @@
 						value="završen"
 						disabled={loading}
 					/>
-					<span class="font-medium">✅ Uspješno završen</span>
+					<span class="font-medium">{t.modali.ciklus.uspjesnoZavrsen}</span>
 				</label>
 				<label class="flex items-center gap-3 p-3 card variant-soft cursor-pointer hover:variant-soft-error">
 					<input
@@ -102,14 +103,14 @@
 						value="neuspješan"
 						disabled={loading}
 					/>
-					<span class="font-medium">❌ Neuspješan</span>
+					<span class="font-medium">{t.modali.ciklus.neuspjesan}</span>
 				</label>
 			</fieldset>
 
 			<!-- Statistike -->
 			<div class="grid grid-cols-2 gap-3">
 				<label class="label">
-					<span class="text-sm">Broj jaja</span>
+					<span class="text-sm">{t.modali.ciklus.brojJaja}</span>
 					<input
 						class="input"
 						type="number"
@@ -121,7 +122,7 @@
 				</label>
 				{#if odabraniStatus === 'završen'}
 					<label class="label">
-						<span class="text-sm">Izlijegljenih</span>
+						<span class="text-sm">{t.modali.ciklus.izlijegljenih}</span>
 						<input
 							class="input"
 							type="number"
@@ -135,12 +136,12 @@
 			</div>
 
 			<label class="label">
-				<span class="text-sm">Napomena (opcionalno)</span>
+				<span class="text-sm">{t.common.napomenaOpt}</span>
 				<textarea
 					class="textarea text-sm"
 					rows="2"
 					bind:value={napomena}
-					placeholder="Bilješka o leglu..."
+					placeholder={t.modali.ciklus.napomenaPlaceholder}
 					disabled={loading}
 				/>
 			</label>
@@ -158,7 +159,7 @@
 					on:click={onClose}
 					disabled={loading}
 				>
-					Odustani
+					{t.common.odustani}
 				</button>
 				<button
 					class="btn variant-filled-warning flex-1"
@@ -168,7 +169,7 @@
 					{#if loading}
 						<span class="animate-spin mr-2">↻</span>
 					{/if}
-					Završi ciklus
+					{t.modali.ciklus.zavrsiBtn}
 				</button>
 			</div>
 		</form>

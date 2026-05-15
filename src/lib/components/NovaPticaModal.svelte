@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createPtica, updatePtica, pticeMuzjaci, pticeSenke } from '$lib/stores/ptice';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
+	import { t } from '$lib/i18n';
 
 	export let userId: string;
 	export let vrstePtica: VrstaPtica[] = [];
@@ -25,10 +26,10 @@
 	$: dostupniOcevi = $pticeMuzjaci.filter((p) => p.id !== editPtica?.id);
 	$: dostupneMajke = $pticeSenke.filter((p) => p.id !== editPtica?.id);
 
-	$: naslov = editPtica ? 'Uredi pticu' : 'Nova ptica';
+	$: naslov = editPtica ? t.ptice.urediPticuTitle : t.ptice.novaPticaTitle;
 
 	async function handleSubmit() {
-		if (!vrstaId) { errorMsg = 'Odaberite vrstu ptice'; return; }
+		if (!vrstaId) { errorMsg = t.ptice.odaberiteVrstuGreska; return; }
 		loading = true;
 		errorMsg = '';
 
@@ -52,7 +53,7 @@
 
 			onSuccess();
 		} catch (err) {
-			errorMsg = err instanceof Error ? err.message : 'Greška pri snimanju';
+			errorMsg = err instanceof Error ? err.message : t.ptice.greska;
 		} finally {
 			loading = false;
 		}
@@ -69,28 +70,28 @@
 		<header class="flex items-center justify-between">
 			<h3 class="h4 font-bold">{naslov}</h3>
 			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose} disabled={loading}>
-				✕
+				{t.modali.zatvoriBtnTitle}
 			</button>
 		</header>
 
 		{#if vrstePtica.length === 0}
 			<aside class="alert variant-soft-warning">
 				<div class="alert-message">
-					<p class="font-semibold">Katalog vrsta je prazan</p>
+					<p class="font-semibold">{t.ptice.katalogPrazan}</p>
 					<p class="text-sm">
-						Pokrenite SQL migraciju <code>002_seed_vrsta_ptica.sql</code> u Supabase dashboardu.
+						{t.ptice.katalogPrazanOpis} <code>002_seed_vrsta_ptica.sql</code> u Supabase dashboardu.
 					</p>
 				</div>
 			</aside>
-			<button class="btn variant-ghost w-full" on:click={onClose}>Zatvori</button>
+			<button class="btn variant-ghost w-full" on:click={onClose}>{t.common.zatvori}</button>
 		{:else}
 			<form class="space-y-4" on:submit|preventDefault={handleSubmit}>
 
 				<!-- Spol: pill radio dugmad -->
 				<fieldset>
-					<legend class="text-sm font-medium mb-2">Spol</legend>
+					<legend class="text-sm font-medium mb-2">{t.ptice.spol}</legend>
 					<div class="flex gap-2">
-						{#each [['M', '♂ Mužjak'], ['Ž', '♀ Ženka'], ['?', '? Nepoznat']] as [val, label]}
+						{#each [['M', t.ptice.spolMuzjak], ['Ž', t.ptice.spolZenka], ['?', t.ptice.spolNepoznat]] as [val, label]}
 							<label
 								class="flex-1 btn btn-sm cursor-pointer {spol === val
 									? 'variant-filled-primary'
@@ -111,9 +112,9 @@
 
 				<!-- Vrsta -->
 				<label class="label">
-					<span class="text-sm font-medium">Vrsta ptice <span class="text-error-500">*</span></span>
+					<span class="text-sm font-medium">{t.ptice.vrsta} <span class="text-error-500">{t.ptice.vrstaRequired}</span></span>
 					<select class="select" bind:value={vrstaId} required disabled={loading}>
-						<option value="" disabled>— Odaberite vrstu —</option>
+						<option value="" disabled>{t.ptice.odaberiteVrstu}</option>
 						{#each vrstePtica as vrsta (vrsta.id)}
 							<option value={vrsta.id}>{vrsta.naziv}</option>
 						{/each}
@@ -123,22 +124,22 @@
 				<!-- Naziv i prsten -->
 				<div class="grid grid-cols-2 gap-3">
 					<label class="label">
-						<span class="text-sm font-medium">Naziv / nadimak</span>
+						<span class="text-sm font-medium">{t.ptice.naziv}</span>
 						<input
 							class="input"
 							type="text"
 							bind:value={naziv}
-							placeholder="Pero, Lili..."
+							placeholder={t.ptice.nazivPlaceholder}
 							disabled={loading}
 						/>
 					</label>
 					<label class="label">
-						<span class="text-sm font-medium">Oznaka prstena</span>
+						<span class="text-sm font-medium">{t.ptice.prstenaOznaka}</span>
 						<input
 							class="input"
 							type="text"
 							bind:value={prstenaOznaka}
-							placeholder="A-2024-001"
+							placeholder={t.ptice.prstenaOznakaPlaceholder}
 							disabled={loading}
 						/>
 					</label>
@@ -146,7 +147,7 @@
 
 				<!-- Datum rođenja -->
 				<label class="label">
-					<span class="text-sm font-medium">Datum rođenja (opcionalno)</span>
+					<span class="text-sm font-medium">{t.ptice.datumRodjenja}</span>
 					<input class="input" type="date" bind:value={datumRodjenja} disabled={loading} />
 				</label>
 
@@ -158,16 +159,16 @@
 						on:click={() => (rodovnikOtvoren = !rodovnikOtvoren)}
 						disabled={loading}
 					>
-						<span class="text-sm">🌳 Rodovnik (opcionalno)</span>
+						<span class="text-sm">{t.ptice.rodovnik}</span>
 						<span>{rodovnikOtvoren ? '▲' : '▼'}</span>
 					</button>
 
 					{#if rodovnikOtvoren}
 						<div class="card variant-soft p-3 space-y-3">
 							<label class="label">
-								<span class="text-sm">♂ Otac</span>
+								<span class="text-sm">{t.ptice.otac}</span>
 								<select class="select select-sm" bind:value={otacId} disabled={loading}>
-									<option value="">— Nije poznat —</option>
+									<option value="">{t.ptice.nijePozan}</option>
 									{#each dostupniOcevi as ptica (ptica.id)}
 										<option value={ptica.id}>
 											{ptica.naziv || ptica.prstena_oznaka || ptica.id.slice(0, 8)}
@@ -176,9 +177,9 @@
 								</select>
 							</label>
 							<label class="label">
-								<span class="text-sm">♀ Majka</span>
+								<span class="text-sm">{t.ptice.majka}</span>
 								<select class="select select-sm" bind:value={majkaId} disabled={loading}>
-									<option value="">— Nije poznata —</option>
+									<option value="">{t.ptice.nijePozdnata}</option>
 									{#each dostupneMajke as ptica (ptica.id)}
 										<option value={ptica.id}>
 											{ptica.naziv || ptica.prstena_oznaka || ptica.id.slice(0, 8)}
@@ -192,12 +193,12 @@
 
 				<!-- Napomena -->
 				<label class="label">
-					<span class="text-sm font-medium">Napomena (opcionalno)</span>
+					<span class="text-sm font-medium">{t.common.napomenaOpt}</span>
 					<textarea
 						class="textarea text-sm"
 						rows="2"
 						bind:value={napomena}
-						placeholder="Bilješka o ptici..."
+						placeholder={t.ptice.napomenaPlaceholder}
 						disabled={loading}
 					/>
 				</label>
@@ -215,7 +216,7 @@
 						on:click={onClose}
 						disabled={loading}
 					>
-						Odustani
+						{t.common.odustani}
 					</button>
 					<button
 						class="btn variant-filled-primary flex-1"
@@ -223,7 +224,7 @@
 						disabled={loading || !vrstaId}
 					>
 						{#if loading}<span class="animate-spin mr-2">↻</span>{/if}
-						{editPtica ? 'Sačuvaj izmjene' : 'Dodaj pticu'}
+						{editPtica ? t.common.sacuvajIzmjene : t.ptice.dodajPticu}
 					</button>
 				</div>
 			</form>

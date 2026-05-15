@@ -10,6 +10,7 @@
 	import { ptice, pticeMuzjaci, pticeSenke, loadPtice } from '$lib/stores/ptice';
 	import { db } from '$lib/db/dexie';
 	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
+	import { t } from '$lib/i18n';
 
 	let loading = true;
 	let sveAktivnosti: AktivnostCiklusa[] = [];
@@ -122,17 +123,17 @@
 </script>
 
 <svelte:head>
-	<title>Statistike – Uzgoj ptica</title>
+	<title>{t.statistike.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-6 max-w-3xl">
 
 	<!-- Header -->
 	<div>
-		<h2 class="h3 font-bold">Statistike</h2>
+		<h2 class="h3 font-bold">{t.statistike.title}</h2>
 		{#if $aktivnaSezona}
 			<p class="text-sm text-surface-500">
-				Sezona {$aktivnaSezona.godina}
+				{t.common.sezona} {$aktivnaSezona.godina}
 				{#if $aktivnaSezona.naziv && $aktivnaSezona.naziv !== `Sezona ${$aktivnaSezona.godina}`}
 					— {$aktivnaSezona.naziv}
 				{/if}
@@ -150,8 +151,8 @@
 	{:else if !$aktivnaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">📊</span>
-			<p class="h4 text-center">Nema aktivne sezone</p>
-			<a class="btn variant-filled-primary" href="/kavezi">Idi na Kaveze</a>
+			<p class="h4 text-center">{t.statistike.nemaSezone}</p>
+			<a class="btn variant-filled-primary" href="/kavezi">{t.statistike.iditeNaKaveze}</a>
 		</div>
 
 	{:else}
@@ -161,20 +162,20 @@
 
 			<!-- Kavezi -->
 			<div class="card p-5 space-y-3">
-				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">🏠 Kavezi</h3>
+				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">{t.statistike.kavezi}</h3>
 				<p class="text-4xl font-bold">{kavezUkupno}</p>
 				<div class="space-y-1.5 text-sm">
 					<div class="flex justify-between">
-						<span class="text-surface-500">Aktivni</span>
+						<span class="text-surface-500">{t.statistike.kavezAktivni}</span>
 						<span class="font-semibold text-success-600">{kavezAktivni}</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-surface-500">Prazni</span>
+						<span class="text-surface-500">{t.statistike.kavezPrazni}</span>
 						<span class="font-semibold">{kavezPrazni}</span>
 					</div>
 					{#if kavezAlarmi > 0}
 						<div class="flex justify-between">
-							<span class="text-surface-500">Alarm</span>
+							<span class="text-surface-500">{t.statistike.kavezAlarm}</span>
 							<span class="font-semibold text-error-500">⚠ {kavezAlarmi}</span>
 						</div>
 					{/if}
@@ -183,20 +184,20 @@
 
 			<!-- Ciklusi / Legla -->
 			<div class="card p-5 space-y-3">
-				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">🥚 Legla</h3>
+				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">{t.statistike.legla}</h3>
 				<p class="text-4xl font-bold">{ciklusUkupno}</p>
 				<div class="space-y-1.5 text-sm">
 					<div class="flex justify-between">
-						<span class="text-surface-500">Aktivna</span>
+						<span class="text-surface-500">{t.statistike.ciklusAktivna}</span>
 						<span class="font-semibold text-success-600">{ciklusAktivni}</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-surface-500">Završena</span>
+						<span class="text-surface-500">{t.statistike.ciklusZavrsena}</span>
 						<span class="font-semibold">{ciklusZavrseni}</span>
 					</div>
 					{#if ciklusNeuspjesni > 0}
 						<div class="flex justify-between">
-							<span class="text-surface-500">Neuspješna</span>
+							<span class="text-surface-500">{t.statistike.ciklusNeuspjesna}</span>
 							<span class="font-semibold text-error-500">{ciklusNeuspjesni}</span>
 						</div>
 					{/if}
@@ -207,21 +208,21 @@
 		<!-- ── Jaja & stopa izlijeganja ── -->
 		{#if ukupnoJaja > 0 || ciklusZavrseni > 0}
 			<div class="card p-5 space-y-4">
-				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">🐣 Izlijeganje</h3>
+				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">{t.statistike.izlijeganje}</h3>
 				<div class="grid grid-cols-3 gap-4 text-center">
 					<div>
 						<p class="text-3xl font-bold">{ukupnoJaja}</p>
-						<p class="text-xs text-surface-500 mt-1">Jaja ukupno</p>
+						<p class="text-xs text-surface-500 mt-1">{t.statistike.jajaUkupno}</p>
 					</div>
 					<div>
 						<p class="text-3xl font-bold text-success-600">{ukupnoIzlijeglo}</p>
-						<p class="text-xs text-surface-500 mt-1">Izlijegljenih</p>
+						<p class="text-xs text-surface-500 mt-1">{t.statistike.izlijegljenih}</p>
 					</div>
 					<div>
 						<p class="text-3xl font-bold {stopaIzlijeganja !== null && stopaIzlijeganja >= 70 ? 'text-success-600' : stopaIzlijeganja !== null && stopaIzlijeganja < 50 ? 'text-error-500' : 'text-warning-600'}">
 							{stopaIzlijeganja !== null ? `${stopaIzlijeganja}%` : '—'}
 						</p>
-						<p class="text-xs text-surface-500 mt-1">Stopa</p>
+						<p class="text-xs text-surface-500 mt-1">{t.statistike.stopa}</p>
 					</div>
 				</div>
 				{#if stopaIzlijeganja !== null}
@@ -240,20 +241,20 @@
 
 			<!-- Parovi -->
 			<div class="card p-5 space-y-3">
-				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">🫂 Parovi</h3>
+				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">{t.statistike.parovi}</h3>
 				<p class="text-4xl font-bold">{$parovi.length}</p>
 				<div class="space-y-1.5 text-sm">
 					<div class="flex justify-between">
-						<span class="text-surface-500">Aktivni</span>
+						<span class="text-surface-500">{t.statistike.paroviAktivni}</span>
 						<span class="font-semibold text-success-600">{paroviAktivni}</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-surface-500">Završeni</span>
+						<span class="text-surface-500">{t.statistike.paroviZavrseni}</span>
 						<span class="font-semibold">{paroviZavrseni}</span>
 					</div>
 					{#if paroviRazdv > 0}
 						<div class="flex justify-between">
-							<span class="text-surface-500">Razdvojeni</span>
+							<span class="text-surface-500">{t.statistike.paroviRazdvojeni}</span>
 							<span class="font-semibold text-warning-600">{paroviRazdv}</span>
 						</div>
 					{/if}
@@ -262,20 +263,20 @@
 
 			<!-- Ptice -->
 			<div class="card p-5 space-y-3">
-				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">🐦 Ptice</h3>
+				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">{t.statistike.ptice}</h3>
 				<p class="text-4xl font-bold">{pticaUkupno}</p>
 				<div class="space-y-1.5 text-sm">
 					<div class="flex justify-between">
-						<span class="text-surface-500">♂ Mužjaci</span>
+						<span class="text-surface-500">{t.statistike.pticeMuzjaci}</span>
 						<span class="font-semibold text-primary-600">{pticaMuzjaci}</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-surface-500">♀ Ženke</span>
+						<span class="text-surface-500">{t.statistike.pticeZenke}</span>
 						<span class="font-semibold text-tertiary-600">{pticaZenke}</span>
 					</div>
 					{#if pticaNepozn > 0}
 						<div class="flex justify-between">
-							<span class="text-surface-500">Nepoznato</span>
+							<span class="text-surface-500">{t.statistike.pticeNepoznato}</span>
 							<span class="font-semibold">{pticaNepozn}</span>
 						</div>
 					{/if}
@@ -287,29 +288,29 @@
 		{#if aktUkupno > 0}
 			<div class="card p-5 space-y-4">
 				<div class="flex items-center justify-between">
-					<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">📋 Aktivnosti</h3>
+					<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">{t.statistike.aktivnosti}</h3>
 					{#if aktZakasn > 0}
-						<span class="badge variant-filled-error text-xs">⚠ {aktZakasn} zakašnjelo</span>
+						<span class="badge variant-filled-error text-xs">⚠ {aktZakasn} {t.statistike.aktZakasnilo}</span>
 					{/if}
 				</div>
 				<div class="grid grid-cols-3 gap-4 text-center">
 					<div>
 						<p class="text-3xl font-bold">{aktUkupno}</p>
-						<p class="text-xs text-surface-500 mt-1">Ukupno</p>
+						<p class="text-xs text-surface-500 mt-1">{t.statistike.aktUkupno}</p>
 					</div>
 					<div>
 						<p class="text-3xl font-bold text-success-600">{aktObavl}</p>
-						<p class="text-xs text-surface-500 mt-1">Obavljene</p>
+						<p class="text-xs text-surface-500 mt-1">{t.statistike.aktObavljene}</p>
 					</div>
 					<div>
 						<p class="text-3xl font-bold {aktCekanje > 0 ? 'text-warning-600' : 'text-success-600'}">{aktCekanje}</p>
-						<p class="text-xs text-surface-500 mt-1">Na čekanju</p>
+						<p class="text-xs text-surface-500 mt-1">{t.statistike.aktNaCekanju}</p>
 					</div>
 				</div>
 				<!-- Progress bar -->
 				<div class="space-y-1">
 					<div class="flex justify-between text-xs text-surface-500">
-						<span>Napredak obavljanja</span>
+						<span>{t.statistike.napredakObavljanja}</span>
 						<span>{stopaAktivnosti}%</span>
 					</div>
 					<div class="w-full bg-surface-200-700-token rounded-full h-2">
@@ -326,7 +327,7 @@
 		{#if ciklusAktivni > 0 && fazaDistrib.length > 0}
 			<div class="card p-5 space-y-3">
 				<h3 class="font-semibold text-sm text-surface-500 uppercase tracking-wide">
-					📈 Aktivna legla po fazi
+					{t.statistike.aktivnaLeglaPoFazi}
 				</h3>
 				<div class="space-y-2">
 					{#each fazaDistrib as [naziv, broj]}
@@ -334,7 +335,7 @@
 						<div class="space-y-1">
 							<div class="flex justify-between text-sm">
 								<span class="font-medium" style={faza ? `color: ${faza.boja}` : ''}>{naziv}</span>
-								<span class="text-surface-500">{broj} leglo{broj !== 1 ? 'a' : ''}</span>
+								<span class="text-surface-500">{broj} {broj !== 1 ? t.statistike.legloSufiksPlural : t.statistike.legloSufiks}</span>
 							</div>
 							<div class="w-full bg-surface-200-700-token rounded-full h-1.5">
 								<div
@@ -350,7 +351,7 @@
 
 		<!-- ── Datum početka sezone ── -->
 		<p class="text-xs text-surface-400 text-center pb-2">
-			Sezona aktivna od {new Date($aktivnaSezona.datum_pocetka).toLocaleDateString('hr-BA', { day: '2-digit', month: 'long', year: 'numeric' })}
+			{t.sezona.aktivnaOd} {new Date($aktivnaSezona.datum_pocetka).toLocaleDateString('hr-BA', { day: '2-digit', month: 'long', year: 'numeric' })}
 		</p>
 
 	{/if}

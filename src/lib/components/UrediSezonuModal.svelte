@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { updateSezona } from '$lib/stores/sezona';
 	import type { Sezona } from '$lib/db/schema';
+	import { t } from '$lib/i18n';
 
 	export let sezona: Sezona;
 	export let onClose: () => void;
@@ -25,7 +26,7 @@
 			});
 			onSuccess();
 		} catch (err) {
-			errorMsg = err instanceof Error ? err.message : 'Greška pri ažuriranju';
+			errorMsg = err instanceof Error ? err.message : t.sezona.urediGreska;
 		} finally {
 			loading = false;
 		}
@@ -40,27 +41,27 @@
 >
 	<div class="card w-full max-w-md p-6 space-y-5">
 		<header class="flex items-center justify-between">
-			<h3 class="h4 font-bold">Uredi sezonu {sezona.godina}</h3>
+			<h3 class="h4 font-bold">{t.sezona.urediTitle} {sezona.godina}</h3>
 			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose} disabled={loading}>
-				✕
+				{t.modali.zatvoriBtnTitle}
 			</button>
 		</header>
 
 		<form class="space-y-4" on:submit|preventDefault={handleSubmit}>
 			<label class="label">
-				<span class="text-sm font-medium">Naziv sezone (opcionalno)</span>
+				<span class="text-sm font-medium">{t.sezona.urediNazivLabel}</span>
 				<input
 					class="input"
 					type="text"
 					bind:value={naziv}
-					placeholder="npr. Sezona kanarinaca 2026"
+					placeholder={t.sezona.urediNazivPlaceholder}
 					disabled={loading}
 				/>
 			</label>
 
 			<div class="grid grid-cols-2 gap-3">
 				<label class="label">
-					<span class="text-sm font-medium">Datum početka</span>
+					<span class="text-sm font-medium">{t.common.datumPocetka}</span>
 					<input
 						class="input"
 						type="date"
@@ -70,7 +71,7 @@
 					/>
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">Datum završetka</span>
+					<span class="text-sm font-medium">{t.common.datumZavrsetka}</span>
 					<input
 						class="input"
 						type="date"
@@ -81,10 +82,10 @@
 			</div>
 
 			<label class="label">
-				<span class="text-sm font-medium">Status</span>
+				<span class="text-sm font-medium">{t.sezona.urediStatus}</span>
 				<select class="select" bind:value={status} disabled={loading}>
-					<option value="aktiva">Aktivna</option>
-					<option value="završena">Završena</option>
+					<option value="aktiva">{t.sezona.statusAktiva}</option>
+					<option value="završena">{t.sezona.statusZavrsena}</option>
 				</select>
 			</label>
 
@@ -101,7 +102,7 @@
 					on:click={onClose}
 					disabled={loading}
 				>
-					Odustani
+					{t.common.odustani}
 				</button>
 				<button
 					class="btn variant-filled-primary flex-1"
@@ -109,7 +110,7 @@
 					disabled={loading}
 				>
 					{#if loading}<span class="animate-spin mr-2">↻</span>{/if}
-					Sačuvaj
+					{t.common.sacuvaj}
 				</button>
 			</div>
 		</form>

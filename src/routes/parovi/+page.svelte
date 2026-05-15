@@ -8,6 +8,7 @@
 	import { ptice, loadPtice } from '$lib/stores/ptice';
 
 	import NovParModal from '$lib/components/NovParModal.svelte';
+	import { t } from '$lib/i18n';
 	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
 
 	let loading = true;
@@ -67,7 +68,7 @@
 			await finishPar(zavrsiParId, zavrsiStatus);
 			zavrsiParId = null;
 		} catch (err) {
-			zavrsiError = err instanceof Error ? err.message : 'Greška pri završetku';
+			zavrsiError = err instanceof Error ? err.message : t.parovi.greska;
 		} finally {
 			zavrsiLoading = false;
 		}
@@ -103,7 +104,7 @@
 </script>
 
 <svelte:head>
-	<title>Parovi – Uzgoj ptica</title>
+	<title>{t.parovi.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-4 max-w-2xl">
@@ -111,14 +112,14 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h2 class="h3 font-bold">Parovi</h2>
+			<h2 class="h3 font-bold">{t.parovi.title}</h2>
 			{#if $prikazanaSezona}
-				<p class="text-sm text-surface-500">Sezona {$prikazanaSezona.godina}</p>
+				<p class="text-sm text-surface-500">{t.common.sezona} {$prikazanaSezona.godina}</p>
 			{/if}
 		</div>
 		{#if $prikazanaSezona && !loading}
 			<button class="btn variant-filled-primary btn-sm" on:click={() => (novParOpen = true)}>
-				+ Novi par
+				{t.parovi.noviPar}
 			</button>
 		{/if}
 	</div>
@@ -135,22 +136,22 @@
 	{:else if !$prikazanaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">📅</span>
-			<p class="h4 text-center">Nema aktivne sezone</p>
+			<p class="h4 text-center">{t.parovi.nemaSezone}</p>
 			<p class="text-surface-500 text-sm text-center">
-				Kreirajte sezonu na stranici Kavezi.
+				{t.parovi.nemaSezoneOpis}
 			</p>
-			<a class="btn variant-filled-primary" href="/kavezi">Idi na Kaveze</a>
+			<a class="btn variant-filled-primary" href="/kavezi">{t.parovi.iditeNaKaveze}</a>
 		</div>
 
 	<!-- Nema ptica -->
 	{:else if $ptice.length === 0}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">🐦</span>
-			<p class="h4 text-center">Nema unesenih ptica</p>
+			<p class="h4 text-center">{t.parovi.nemaPtica}</p>
 			<p class="text-surface-500 text-sm text-center">
-				Dodajte ptice kako biste mogli kreirati parove.
+				{t.parovi.nemaPticaOpis}
 			</p>
-			<a class="btn variant-filled-primary" href="/ptice">Dodaj ptice</a>
+			<a class="btn variant-filled-primary" href="/ptice">{t.parovi.dodajPtice}</a>
 		</div>
 
 	{:else}
@@ -159,7 +160,7 @@
 		{#if aktivniParovi.length > 0}
 			<section class="space-y-2">
 				<h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wider px-1">
-					Aktivni parovi ({aktivniParovi.length})
+					{t.parovi.aktivniParovi} ({aktivniParovi.length})
 				</h3>
 
 				{#each aktivniParovi as par (par.id)}
@@ -176,19 +177,19 @@
 									{pticaLabel(par.ptica2_id)}
 								</p>
 								<p class="text-xs text-surface-500">
-									📅 Od {formatDatum(par.datum_formiranja)}
+									{t.parovi.od} {formatDatum(par.datum_formiranja)}
 								</p>
 								{#if par.napomena}
 									<p class="text-xs text-surface-500 italic">{par.napomena}</p>
 								{/if}
 							</div>
-							<span class="badge variant-filled-success text-xs shrink-0">Aktivan</span>
+							<span class="badge variant-filled-success text-xs shrink-0">{t.parovi.aktivan}</span>
 						</div>
 
 						<!-- Inline završetak -->
 						{#if zavrsiParId === par.id}
 							<div class="space-y-2 pt-1 border-t border-surface-200-700-token">
-								<p class="text-sm font-medium">Završi par?</p>
+								<p class="text-sm font-medium">{t.parovi.zavrsiPitanje}</p>
 								<div class="flex gap-2">
 									<label class="flex items-center gap-1.5 text-sm cursor-pointer">
 										<input
@@ -198,7 +199,7 @@
 											value="završen"
 											disabled={zavrsiLoading}
 										/>
-										Završen
+										{t.parovi.zavrsen}
 									</label>
 									<label class="flex items-center gap-1.5 text-sm cursor-pointer">
 										<input
@@ -208,7 +209,7 @@
 											value="razdvojen"
 											disabled={zavrsiLoading}
 										/>
-										Razdvojen
+										{t.parovi.razdvojen}
 									</label>
 								</div>
 								{#if zavrsiError}
@@ -220,7 +221,7 @@
 										on:click={() => { zavrsiParId = null; zavrsiError = ''; }}
 										disabled={zavrsiLoading}
 									>
-										Odustani
+										{t.common.odustani}
 									</button>
 									<button
 										class="btn btn-sm variant-filled-warning flex-1"
@@ -228,7 +229,7 @@
 										disabled={zavrsiLoading}
 									>
 										{#if zavrsiLoading}<span class="animate-spin mr-1">↻</span>{/if}
-										Potvrdi
+										{t.common.potvrdi}
 									</button>
 								</div>
 							</div>
@@ -237,7 +238,7 @@
 								class="btn btn-sm variant-soft-warning w-full"
 								on:click={() => otvoriZavrsetak(par.id)}
 							>
-								Završi par
+								{t.parovi.zavrsiPar}
 							</button>
 						{/if}
 					</div>
@@ -248,10 +249,10 @@
 			<div class="flex flex-col items-center justify-center py-12 space-y-3">
 				<span class="text-5xl">🪺</span>
 				<p class="text-surface-500 text-center">
-					Nema aktivnih parova u ovoj sezoni.
+					{t.parovi.nemaAktivnih}
 				</p>
 				<button class="btn variant-filled-primary" on:click={() => (novParOpen = true)}>
-					Kreiraj prvi par
+					{t.parovi.kreirajPrvi}
 				</button>
 			</div>
 		{/if}
@@ -260,7 +261,7 @@
 		{#if zavrseniParovi.length > 0}
 			<section class="space-y-2">
 				<h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wider px-1">
-					Arhiva ({zavrseniParovi.length})
+					{t.parovi.arhiva} ({zavrseniParovi.length})
 				</h3>
 				{#each zavrseniParovi as par (par.id)}
 					<div class="card p-4 opacity-60">
@@ -283,7 +284,7 @@
 									? 'variant-soft-surface'
 									: 'variant-soft-warning'} text-xs shrink-0"
 							>
-								{par.status === 'završen' ? 'Završen' : 'Razdvojen'}
+								{par.status === 'završen' ? t.parovi.zavrsen : t.parovi.razdvojen}
 							</span>
 						</div>
 					</div>

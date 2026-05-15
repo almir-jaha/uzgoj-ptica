@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createSezona, createKavez, aktivnaSezona } from '$lib/stores/sezona';
+	import { t } from '$lib/i18n';
 
 	export let userId: string;
 	export let onClose: () => void;
@@ -44,7 +45,7 @@
 
 			onSuccess();
 		} catch (err) {
-			errorMsg = err instanceof Error ? err.message : 'Greška pri kreiranju sezone';
+			errorMsg = err instanceof Error ? err.message : t.sezona.greska;
 		} finally {
 			loading = false;
 		}
@@ -59,16 +60,16 @@
 >
 	<div class="card w-full max-w-md p-6 space-y-5">
 		<header class="flex items-center justify-between">
-			<h3 class="h4 font-bold">Nova sezona</h3>
+			<h3 class="h4 font-bold">{t.sezona.novaSezona}</h3>
 			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose} disabled={loading}>
-				✕
+				{t.modali.zatvoriBtnTitle}
 			</button>
 		</header>
 
 		<form class="space-y-4" on:submit|preventDefault={handleSubmit}>
 			<div class="grid grid-cols-2 gap-4">
 				<label class="label">
-					<span class="text-sm font-medium">Godina</span>
+					<span class="text-sm font-medium">{t.sezona.godina}</span>
 					<input
 						class="input"
 						type="number"
@@ -80,7 +81,7 @@
 					/>
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">Broj kaveza</span>
+					<span class="text-sm font-medium">{t.sezona.brojKaveza}</span>
 					<input
 						class="input"
 						type="number"
@@ -100,12 +101,12 @@
 			{/if}
 
 			<label class="label">
-				<span class="text-sm font-medium">Datum početka</span>
+				<span class="text-sm font-medium">{t.sezona.datumPocetka}</span>
 				<input class="input" type="date" bind:value={datumPocetka} required disabled={loading} />
 			</label>
 
 			<label class="label">
-				<span class="text-sm font-medium">Naziv (opcionalno)</span>
+				<span class="text-sm font-medium">{t.sezona.naziv}</span>
 				<input
 					class="input"
 					type="text"
@@ -143,7 +144,7 @@
 					on:click={onClose}
 					disabled={loading}
 				>
-					Odustani
+					{t.common.odustani}
 				</button>
 				<button
 					class="btn variant-filled-primary flex-1"
@@ -151,7 +152,7 @@
 					disabled={loading || brojKaveza < 1 || duplikatGodina}
 				>
 					{#if loading}<span class="animate-spin mr-2">↻</span>{/if}
-					Kreiraj sezonu
+					{t.sezona.kreirajSezonu}
 				</button>
 			</div>
 		</form>

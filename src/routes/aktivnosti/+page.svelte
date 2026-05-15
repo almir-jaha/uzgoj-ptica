@@ -9,6 +9,7 @@
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
+	import { t } from '$lib/i18n';
 
 	type Hitnost = 'zakasnila' | 'danas' | 'uskoro' | 'buducnost';
 
@@ -142,7 +143,7 @@
 			obavljaId = null;
 			await ucitajAktivnosti();
 		} catch (err) {
-			obavljaError = err instanceof Error ? err.message : 'Greška';
+			obavljaError = err instanceof Error ? err.message : t.aktivnosti.greska;
 		} finally {
 			obavljaLoading = false;
 		}
@@ -155,20 +156,20 @@
 </script>
 
 <svelte:head>
-	<title>Aktivnosti – Uzgoj ptica</title>
+	<title>{t.aktivnosti.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-5 max-w-2xl">
 
 	<div class="flex items-center justify-between">
 		<div>
-			<h2 class="h3 font-bold">Aktivnosti</h2>
+			<h2 class="h3 font-bold">{t.aktivnosti.title}</h2>
 			{#if $prikazanaSezona}
-				<p class="text-sm text-surface-500">Sezona {$prikazanaSezona.godina}</p>
+				<p class="text-sm text-surface-500">{t.common.sezona} {$prikazanaSezona.godina}</p>
 			{/if}
 		</div>
 		{#if !loading && pending.length > 0}
-			<span class="badge variant-filled-warning">{pending.length} na čekanju</span>
+			<span class="badge variant-filled-warning">{pending.length} {t.aktivnosti.naCekanju}</span>
 		{/if}
 	</div>
 
@@ -182,32 +183,32 @@
 	{:else if !$prikazanaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">📅</span>
-			<p class="h4 text-center">Nema aktivne sezone</p>
-			<a class="btn variant-filled-primary" href="/kavezi">Idi na Kaveze</a>
+			<p class="h4 text-center">{t.aktivnosti.nemaSezone}</p>
+			<a class="btn variant-filled-primary" href="/kavezi">{t.aktivnosti.iditeNaKaveze}</a>
 		</div>
 
 	{:else if $ciklusi.filter((c) => c.status === 'aktivan').length === 0}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">🪺</span>
-			<p class="h4 text-center">Nema aktivnih ciklusa</p>
-			<p class="text-surface-500 text-sm text-center">Pokrenite ciklus na stranici Kavezi.</p>
-			<a class="btn variant-filled-primary" href="/kavezi">Idi na Kaveze</a>
+			<p class="h4 text-center">{t.aktivnosti.nemaAktivnihCiklusa}</p>
+			<p class="text-surface-500 text-sm text-center">{t.aktivnosti.nemaAktivnihCiklusaOpis}</p>
+			<a class="btn variant-filled-primary" href="/kavezi">{t.aktivnosti.iditeNaKaveze}</a>
 		</div>
 
 	{:else if pending.length === 0 && obavljene.length > 0}
 		<div class="flex flex-col items-center justify-center py-12 space-y-3">
 			<span class="text-5xl">🎉</span>
-			<p class="h4 text-center">Sve aktivnosti obavljene!</p>
+			<p class="h4 text-center">{t.aktivnosti.sveObavljene}</p>
 		</div>
 
 	{:else}
 
 		<!-- Sekcije aktivnosti -->
 		{#each [
-			{ lista: zakasnjele,  naslov: '⚠ Zakašnjele',        klasa: 'text-error-500'   },
-			{ lista: danasLista,  naslov: '📅 Danas',             klasa: 'text-warning-600' },
-			{ lista: uskoroLista, naslov: '🔔 Uskoro – 7 dana',   klasa: 'text-primary-500' },
-			{ lista: buduceLista, naslov: '📋 Buduće',            klasa: 'text-surface-500' }
+			{ lista: zakasnjele,  naslov: t.aktivnosti.grupe.zakasnjele, klasa: 'text-error-500'   },
+			{ lista: danasLista,  naslov: t.aktivnosti.grupe.danas,      klasa: 'text-warning-600' },
+			{ lista: uskoroLista, naslov: t.aktivnosti.grupe.uskoro,     klasa: 'text-primary-500' },
+			{ lista: buduceLista, naslov: t.aktivnosti.grupe.buduce,     klasa: 'text-surface-500' }
 		] as grupa}
 			{#if grupa.lista.length > 0}
 				<section class="space-y-2">
@@ -229,7 +230,7 @@
 										>{p.faza?.naziv ?? '—'}</span>
 									</p>
 									<p class="text-xs text-surface-500">
-										Potrebno do: {formatDatum(p.aktivnost.potreban_datum)}
+										{t.aktivnosti.potrebnoDo} {formatDatum(p.aktivnost.potreban_datum)}
 									</p>
 								</div>
 
@@ -238,7 +239,7 @@
 										class="btn btn-sm variant-soft-success shrink-0"
 										on:click={() => otvoriObavljanje(p.aktivnost.id)}
 									>
-										✓ Obavi
+										{t.aktivnosti.obavi}
 									</button>
 								{/if}
 							</div>
@@ -248,7 +249,7 @@
 								<div class="space-y-3 pt-1 border-t border-surface-200-700-token">
 									<div class="grid grid-cols-2 gap-3">
 										<label class="label">
-											<span class="text-xs">Datum obavljanja</span>
+											<span class="text-xs">{t.aktivnosti.datumObavljanja}</span>
 											<input
 												class="input input-sm"
 												type="date"
@@ -257,12 +258,12 @@
 											/>
 										</label>
 										<label class="label">
-											<span class="text-xs">Napomena (opt.)</span>
+											<span class="text-xs">{t.aktivnosti.napomenaOpt}</span>
 											<input
 												class="input input-sm"
 												type="text"
 												bind:value={obavljaNapomena}
-												placeholder="Bilješka..."
+												placeholder={t.aktivnosti.napomenaPlaceholder}
 												disabled={obavljaLoading}
 											/>
 										</label>
@@ -278,7 +279,7 @@
 											on:click={() => { obavljaId = null; obavljaError = ''; }}
 											disabled={obavljaLoading}
 										>
-											Odustani
+											{t.common.odustani}
 										</button>
 										<button
 											class="btn btn-sm variant-filled-success flex-1"
@@ -286,7 +287,7 @@
 											disabled={obavljaLoading || !obavljaDatum}
 										>
 											{#if obavljaLoading}<span class="animate-spin mr-1">↻</span>{/if}
-											Potvrdi
+											{t.common.potvrdi}
 										</button>
 									</div>
 								</div>
@@ -306,7 +307,7 @@
 				class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-surface-400 px-1 w-full"
 				on:click={() => (prikaziObavljene = !prikaziObavljene)}
 			>
-				✅ Obavljene ({obavljene.length})
+				{t.aktivnosti.obavljene} ({obavljene.length})
 				<span class="ml-auto">{prikaziObavljene ? '▲' : '▼'}</span>
 			</button>
 

@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { isOnline } from '$lib/stores/network';
+	import { t } from '$lib/i18n';
 
 	initializeStores();
 	const toastStore = getToastStore();
@@ -34,7 +35,7 @@
 				registerSW({
 					onOfflineReady() {
 						toastStore.trigger({
-							message: '✅ Aplikacija je spremna za rad bez interneta.',
+							message: t.app.offlineReady,
 							background: 'variant-filled-success',
 							timeout: 4000
 						});
@@ -63,7 +64,7 @@
 	<div class="flex min-h-screen items-center justify-center bg-surface-50-900-token">
 		<div class="text-center space-y-3">
 			<span class="text-6xl">🐦</span>
-			<p class="text-surface-500 animate-pulse">Učitavanje...</p>
+			<p class="text-surface-500 animate-pulse">{t.app.loading}</p>
 		</div>
 	</div>
 {:else if $isAuthenticated}
@@ -71,10 +72,10 @@
 		<svelte:fragment slot="header">
 			<AppBar padding="px-4 py-2" background="bg-surface-100-800-token">
 				<svelte:fragment slot="lead">
-					<span class="text-lg font-bold tracking-tight">🐦 Uzgoj ptica</span>
+					<span class="text-lg font-bold tracking-tight">{t.app.name}</span>
 					{#if !$isOnline}
-						<span class="badge variant-filled-warning text-xs ml-2" title="Nema interneta — podaci se čuvaju lokalno">
-							offline
+						<span class="badge variant-filled-warning text-xs ml-2" title={t.app.offlineTitle}>
+							{t.app.offlineBadge}
 						</span>
 					{/if}
 				</svelte:fragment>
@@ -86,7 +87,7 @@
 								? 'variant-filled-primary'
 								: 'variant-ghost-surface'}"
 						>
-							🏠 Kavezi
+							{t.nav.kavezi}
 						</a>
 						<a
 							href="/parovi"
@@ -94,7 +95,7 @@
 								? 'variant-filled-primary'
 								: 'variant-ghost-surface'}"
 						>
-							🫂 Parovi
+							{t.nav.parovi}
 						</a>
 						<a
 							href="/ptice"
@@ -102,7 +103,7 @@
 								? 'variant-filled-primary'
 								: 'variant-ghost-surface'}"
 						>
-							🐦 Ptice
+							{t.nav.ptice}
 						</a>
 						<a
 							href="/aktivnosti"
@@ -110,7 +111,7 @@
 								? 'variant-filled-primary'
 								: 'variant-ghost-surface'}"
 						>
-							📋 Aktivnosti
+							{t.nav.aktivnosti}
 						</a>
 						<a
 							href="/statistike"
@@ -118,12 +119,12 @@
 								? 'variant-filled-primary'
 								: 'variant-ghost-surface'}"
 						>
-							📊 Statistike
+							{t.nav.statistike}
 						</a>
 						<button
 							class="btn btn-sm variant-ghost-surface ml-1"
 							on:click={auth.signOut}
-							title="Odjava"
+							title={t.nav.odjavaTitle}
 						>
 							<span>⎋</span>
 						</button>

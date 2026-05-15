@@ -8,6 +8,7 @@
 	import { supabase } from '$lib/supabase/client';
 	import { db } from '$lib/db/dexie';
 	import type { Par } from '$lib/db/schema';
+	import { t } from '$lib/i18n';
 
 	export let kavezId: string;
 	export let sezonaId: string;
@@ -84,10 +85,10 @@
 
 		try {
 			const par = parOviSezona.find((p) => p.id === odabraniParId);
-			if (!par) throw new Error('Par nije pronađen');
+			if (!par) throw new Error(t.modali.ciklus.parNijePronadjen);
 
 			const ptica1 = $ptice.find((p) => p.id === par.ptica1_id);
-			if (!ptica1) throw new Error('Ptica nije pronađena — provjerite ptice');
+			if (!ptica1) throw new Error(t.modali.ciklus.pticaNijePronadjena);
 
 			const vrstaId = ptica1.vrsta_ptica_id;
 
@@ -105,7 +106,7 @@
 			await updateKavezStatus(kavezId, 'aktivan', prvaFaza?.id);
 			onSuccess();
 		} catch (err) {
-			errorMsg = err instanceof Error ? err.message : 'Greška pri pokretanju ciklusa';
+			errorMsg = err instanceof Error ? err.message : t.modali.ciklus.greska;
 		} finally {
 			loading = false;
 		}
@@ -120,9 +121,9 @@
 >
 	<div class="card w-full max-w-md p-6 space-y-5">
 		<header class="flex items-center justify-between">
-			<h3 class="h4 font-bold">Pokreni ciklus</h3>
+			<h3 class="h4 font-bold">{t.modali.ciklus.pokreniTitle}</h3>
 			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose} disabled={loading}>
-				✕
+				{t.modali.zatvoriBtnTitle}
 			</button>
 		</header>
 
@@ -134,24 +135,24 @@
 		{:else if slobodniParovi.length === 0}
 			<aside class="alert variant-soft-warning">
 				<div class="alert-message space-y-1">
-					<p class="font-semibold">Nema slobodnih parova za ovu sezonu</p>
+					<p class="font-semibold">{t.modali.ciklus.nemaParova}</p>
 					<p class="text-sm">
-						Parovi se kreiraju posebno za svaku sezonu. Idite na stranicu
-						<strong>Parovi</strong> i kreirajte parove za ovu sezonu.
+						{t.modali.ciklus.nemaParovaOpis}
+						<strong>{t.modali.ciklus.nemaParovaParovi}</strong> {t.modali.ciklus.nemaParovaOpis2}
 					</p>
 				</div>
 			</aside>
 			<div class="flex gap-3">
-				<button class="btn variant-ghost flex-1" on:click={onClose}>Zatvori</button>
-				<a class="btn variant-filled-primary flex-1" href="/parovi">Idi na Parove</a>
+				<button class="btn variant-ghost flex-1" on:click={onClose}>{t.common.zatvori}</button>
+				<a class="btn variant-filled-primary flex-1" href="/parovi">{t.modali.ciklus.iditeNaParove}</a>
 			</div>
 
 		{:else}
 			<form class="space-y-4" on:submit|preventDefault={handleSubmit}>
 				<label class="label">
-					<span class="text-sm font-medium">Odaberite par</span>
+					<span class="text-sm font-medium">{t.modali.ciklus.odaberitePar}</span>
 					<select class="select" bind:value={odabraniParId} required disabled={loading}>
-						<option value="" disabled>— Odaberite par —</option>
+						<option value="" disabled>{t.modali.ciklus.odaberiteParOpcija}</option>
 						{#each slobodniParovi as par (par.id)}
 							<option value={par.id}>{parLabel(par)}</option>
 						{/each}
@@ -159,7 +160,7 @@
 				</label>
 
 				<label class="label">
-					<span class="text-sm font-medium">Datum prvog jajeta</span>
+					<span class="text-sm font-medium">{t.modali.ciklus.datumPrvogJajeta}</span>
 					<input
 						class="input"
 						type="date"
@@ -182,7 +183,7 @@
 						on:click={onClose}
 						disabled={loading}
 					>
-						Odustani
+						{t.common.odustani}
 					</button>
 					<button
 						class="btn variant-filled-primary flex-1"
@@ -190,7 +191,7 @@
 						disabled={loading || !odabraniParId}
 					>
 						{#if loading}<span class="animate-spin mr-2">↻</span>{/if}
-						Pokreni
+						{t.modali.ciklus.pokreni}
 					</button>
 				</div>
 			</form>

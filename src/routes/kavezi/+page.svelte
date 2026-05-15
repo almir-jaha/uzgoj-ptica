@@ -23,6 +23,7 @@
 	import type { KavezWithDetails } from '$lib/db/schema';
 
 	import KavezKartica from '$lib/components/KavezKartica.svelte';
+	import { t } from '$lib/i18n';
 	import NovaSezonaModal from '$lib/components/NovaSezonaModal.svelte';
 	import UrediSezonuModal from '$lib/components/UrediSezonuModal.svelte';
 	import PokreniCiklusModal from '$lib/components/PokreniCiklusModal.svelte';
@@ -199,7 +200,7 @@
 </script>
 
 <svelte:head>
-	<title>Kavezi – Uzgoj ptica</title>
+	<title>{t.kavezi.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-4 max-w-4xl">
@@ -208,10 +209,10 @@
 	{#if pregledArhive && $prikazanaSezona}
 		<aside class="alert variant-soft-warning py-2 px-3 flex items-center justify-between gap-3">
 			<p class="text-sm">
-				👁 Pregledate arhiviranu sezonu <strong>{$prikazanaSezona.godina}</strong>. Izmjene nisu moguće.
+				{t.sezona.pregledArhive} <strong>{$prikazanaSezona.godina}</strong>{t.sezona.izmjeneNisuMoguce}
 			</p>
 			<button class="btn btn-sm variant-filled-warning shrink-0" on:click={resetujNaAktivnu}>
-				Vrati na aktivnu
+				{t.sezona.vratiNaAktivnu}
 			</button>
 		</aside>
 	{/if}
@@ -221,19 +222,19 @@
 		<div class="flex items-center gap-2 flex-wrap">
 			<h2 class="h3 font-bold">
 				{#if $prikazanaSezona}
-					Sezona {$prikazanaSezona.godina}
+					{t.common.sezona} {$prikazanaSezona.godina}
 					{#if $prikazanaSezona.naziv && $prikazanaSezona.naziv !== `Sezona ${$prikazanaSezona.godina}`}
 						<span class="text-surface-400 font-normal text-lg">— {$prikazanaSezona.naziv}</span>
 					{/if}
 				{:else}
-					Kavezi
+					{t.kavezi.title}
 				{/if}
 			</h2>
 			{#if kaveziDetails.length > 0}
-				<span class="badge variant-soft text-sm">{kaveziDetails.length} kaveza</span>
+				<span class="badge variant-soft text-sm">{kaveziDetails.length} {t.kavezi.kaveziLabel}</span>
 			{/if}
 			{#if aktivnih > 0}
-				<span class="badge variant-filled-success text-sm">{aktivnih} aktivnih</span>
+				<span class="badge variant-filled-success text-sm">{aktivnih} {t.kavezi.aktivnih}</span>
 			{/if}
 			{#if alarma > 0}
 				<span class="badge variant-filled-error text-sm">⚠ {alarma} alarm</span>
@@ -248,7 +249,7 @@
 					<button
 						class="btn btn-sm variant-ghost-surface"
 						on:click={() => (prikaziSezone = !prikaziSezone)}
-						title="Promijeni sezonu za pregled"
+						title={t.sezona.promijeniSezonu}
 					>
 						📅 {prikaziSezone ? '▲' : '▼'}
 					</button>
@@ -257,16 +258,16 @@
 					<button
 						class="btn btn-sm variant-ghost-surface"
 						on:click={() => (urediSezonuOpen = true)}
-						title="Uredi sezonu"
+						title={t.sezona.urediTitle}
 					>
-						✏ Uredi
+						{t.sezona.urediBtn}
 					</button>
 					<button
 						class="btn btn-sm variant-filled-primary"
 						on:click={() => (novaSezonaOpen = true)}
-						title="Nova sezona"
+						title={t.sezona.novaSezona}
 					>
-						+ Sezona
+						{t.sezona.novaSezonaBtn}
 					</button>
 				{/if}
 			</div>
@@ -277,7 +278,7 @@
 	{#if prikaziSezone && sortiraneSeezone.length > 1}
 		<div class="card p-3 space-y-1">
 			<p class="text-xs font-semibold text-surface-500 uppercase tracking-wider px-1 mb-2">
-				Odaberite sezonu za pregled
+				{t.sezona.odaberiteSezonu}
 			</p>
 			{#each sortiraneSeezone as sz (sz.id)}
 				<button
@@ -298,7 +299,7 @@
 							? 'variant-filled-success'
 							: 'variant-soft-surface'}"
 					>
-						{sz.status === 'aktiva' ? 'aktivna' : 'arhivirana'}
+						{sz.status === 'aktiva' ? t.sezona.aktivnaSezona : t.sezona.arhivirana}
 					</span>
 				</button>
 			{/each}
@@ -317,12 +318,12 @@
 	{:else if !$prikazanaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-4">
 			<span class="text-6xl">🪹</span>
-			<p class="h4 text-center">Nema aktivne sezone</p>
+			<p class="h4 text-center">{t.kavezi.nemaSezone}</p>
 			<p class="text-surface-500 text-center text-sm">
-				Kreirajte prvu sezonu kako biste počeli pratiti kaveze.
+				{t.sezona.nemaSezoneOpis}
 			</p>
 			<button class="btn variant-filled-primary" on:click={() => (novaSezonaOpen = true)}>
-				Kreiraj sezonu
+				{t.sezona.kreirajSezonu}
 			</button>
 		</div>
 
@@ -343,7 +344,7 @@
 	{:else}
 		<div class="flex flex-col items-center justify-center py-12 space-y-3">
 			<span class="text-5xl">🏠</span>
-			<p class="text-surface-500 text-center text-sm">Sezona nema kaveza.</p>
+			<p class="text-surface-500 text-center text-sm">{t.kavezi.nemaKaveza}</p>
 		</div>
 	{/if}
 </div>

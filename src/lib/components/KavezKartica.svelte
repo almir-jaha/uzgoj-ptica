@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { getCurrentPhase, getDaysUntilNextPhase } from '$lib/stores/ciklus';
 	import type { KavezWithDetails, FazaCiklusa } from '$lib/db/schema';
+	import { t } from '$lib/i18n';
 
 	export let details: KavezWithDetails;
 	export let faze: FazaCiklusa[] = [];
@@ -69,7 +70,7 @@
 	<!-- Sadržaj po statusu -->
 	{#if details.status === 'prazan'}
 		<div class="flex-1 flex items-center justify-center">
-			<p class="text-surface-400 text-xs text-center">Prazan</p>
+			<p class="text-surface-400 text-xs text-center">{t.kavezi.prazan}</p>
 		</div>
 
 		{#if !readonly}
@@ -77,7 +78,7 @@
 				class="btn btn-sm variant-filled-primary w-full text-xs"
 				on:click={() => dispatch('pokrenuCiklus')}
 			>
-				Pokreni ciklus
+				{t.kavezi.pokreniCiklus}
 			</button>
 		{/if}
 	{:else}
@@ -112,12 +113,12 @@
 								? 'variant-filled-warning'
 								: 'variant-soft'} shrink-0"
 					>
-						{daniDo === 0 ? 'Danas' : daniDo === 1 ? 'Sutra' : `${daniDo}d`}
+						{daniDo === 0 ? t.kavezi.danas : daniDo === 1 ? t.kavezi.sutra : `${daniDo}d`}
 					</span>
 				{/if}
 			</div>
 		{:else}
-			<p class="text-xs text-surface-400">Sve faze završene</p>
+			<p class="text-xs text-surface-400">{t.kavezi.sveRazePravrsene}</p>
 		{/if}
 
 		<!-- Datum sljedeće aktivnosti -->
@@ -135,7 +136,7 @@
 					: 'variant-soft-warning'} w-full text-xs mt-auto"
 				on:click={() => dispatch('zavrsiCiklus')}
 			>
-				Završi ciklus
+				{t.kavezi.zavrsiCiklus}
 			</button>
 		{/if}
 	{/if}
