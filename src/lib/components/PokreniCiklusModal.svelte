@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { parovi } from '$lib/stores/parovi';
+	import { onMount } from 'svelte';
 	import { ciklusi, createCiklus, getFazeZaVrstu } from '$lib/stores/ciklus';
-	import { ptice } from '$lib/stores/ptice';
+	import { ptice, loadPtice } from '$lib/stores/ptice';
+	import { user } from '$lib/stores/auth';
+	import { get } from 'svelte/store';
 	import { updateKavezStatus } from '$lib/stores/sezona';
+	import { supabase } from '$lib/supabase/client';
+	import { db } from '$lib/db/dexie';
 	import type { Par } from '$lib/db/schema';
 
 	export let kavezId: string;
@@ -10,13 +14,44 @@
 	export let onClose: () => void;
 	export let onSuccess: () => void;
 
-	// Parovi ove sezone koji nisu već u aktivnom ciklusu
+	let modalLoading = true;
+	let svihParovi: Par[] = [];
+
+	onMount(async () => {
+		// Svježi direktni load — ne ovisi o globalnom $parovi storu
+		// Učitavamo SVE aktivne parove korisnika, bez filtera po sezoni
+		// (par ♂+♀ može se koristiti u ciklusima više sezona)
+		try {
+			const currentUser = get(user);
+			if (currentUser) {
+				// Ensure ptice are loaded
+				if ($ptice.length === 0) await loadPtice(currentUser.id);
+
+				const { data } = await supabase
+					.from('parovi')
+					.select('*')
+					.eq('status', 'aktivan');
+
+				if (data?.length) {
+					await db.parovi.bulkPut(data);
+					svihParovi = data;
+				} else {
+					// Fallback: Dexie
+					svihParovi = await db.parovi.where('status').equals('aktivan').toArray();
+				}
+			}
+		} catch {
+			svihParovi = await db.parovi.where('status').equals('aktivan').toArray();
+		}
+		modalLoading = false;
+	});
+
+	// Parovi koji nisu u aktivnom ciklusu OVE sezone
 	$: zauzetiParIds = $ciklusi
 		.filter((c) => c.status === 'aktivan' && c.sezona_id === sezonaId)
 		.map((c) => c.par_id);
-	$: slobodniParovi = $parovi.filter(
-		(p) => p.status === 'aktivan' && p.sezona_id === sezonaId && !zauzetiParIds.includes(p.id)
-	);
+
+	$: slobodniParovi = svihParovi.filter((p) => !zauzetiParIds.includes(p.id));
 
 	function parLabel(par: Par): string {
 		const p1 = $ptice.find((p) => p.id === par.ptica1_id);
@@ -37,7 +72,7 @@
 		errorMsg = '';
 
 		try {
-			const par = $parovi.find((p) => p.id === odabraniParId);
+			const par = svihParovi.find((p) => p.id === odabraniParId);
 			if (!par) throw new Error('Par nije pronađen');
 
 			const ptica1 = $ptice.find((p) => p.id === par.ptica1_id);
@@ -67,7 +102,6 @@
 	}
 </script>
 
-<!-- Backdrop -->
 <div
 	class="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-4"
 	role="presentation"
@@ -82,9 +116,14 @@
 			</button>
 		</header>
 
-		{#if slobodniParovi.length === 0}
+		{#if modalLoading}
+			<div class="flex items-center justify-center py-6">
+				<span class="animate-spin text-2xl">↻</span>
+			</div>
+
+		{:else if slobodniParovi.length === 0}
 			<aside class="alert variant-soft-warning">
-				<div class="alert-message">
+				<div class="alert-message space-y-1">
 					<p class="font-semibold">Nema slobodnih parova</p>
 					<p class="text-sm">Dodajte parove na stranici Parovi, pa pokrenite ciklus.</p>
 				</div>
@@ -93,6 +132,7 @@
 				<button class="btn variant-ghost flex-1" on:click={onClose}>Zatvori</button>
 				<a class="btn variant-filled-primary flex-1" href="/parovi">Idi na Parove</a>
 			</div>
+
 		{:else}
 			<form class="space-y-4" on:submit|preventDefault={handleSubmit}>
 				<label class="label">
@@ -136,9 +176,7 @@
 						type="submit"
 						disabled={loading || !odabraniParId}
 					>
-						{#if loading}
-							<span class="animate-spin mr-2">↻</span>
-						{/if}
+						{#if loading}<span class="animate-spin mr-2">↻</span>{/if}
 						Pokreni
 					</button>
 				</div>
