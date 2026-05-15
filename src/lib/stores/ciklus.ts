@@ -60,8 +60,12 @@ export async function loadCiklusi(sezonaId: string) {
 
     if (error) throw error;
 
-    if (data) {
-      await db.ciklusi.bulkPut(data);
+    if (data !== null) {
+      const supabaseIds = new Set(data.map((c) => c.id));
+      const dexieCiklusi = await db.ciklusi.where('sezona_id').equals(sezonaId).toArray();
+      const staleIds = dexieCiklusi.filter((c) => !supabaseIds.has(c.id)).map((c) => c.id);
+      if (staleIds.length > 0) await db.ciklusi.bulkDelete(staleIds);
+      if (data.length > 0) await db.ciklusi.bulkPut(data);
       ciklusi.set(data);
     }
   } catch (err) {

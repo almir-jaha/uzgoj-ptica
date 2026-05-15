@@ -18,8 +18,13 @@ export async function loadParovi(sezonaId: string) {
 
     if (error) throw error;
 
-    if (data) {
-      await db.parovi.bulkPut(data);
+    if (data !== null) {
+      // Briši iz Dexie sve što Supabase više nema (manuelno obrisani zapisi)
+      const supabaseIds = new Set(data.map((p) => p.id));
+      const dexiePar = await db.parovi.where('sezona_id').equals(sezonaId).toArray();
+      const staleIds = dexiePar.filter((p) => !supabaseIds.has(p.id)).map((p) => p.id);
+      if (staleIds.length > 0) await db.parovi.bulkDelete(staleIds);
+      if (data.length > 0) await db.parovi.bulkPut(data);
       parovi.set(data);
     }
   } catch (err) {

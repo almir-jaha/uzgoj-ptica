@@ -24,18 +24,23 @@
 			// Svježe faze iz Supabase — briše zastarjele Dexie faze koje bi uzrokovale FK grešku
 			await loadFaze();
 
-			// Svježi load iz Supabase — parovi ove sezone
-			const { data } = await supabase
+			// Svježi load iz Supabase — Supabase je izvor istine
+			const { data, error } = await supabase
 				.from('parovi')
 				.select('*')
 				.eq('sezona_id', sezonaId)
 				.eq('status', 'aktivan');
 
-			if (data?.length) {
-				await db.parovi.bulkPut(data);
+			if (!error && data !== null) {
+				// Supabase odgovorio (čak i prazan niz) — sinhronizuj Dexie
+				const supabaseIds = new Set(data.map((p) => p.id));
+				const dexiePar = await db.parovi.where('sezona_id').equals(sezonaId).toArray();
+				const staleIds = dexiePar.filter((p) => !supabaseIds.has(p.id)).map((p) => p.id);
+				if (staleIds.length > 0) await db.parovi.bulkDelete(staleIds);
+				if (data.length > 0) await db.parovi.bulkPut(data);
 				parOviSezona = data;
 			} else {
-				// Fallback: Dexie
+				// Mrežna greška — fallback Dexie
 				parOviSezona = await db.parovi
 					.where('sezona_id')
 					.equals(sezonaId)

@@ -155,8 +155,12 @@ export async function loadKavezi(sezonaId: string) {
       .order('oznaka');
 
     if (error) throw error;
-    if (data) {
-      await db.kavezi.bulkPut(data);
+    if (data !== null) {
+      const supabaseIds = new Set(data.map((k) => k.id));
+      const dexieKavezi = await db.kavezi.where('sezona_id').equals(sezonaId).toArray();
+      const staleIds = dexieKavezi.filter((k) => !supabaseIds.has(k.id)).map((k) => k.id);
+      if (staleIds.length > 0) await db.kavezi.bulkDelete(staleIds);
+      if (data.length > 0) await db.kavezi.bulkPut(data);
       kavezi.set(data);
     }
   } catch (err) {
