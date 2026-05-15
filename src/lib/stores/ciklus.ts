@@ -100,23 +100,30 @@ export async function createCiklus(ciklusData: Omit<Ciklus, 'id' | 'created_at' 
     // Sačuvaj lokalno
     await db.ciklusi.add(newCiklus);
     await db.aktivnosti_ciklusa.bulkAdd(aktivnostiArray);
-
-    // Ažuriraj stores
     ciklusi.update((c) => [...c, newCiklus]);
     aktivnosti.update((a) => [...a, ...aktivnostiArray]);
 
-    // Queue za sync
-    await addOfflineAction('create', 'ciklusi', newCiklus);
-    for (const a of aktivnostiArray) {
-      await addOfflineAction('create', 'aktivnosti_ciklusa', a);
+    // Pošalji na Supabase — rollback ako Supabase odbije s podatkovnom greškom
+    const { error: cError } = await supabase.from('ciklusi').insert([newCiklus]);
+    if (cError && !isMreznaGreska(cError)) {
+      await db.ciklusi.delete(newCiklus.id).catch(() => {});
+      await db.aktivnosti_ciklusa.where('ciklus_id').equals(newCiklus.id).delete().catch(() => {});
+      ciklusi.update((c) => c.filter((ck) => ck.id !== newCiklus.id));
+      aktivnosti.update((a) => a.filter((ak) => ak.ciklus_id !== newCiklus.id));
+      throw new Error(cError.message || 'Greška pri snimanju ciklusa');
     }
 
-    // Pošalji na Supabase
-    const { error: cError } = await supabase.from('ciklusi').insert([newCiklus]);
-    if (cError && cError.code !== '23505' && !isMreznaGreska(cError)) throw cError;
-
     const { error: aError } = await supabase.from('aktivnosti_ciklusa').insert(aktivnostiArray);
-    if (aError && aError.code !== '23505' && !isMreznaGreska(aError)) throw aError;
+    if (aError && !isMreznaGreska(aError)) {
+      console.error('Aktivnosti nisu sačuvane u Supabase:', aError.message);
+    }
+
+    if (isMreznaGreska(cError) || !cError) {
+      await addOfflineAction('create', 'ciklusi', newCiklus);
+      for (const a of aktivnostiArray) {
+        await addOfflineAction('create', 'aktivnosti_ciklusa', a);
+      }
+    }
 
     return newCiklus;
   } catch (err) {

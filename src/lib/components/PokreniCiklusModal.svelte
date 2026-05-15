@@ -15,43 +15,47 @@
 	export let onSuccess: () => void;
 
 	let modalLoading = true;
-	let svihParovi: Par[] = [];
+	let parOviSezona: Par[] = [];
 
 	onMount(async () => {
-		// Svježi direktni load — ne ovisi o globalnom $parovi storu
-		// Učitavamo SVE aktivne parove korisnika, bez filtera po sezoni
-		// (par ♂+♀ može se koristiti u ciklusima više sezona)
 		try {
 			const currentUser = get(user);
-			if (currentUser) {
-				// Ensure ptice are loaded
-				if ($ptice.length === 0) await loadPtice(currentUser.id);
+			if (currentUser && $ptice.length === 0) await loadPtice(currentUser.id);
 
-				const { data } = await supabase
-					.from('parovi')
-					.select('*')
-					.eq('status', 'aktivan');
+			// Svježi load iz Supabase — parovi ove sezone
+			const { data } = await supabase
+				.from('parovi')
+				.select('*')
+				.eq('sezona_id', sezonaId)
+				.eq('status', 'aktivan');
 
-				if (data?.length) {
-					await db.parovi.bulkPut(data);
-					svihParovi = data;
-				} else {
-					// Fallback: Dexie
-					svihParovi = await db.parovi.where('status').equals('aktivan').toArray();
-				}
+			if (data?.length) {
+				await db.parovi.bulkPut(data);
+				parOviSezona = data;
+			} else {
+				// Fallback: Dexie
+				parOviSezona = await db.parovi
+					.where('sezona_id')
+					.equals(sezonaId)
+					.filter((p) => p.status === 'aktivan')
+					.toArray();
 			}
 		} catch {
-			svihParovi = await db.parovi.where('status').equals('aktivan').toArray();
+			parOviSezona = await db.parovi
+				.where('sezona_id')
+				.equals(sezonaId)
+				.filter((p) => p.status === 'aktivan')
+				.toArray();
 		}
 		modalLoading = false;
 	});
 
-	// Parovi koji nisu u aktivnom ciklusu OVE sezone
+	// Parovi koji nisu u aktivnom ciklusu ove sezone
 	$: zauzetiParIds = $ciklusi
 		.filter((c) => c.status === 'aktivan' && c.sezona_id === sezonaId)
 		.map((c) => c.par_id);
 
-	$: slobodniParovi = svihParovi.filter((p) => !zauzetiParIds.includes(p.id));
+	$: slobodniParovi = parOviSezona.filter((p) => !zauzetiParIds.includes(p.id));
 
 	function parLabel(par: Par): string {
 		const p1 = $ptice.find((p) => p.id === par.ptica1_id);
@@ -72,7 +76,7 @@
 		errorMsg = '';
 
 		try {
-			const par = svihParovi.find((p) => p.id === odabraniParId);
+			const par = parOviSezona.find((p) => p.id === odabraniParId);
 			if (!par) throw new Error('Par nije pronađen');
 
 			const ptica1 = $ptice.find((p) => p.id === par.ptica1_id);
@@ -91,7 +95,6 @@
 
 			const fazeZaVrstu = await getFazeZaVrstu(vrstaId);
 			const prvaFaza = fazeZaVrstu[0];
-
 			await updateKavezStatus(kavezId, 'aktivan', prvaFaza?.id);
 			onSuccess();
 		} catch (err) {
@@ -124,8 +127,11 @@
 		{:else if slobodniParovi.length === 0}
 			<aside class="alert variant-soft-warning">
 				<div class="alert-message space-y-1">
-					<p class="font-semibold">Nema slobodnih parova</p>
-					<p class="text-sm">Dodajte parove na stranici Parovi, pa pokrenite ciklus.</p>
+					<p class="font-semibold">Nema slobodnih parova za ovu sezonu</p>
+					<p class="text-sm">
+						Parovi se kreiraju posebno za svaku sezonu. Idite na stranicu
+						<strong>Parovi</strong> i kreirajte parove za ovu sezonu.
+					</p>
 				</div>
 			</aside>
 			<div class="flex gap-3">
