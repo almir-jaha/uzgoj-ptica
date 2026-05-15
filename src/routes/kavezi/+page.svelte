@@ -104,6 +104,20 @@
 		// 3. Prikaži lokalne podatke odmah
 		await lokalnoPodaci(sezona.id, currentUser.id);
 		await ucitajDetalje();
+
+		// Ako Dexie nema kaveza ali sezona ih treba imati — čekaj Supabase sinkronizaciju
+		// To se dešava kada korisnik ručno čisti bazu ili dolazi sa novog uređaja
+		if (kaveziDetails.length === 0 && sezona.broj_kaveza > 0) {
+			await Promise.all([
+				loadKavezi(sezona.id),
+				loadParovi(sezona.id),
+				loadCiklusi(sezona.id),
+				loadFaze(),
+				loadPtice(currentUser.id)
+			]);
+			await ucitajDetalje();
+		}
+
 		pageLoading = false;
 
 		// 4. Background sync + realtime (samo za aktivnu sezonu)

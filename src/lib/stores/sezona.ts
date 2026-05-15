@@ -52,6 +52,24 @@ export async function loadSezone(userId: string) {
 
     if (error) throw error;
     if (data) {
+      // Briši zastarjele Dexie zapise koji ne postoje u Supabase
+      // Ovo rješava problem kada korisnik ručno izmijeni bazu
+      const supabaseIds = new Set(data.map((s) => s.id));
+      const staleIds = localSezone.filter((s) => !supabaseIds.has(s.id)).map((s) => s.id);
+      if (staleIds.length > 0) {
+        await Promise.all([
+          db.kavezi.where('sezona_id').anyOf(staleIds).delete(),
+          db.parovi.where('sezona_id').anyOf(staleIds).delete(),
+          db.ciklusi.where('sezona_id').anyOf(staleIds).delete(),
+          db.sezona.where('id').anyOf(staleIds).delete()
+        ]);
+        // Ako je pregledna sezona postala nevažeća, resetuj je
+        const currentPregled = get(sezonaZaPregled);
+        if (currentPregled && staleIds.includes(currentPregled)) {
+          sezonaZaPregled.set(null);
+        }
+      }
+
       await db.sezona.bulkPut(data);
       sezone.set(data);
     }

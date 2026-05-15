@@ -6,7 +6,6 @@ import { db, addOfflineAction } from '../db/dexie';
 
 export const parovi = writable<Par[]>([]);
 
-// Učitaj parove za sezonu
 export async function loadParovi(sezonaId: string) {
   try {
     const localParovi = await db.parovi.where('sezona_id').equals(sezonaId).toArray();
@@ -28,7 +27,6 @@ export async function loadParovi(sezonaId: string) {
   }
 }
 
-// Kreiraj novi par
 export async function createPar(
   sezonaId: string,
   ptica1Id: string,
@@ -36,45 +34,45 @@ export async function createPar(
   datumFormiranja: string,
   napomena?: string
 ) {
-  try {
-    const newPar: Par = {
-      id: crypto.randomUUID(),
-      sezona_id: sezonaId,
-      ptica1_id: ptica1Id,
-      ptica2_id: ptica2Id,
-      status: 'aktivan',
-      datum_formiranja: datumFormiranja,
-      napomena,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
+  const newPar: Par = {
+    id: crypto.randomUUID(),
+    sezona_id: sezonaId,
+    ptica1_id: ptica1Id,
+    ptica2_id: ptica2Id,
+    status: 'aktivan',
+    datum_formiranja: datumFormiranja,
+    napomena,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
 
-    await db.parovi.add(newPar);
-    parovi.update((p) => [...p, newPar]);
-    await addOfflineAction('create', 'parovi', newPar);
+  // Lokalni upis
+  await db.parovi.add(newPar);
+  parovi.update((p) => [...p, newPar]);
 
-    const { error } = await supabase.from('parovi').insert([newPar]);
-    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
+  const { error } = await supabase.from('parovi').insert([newPar]);
 
-    return newPar;
-  } catch (err) {
-    console.error('Greška pri kreiranju para:', err);
-    throw err;
+  if (error && !isMreznaGreska(error)) {
+    // Podatkovna greška — rollback lokalnog upisa
+    await db.parovi.delete(newPar.id).catch(() => {});
+    parovi.update((p) => p.filter((pr) => pr.id !== newPar.id));
+    throw new Error(error.message || 'Greška pri snimanju para u bazu');
   }
+
+  // Offline — zapiši u queue za kasniju sinkronizaciju
+  if (isMreznaGreska(error)) {
+    await addOfflineAction('create', 'parovi', newPar);
+  }
+
+  return newPar;
 }
 
-// Završi par (preparivanje - novi par ili završetak)
 export async function finishPar(parId: string, status: 'završen' | 'razdvojen') {
   try {
-    const updated = {
-      status,
-      updated_at: new Date().toISOString()
-    };
+    const updated = { status, updated_at: new Date().toISOString() };
 
     await db.parovi.update(parId, updated);
-    parovi.update((p) =>
-      p.map((pr) => (pr.id === parId ? { ...pr, ...updated } : pr))
-    );
+    parovi.update((p) => p.map((pr) => (pr.id === parId ? { ...pr, ...updated } : pr)));
     await addOfflineAction('update', 'parovi', { id: parId, ...updated });
 
     const { error } = await supabase.from('parovi').update(updated).eq('id', parId);
@@ -85,10 +83,14 @@ export async function finishPar(parId: string, status: 'završen' | 'razdvojen')
   }
 }
 
-// Pregled ptice kroz sve parove (istorija)
 export async function getPticaHistory(pticaId: string) {
   try {
-    const allParovi = await db.parovi.where('ptica1_id').equals(pticaId).or('ptica2_id').equals(pticaId).toArray();
+    const allParovi = await db.parovi
+      .where('ptica1_id')
+      .equals(pticaId)
+      .or('ptica2_id')
+      .equals(pticaId)
+      .toArray();
     return allParovi.sort((a, b) => a.datum_formiranja.localeCompare(b.datum_formiranja));
   } catch (err) {
     console.error('Greška pri učitavanju istorije ptice:', err);

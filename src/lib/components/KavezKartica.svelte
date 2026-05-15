@@ -5,6 +5,7 @@
 
 	export let details: KavezWithDetails;
 	export let faze: FazaCiklusa[] = [];
+	export let readonly = false;
 
 	const dispatch = createEventDispatcher<{
 		pokrenuCiklus: void;
@@ -71,12 +72,14 @@
 			<p class="text-surface-400 text-xs text-center">Prazan</p>
 		</div>
 
-		<button
-			class="btn btn-sm variant-filled-primary w-full text-xs"
-			on:click={() => dispatch('pokrenuCiklus')}
-		>
-			Pokreni ciklus
-		</button>
+		{#if !readonly}
+			<button
+				class="btn btn-sm variant-filled-primary w-full text-xs"
+				on:click={() => dispatch('pokrenuCiklus')}
+			>
+				Pokreni ciklus
+			</button>
+		{/if}
 	{:else}
 		<!-- Par -->
 		<p class="text-xs font-medium truncate text-surface-700-200-token">
@@ -125,13 +128,15 @@
 		{/if}
 
 		<!-- Akcijsko dugme -->
-		<button
-			class="btn btn-sm {isAlarm
-				? 'variant-filled-error'
-				: 'variant-soft-warning'} w-full text-xs mt-auto"
-			on:click={() => dispatch('zavrsiCiklus')}
-		>
-			Završi ciklus
-		</button>
+		{#if !readonly}
+			<button
+				class="btn btn-sm {isAlarm
+					? 'variant-filled-error'
+					: 'variant-soft-warning'} w-full text-xs mt-auto"
+				on:click={() => dispatch('zavrsiCiklus')}
+			>
+				Završi ciklus
+			</button>
+		{/if}
 	{/if}
 </div>
