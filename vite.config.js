@@ -11,7 +11,9 @@ export default defineConfig({
 			manifest: false,
 
 			workbox: {
-				// JS/CSS/assets se skeniraju iz Vite outputa
+				// Increment cacheId da se forsira brisanje svih starih cache-ova
+				cacheId: 'uzgoj-ptica-v2',
+
 				globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff,woff2}'],
 
 				// index.html generiše adapter-static NAKON što Workbox kreira SW,

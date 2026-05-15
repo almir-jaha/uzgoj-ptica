@@ -4,6 +4,11 @@
 	"outputDirectory": "build",
 	"routes": [
 		{ "handle": "filesystem" },
+		{
+			"src": "/_app/(.*)",
+			"status": 404,
+			"headers": { "Content-Type": "text/plain" }
+		},
 		{ "src": "/(.*)", "dest": "/index.html" }
 	]
 }
