@@ -8,27 +8,32 @@ export default defineConfig({
 		VitePWA({
 			registerType: 'autoUpdate',
 			strategies: 'generateSW',
-
-			// Koristimo vlastiti manifest.json iz static/
 			manifest: false,
 
 			workbox: {
-				// Precache: app shell + sve statičke datoteke
-				globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+				// JS/CSS/assets se skeniraju iz Vite outputa
+				globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff,woff2}'],
 
-				// SPA fallback — sve navigacije vraćaju app shell koji SvelteKit
-				// klijentski router obrađuje
-				navigateFallback: '/',
-				navigateFallbackDenylist: [
-					/^\/_app\/immutable\//,  // Immutable assets — neka vrati 404
-					/^\/api\//               // API rute
+				// index.html generiše adapter-static NAKON što Workbox kreira SW,
+				// pa ga moramo dodati ručno u precache
+				additionalManifestEntries: [
+					{ url: '/index.html', revision: null },
+					{ url: '/', revision: null }
 				],
 
-				// Runtime caching
+				// SPA navigacijski fallback — uvijek serviraj keširani index.html
+				navigateFallback: '/index.html',
+				navigateFallbackDenylist: [
+					/^\/_app\/immutable\//,
+					/^\/api\//
+				],
+
+				// SW preuzima kontrolu odmah bez čekanja na refresh
+				clientsClaim: true,
+				skipWaiting: true,
+
 				runtimeCaching: [
 					{
-						// Supabase API — Network First s timeout-om
-						// Dexie preuzima ako server nije dostupan
 						urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
 						handler: 'NetworkFirst',
 						options: {
@@ -37,19 +42,18 @@ export default defineConfig({
 							cacheableResponse: { statuses: [0, 200] },
 							expiration: {
 								maxEntries: 100,
-								maxAgeSeconds: 60 * 60 * 24 // 24h
+								maxAgeSeconds: 60 * 60 * 24
 							}
 						}
 					},
 					{
-						// Fontovi i ikone — Cache First
 						urlPattern: /\.(woff2?|ttf|eot|ico|png|svg|webp)$/,
 						handler: 'CacheFirst',
 						options: {
 							cacheName: 'static-assets',
 							expiration: {
 								maxEntries: 60,
-								maxAgeSeconds: 60 * 60 * 24 * 30 // 30 dana
+								maxAgeSeconds: 60 * 60 * 24 * 30
 							}
 						}
 					}
