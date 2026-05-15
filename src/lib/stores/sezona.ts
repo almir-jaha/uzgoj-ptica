@@ -203,12 +203,17 @@ export async function updateKavezStatus(
   faza_id?: string
 ) {
   try {
-    const updated = {
+    const updated: Record<string, unknown> = {
       status,
-      trenutna_faza_id: faza_id,
       updated_from: Date.now(),
       updated_at: new Date().toISOString()
     };
+    // Postavi samo ako je definisan — undefined bi uzrokovao FK grešku s null vrijednošću
+    if (faza_id !== undefined) {
+      updated.trenutna_faza_id = faza_id;
+    } else {
+      updated.trenutna_faza_id = null;
+    }
 
     await db.kavezi.update(kavezId, updated);
     kavezi.update((k) => k.map((kv) => (kv.id === kavezId ? { ...kv, ...updated } : kv)));

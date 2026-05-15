@@ -8,7 +8,7 @@ export const ciklusi = writable<Ciklus[]>([]);
 export const aktivnosti = writable<AktivnostCiklusa[]>([]);
 export const faze = writable<FazaCiklusa[]>([]);
 
-// Učitaj sve faze (šifarnik)
+// Učitaj sve faze (šifarnik) — briše zastarjele Dexie faze koje ne postoje u Supabase
 export async function loadFaze() {
   try {
     const localFaze = await db.faze_ciklusa.toArray();
@@ -23,6 +23,14 @@ export async function loadFaze() {
     if (error) throw error;
 
     if (data) {
+      // Briši zastarjele faze (stale Dexie IDs koji ne postoje u Supabase)
+      const supabaseIds = new Set(data.map((f) => f.id));
+      const staleIds = localFaze.filter((f) => !supabaseIds.has(f.id)).map((f) => f.id);
+      if (staleIds.length > 0) {
+        await db.aktivnosti_ciklusa.where('faza_id').anyOf(staleIds).delete().catch(() => {});
+        await db.faze_ciklusa.where('id').anyOf(staleIds).delete().catch(() => {});
+      }
+
       await db.faze_ciklusa.bulkPut(data);
       faze.set(data);
     }
@@ -115,10 +123,16 @@ export async function createCiklus(ciklusData: Omit<Ciklus, 'id' | 'created_at' 
 
     const { error: aError } = await supabase.from('aktivnosti_ciklusa').insert(aktivnostiArray);
     if (aError && !isMreznaGreska(aError)) {
-      console.error('Aktivnosti nisu sačuvane u Supabase:', aError.message);
+      // Aktivnosti ne mogu biti snimljene (stale faza IDs ili drug FK) — rollback svega
+      await supabase.from('ciklusi').delete().eq('id', newCiklus.id).catch(() => {});
+      await db.ciklusi.delete(newCiklus.id).catch(() => {});
+      await db.aktivnosti_ciklusa.where('ciklus_id').equals(newCiklus.id).delete().catch(() => {});
+      ciklusi.update((c) => c.filter((ck) => ck.id !== newCiklus.id));
+      aktivnosti.update((a) => a.filter((ak) => ak.ciklus_id !== newCiklus.id));
+      throw new Error('Faze ciklusa su zastarjele. Osvježite aplikaciju (Ctrl+Shift+R) i pokušajte ponovo.');
     }
 
-    if (isMreznaGreska(cError) || !cError) {
+    if (!cError) {
       await addOfflineAction('create', 'ciklusi', newCiklus);
       for (const a of aktivnostiArray) {
         await addOfflineAction('create', 'aktivnosti_ciklusa', a);

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { ciklusi, createCiklus, getFazeZaVrstu } from '$lib/stores/ciklus';
+	import { ciklusi, createCiklus, getFazeZaVrstu, loadFaze } from '$lib/stores/ciklus';
 	import { ptice, loadPtice } from '$lib/stores/ptice';
 	import { user } from '$lib/stores/auth';
 	import { get } from 'svelte/store';
@@ -21,6 +21,8 @@
 		try {
 			const currentUser = get(user);
 			if (currentUser && $ptice.length === 0) await loadPtice(currentUser.id);
+			// Svježe faze iz Supabase — briše zastarjele Dexie faze koje bi uzrokovale FK grešku
+			await loadFaze();
 
 			// Svježi load iz Supabase — parovi ove sezone
 			const { data } = await supabase
