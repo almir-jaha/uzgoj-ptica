@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store';
+import { browser } from '$app/environment';
 import { isMreznaGreska } from '$lib/utils/offline';
 import type { Sezona, Kavez } from '../db/schema';
 import { supabase } from '../supabase/client';
@@ -9,6 +10,30 @@ export const sezonaLoading = writable(false);
 export const sezonaError = writable<string | null>(null);
 
 export const kavezi = writable<Kavez[]>([]);
+
+// Eksplicitno odabrana sezona (preživljava navigaciju, pamti se u localStorage)
+const storedId = browser ? localStorage.getItem('aktuelna_sezona_id') : null;
+export const aktuelnaSezonaId = writable<string | null>(storedId);
+if (browser) {
+  aktuelnaSezonaId.subscribe((id) => {
+    if (id) localStorage.setItem('aktuelna_sezona_id', id);
+    else localStorage.removeItem('aktuelna_sezona_id');
+  });
+}
+
+// Aktivna sezona: eksplicitno odabrana > najstarija 'aktiva' (fallback)
+export const aktivnaSezona = derived(
+  [sezone, aktuelnaSezonaId],
+  ([$sezone, $aktuelnaId]) => {
+    if ($aktuelnaId) {
+      const selected = $sezone.find((s) => s.id === $aktuelnaId);
+      if (selected) return selected;
+    }
+    const aktivne = $sezone.filter((s) => s.status === 'aktiva');
+    if (aktivne.length === 0) return undefined;
+    return aktivne.reduce((oldest, s) => (s.created_at < oldest.created_at ? s : oldest));
+  }
+);
 
 // Učitaj sve sezone korisnika
 export async function loadSezone(userId: string) {
@@ -23,7 +48,7 @@ export async function loadSezone(userId: string) {
       .from('sezona')
       .select('*')
       .eq('user_id', userId)
-      .order('godina', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
 
@@ -35,6 +60,24 @@ export async function loadSezone(userId: string) {
     sezonaError.set(err instanceof Error ? err.message : 'Greška pri učitavanju sezona');
   } finally {
     sezonaLoading.set(false);
+  }
+}
+
+// Ažuriraj sezonu
+export async function updateSezona(
+  sezonaId: string,
+  updates: Partial<Pick<Sezona, 'naziv' | 'datum_pocetka' | 'datum_kraja' | 'status' | 'broj_kaveza'>>
+) {
+  try {
+    const updated = { ...updates, updated_at: new Date().toISOString() };
+    await db.sezona.update(sezonaId, updated);
+    sezone.update((s) => s.map((sz) => (sz.id === sezonaId ? { ...sz, ...updated } : sz)));
+    await addOfflineAction('update', 'sezona', { id: sezonaId, ...updated });
+    const { error } = await supabase.from('sezona').update(updated).eq('id', sezonaId);
+    if (error && !isMreznaGreska(error)) throw error;
+  } catch (err) {
+    sezonaError.set(err instanceof Error ? err.message : 'Greška pri ažuriranju sezone');
+    throw err;
   }
 }
 
@@ -52,7 +95,7 @@ export async function createSezona(
     };
 
     await db.sezona.add(newSezona);
-    sezone.update((s) => [...s, newSezona]);
+    sezone.update((s) => [newSezona, ...s]);
     await addOfflineAction('create', 'sezona', newSezona);
 
     const { error } = await supabase.from('sezona').insert([newSezona]);
@@ -88,7 +131,7 @@ export async function loadKavezi(sezonaId: string) {
   }
 }
 
-// Kreiraj kaveze za sezonu
+// Kreiraj kavez za sezonu
 export async function createKavez(
   sezonaId: string,
   userId: string,
@@ -147,14 +190,6 @@ export async function updateKavezStatus(
     throw err;
   }
 }
-
-// Filteri
-// Bira najstariju aktivnu sezonu (originalnu) da izbjegne duplikate
-export const aktivnaSezona = derived(sezone, ($sezone) => {
-  const aktivne = $sezone.filter((s) => s.status === 'aktiva');
-  if (aktivne.length === 0) return undefined;
-  return aktivne.reduce((oldest, s) => (s.created_at < oldest.created_at ? s : oldest));
-});
 
 export const sezonaKavezi = (sezonaId: string) =>
   derived(kavezi, ($kavezi) => $kavezi.filter((k) => k.sezona_id === sezonaId));

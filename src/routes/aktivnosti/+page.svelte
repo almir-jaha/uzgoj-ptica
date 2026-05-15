@@ -102,18 +102,24 @@
 		const currentUser = get(user);
 		if (!currentUser) return;
 
-		// Brzo iz Dexie — prikaži odmah
+		// Brzo iz Dexie
 		await lokalnoSezone(currentUser.id);
-		const sezona = get(aktivnaSezona);
+		let sezona = get(aktivnaSezona);
+
+		// Direktna navigacija: sezone još nisu učitane
+		if (!sezona) {
+			await loadSezone(currentUser.id);
+			sezona = get(aktivnaSezona);
+		}
+
 		if (!sezona) { loading = false; return; }
 
 		await lokalnoPodaci(sezona.id, currentUser.id);
 		await ucitajAktivnosti();
 		loading = false;
 
-		// Background Supabase sync
+		// Background: bez loadSezone — izaziva race condition na parovi/aktivnosti stranicama
 		Promise.all([
-			loadSezone(currentUser.id),
 			loadKavezi(sezona.id),
 			loadCiklusi(sezona.id),
 			loadFaze()

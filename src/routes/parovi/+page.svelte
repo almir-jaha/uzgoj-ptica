@@ -23,19 +23,35 @@
 		const currentUser = get(user);
 		if (!currentUser) return;
 
-		// Brzo iz Dexie — prikaži odmah
+		// Brzo iz Dexie
 		await lokalnoSezone(currentUser.id);
-		const sezona = get(aktivnaSezona);
-		if (sezona) await lokalnoPodaci(sezona.id, currentUser.id);
+		let sezona = get(aktivnaSezona);
+
+		// Direktna navigacija: sezone još nisu učitane
+		if (!sezona) {
+			await loadSezone(currentUser.id);
+			sezona = get(aktivnaSezona);
+		}
+
+		if (sezona) {
+			await lokalnoPodaci(sezona.id, currentUser.id);
+			loadedSezonaId = sezona.id;
+		}
 		loading = false;
 
-		// Background Supabase sync
+		// Background: samo parovi i ptice — NE loadSezone (uzrokuje race condition)
 		if (sezona) {
-			loadPtice(currentUser.id);
-			loadSezone(currentUser.id);
-			loadParovi(sezona.id);
+			loadPtice(currentUser.id).catch(console.error);
+			loadParovi(sezona.id).catch(console.error);
 		}
 	});
+
+	// Reaktivno: promjena sezone (season switcher) → reload parovi
+	let loadedSezonaId = '';
+	$: if ($aktivnaSezona && $aktivnaSezona.id !== loadedSezonaId && !loading) {
+		loadedSezonaId = $aktivnaSezona.id;
+		loadParovi($aktivnaSezona.id).catch(console.error);
+	}
 
 	async function handleNovPar() {
 		novParOpen = false;
