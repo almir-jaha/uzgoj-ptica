@@ -87,9 +87,10 @@
 		await ucitajDetalje();
 		pageLoading = false;
 
-		// 3. Supabase sync u pozadini + realtime (samo jednom)
-		await sinhronizujSuapabase(sezona.id, currentUser.id);
-		pokreniRealtime(sezona.id);
+		// 3. Supabase sync + realtime — fire-and-forget, ne blokira UI
+		sinhronizujSuapabase(sezona.id, currentUser.id)
+			.then(() => pokreniRealtime(sezona.id))
+			.catch(console.error);
 	});
 
 	onDestroy(() => {

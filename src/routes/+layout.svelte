@@ -20,6 +20,15 @@
 
 		// Registracija Service Workera
 		if ('serviceWorker' in navigator) {
+			// Kad novi SW preuzme kontrolu — reload da se učita nova index.html
+			// Bez ovoga stari JS hashevi postaju 404 i app se ruši
+			let reloadPending = false;
+			navigator.serviceWorker.addEventListener('controllerchange', () => {
+				if (reloadPending) return;
+				reloadPending = true;
+				window.location.reload();
+			});
+
 			try {
 				const { registerSW } = await import('virtual:pwa-register');
 				registerSW({
@@ -28,14 +37,6 @@
 							message: '✅ Aplikacija je spremna za rad bez interneta.',
 							background: 'variant-filled-success',
 							timeout: 4000
-						});
-					},
-					onNeedRefresh() {
-						// autoUpdate SW — samo obavijesti korisnika
-						toastStore.trigger({
-							message: '🔄 Nova verzija instalirana.',
-							background: 'variant-filled-surface',
-							timeout: 3000
 						});
 					}
 				});
