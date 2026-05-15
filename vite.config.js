@@ -2,6 +2,10 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+// Jedinstvena revizija po buildu — forsira SW da ponovo fetchuje index.html
+// revision: null bi značilo "nikad ne osvježavaj" što uzrokuje plavi ekran
+const buildRevision = Date.now().toString(36);
+
 export default defineConfig({
 	plugins: [
 		sveltekit(),
@@ -11,16 +15,16 @@ export default defineConfig({
 			manifest: false,
 
 			workbox: {
-				// Increment cacheId da se forsira brisanje svih starih cache-ova
 				cacheId: 'uzgoj-ptica-v2',
 
 				globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff,woff2}'],
 
 				// index.html generiše adapter-static NAKON što Workbox kreira SW,
-				// pa ga moramo dodati ručno u precache
+				// pa ga moramo dodati ručno u precache.
+				// buildRevision se mijenja svaki build → SW uvijek re-fetcha novi index.html
 				additionalManifestEntries: [
-					{ url: '/index.html', revision: null },
-					{ url: '/', revision: null }
+					{ url: '/index.html', revision: buildRevision },
+					{ url: '/', revision: buildRevision }
 				],
 
 				// SPA navigacijski fallback — uvijek serviraj keširani index.html

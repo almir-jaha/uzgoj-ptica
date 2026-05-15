@@ -73,12 +73,17 @@
 
 		// 1. Brzo — samo Dexie (< 100ms za povratne korisnike)
 		await lokalnoSezone(currentUser.id);
-		const sezona = get(aktivnaSezona);
+		let sezona = get(aktivnaSezona);
+
+		if (!sezona) {
+			// Dexie prazan (prvi posjet ili brisanje keša) — čekaj Supabase
+			await loadSezone(currentUser.id);
+			sezona = get(aktivnaSezona);
+		}
 
 		if (!sezona) {
 			pageLoading = false;
 			novaSezonaOpen = true;
-			loadSezone(currentUser.id);
 			return;
 		}
 

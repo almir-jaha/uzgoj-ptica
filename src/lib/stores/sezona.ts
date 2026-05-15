@@ -149,9 +149,12 @@ export async function updateKavezStatus(
 }
 
 // Filteri
-export const aktivnaSezona = derived(sezone, ($sezone) =>
-  $sezone.find((s) => s.status === 'aktiva')
-);
+// Bira najstariju aktivnu sezonu (originalnu) da izbjegne duplikate
+export const aktivnaSezona = derived(sezone, ($sezone) => {
+  const aktivne = $sezone.filter((s) => s.status === 'aktiva');
+  if (aktivne.length === 0) return undefined;
+  return aktivne.reduce((oldest, s) => (s.created_at < oldest.created_at ? s : oldest));
+});
 
 export const sezonaKavezi = (sezonaId: string) =>
   derived(kavezi, ($kavezi) => $kavezi.filter((k) => k.sezona_id === sezonaId));
