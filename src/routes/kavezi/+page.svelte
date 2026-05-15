@@ -54,7 +54,8 @@
 		});
 	}
 
-	async function ucitajSezonuPodatke(sezonaId: string, userId: string) {
+	async function sinhronizujSuapabase(sezonaId: string, userId: string) {
+		// Stores catch vlastite greške — Promise.all nikad ne baca
 		await Promise.all([
 			loadKavezi(sezonaId),
 			loadParovi(sezonaId),
@@ -62,8 +63,8 @@
 			loadFaze(),
 			loadPtice(userId)
 		]);
+		// Osvježi kaveziDetails sa svježim Supabase podacima
 		await ucitajDetalje();
-		await pokreniRealtime(sezonaId);
 	}
 
 	onMount(async () => {
@@ -75,20 +76,20 @@
 		const sezona = get(aktivnaSezona);
 
 		if (!sezona) {
-			// Nema lokalne sezone — čekamo Supabase samo ovaj put
 			pageLoading = false;
 			novaSezonaOpen = true;
-			loadSezone(currentUser.id); // background
+			loadSezone(currentUser.id);
 			return;
 		}
 
-		// 2. Ostali podaci iz Dexie — prikaži UI odmah
+		// 2. Prikaži lokalne podatke odmah
 		await lokalnoPodaci(sezona.id, currentUser.id);
 		await ucitajDetalje();
 		pageLoading = false;
 
-		// 3. Supabase sync u pozadini — reaktivno ažurira UI
-		ucitajSezonuPodatke(sezona.id, currentUser.id).catch(console.error);
+		// 3. Supabase sync u pozadini + realtime (samo jednom)
+		await sinhronizujSuapabase(sezona.id, currentUser.id);
+		pokreniRealtime(sezona.id);
 	});
 
 	onDestroy(() => {
