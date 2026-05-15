@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { isMreznaGreska } from '$lib/utils/offline';
 import type { Sezona, Kavez } from '../db/schema';
@@ -8,38 +8,38 @@ import { db, addOfflineAction } from '../db/dexie';
 export const sezone = writable<Sezona[]>([]);
 export const sezonaLoading = writable(false);
 export const sezonaError = writable<string | null>(null);
-
 export const kavezi = writable<Kavez[]>([]);
 
-// Eksplicitno odabrana sezona (preživljava navigaciju, pamti se u localStorage)
-const storedId = browser ? localStorage.getItem('aktuelna_sezona_id') : null;
-export const aktuelnaSezonaId = writable<string | null>(storedId);
+// Jedina aktivna sezona (status === 'aktiva') — uvijek max jedna
+export const aktivnaSezona = derived(sezone, ($sezone) =>
+  $sezone.find((s) => s.status === 'aktiva')
+);
+
+// Sezona koja se trenutno pregledava — default je aktivna, može biti arhivirana
+const storedPregled = browser ? localStorage.getItem('pregled_sezona_id') : null;
+export const sezonaZaPregled = writable<string | null>(storedPregled);
 if (browser) {
-  aktuelnaSezonaId.subscribe((id) => {
-    if (id) localStorage.setItem('aktuelna_sezona_id', id);
-    else localStorage.removeItem('aktuelna_sezona_id');
+  sezonaZaPregled.subscribe((id) => {
+    if (id) localStorage.setItem('pregled_sezona_id', id);
+    else localStorage.removeItem('pregled_sezona_id');
   });
 }
 
-// Aktivna sezona: eksplicitno odabrana > najstarija 'aktiva' (fallback)
-export const aktivnaSezona = derived(
-  [sezone, aktuelnaSezonaId],
-  ([$sezone, $aktuelnaId]) => {
-    if ($aktuelnaId) {
-      const selected = $sezone.find((s) => s.id === $aktuelnaId);
-      if (selected) return selected;
+// Sezona koja se prikazuje: eksplicitno odabrana ili aktivna
+export const prikazanaSezona = derived(
+  [sezone, sezonaZaPregled, aktivnaSezona],
+  ([$sezone, $pregledId, $aktivna]) => {
+    if ($pregledId) {
+      const found = $sezone.find((s) => s.id === $pregledId);
+      if (found) return found;
     }
-    const aktivne = $sezone.filter((s) => s.status === 'aktiva');
-    if (aktivne.length === 0) return undefined;
-    return aktivne.reduce((oldest, s) => (s.created_at < oldest.created_at ? s : oldest));
+    return $aktivna;
   }
 );
 
-// Učitaj sve sezone korisnika
 export async function loadSezone(userId: string) {
   sezonaLoading.set(true);
   sezonaError.set(null);
-
   try {
     const localSezone = await db.sezona.where('user_id').equals(userId).toArray();
     sezone.set(localSezone);
@@ -51,7 +51,6 @@ export async function loadSezone(userId: string) {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-
     if (data) {
       await db.sezona.bulkPut(data);
       sezone.set(data);
@@ -63,7 +62,6 @@ export async function loadSezone(userId: string) {
   }
 }
 
-// Ažuriraj sezonu
 export async function updateSezona(
   sezonaId: string,
   updates: Partial<Pick<Sezona, 'naziv' | 'datum_pocetka' | 'datum_kraja' | 'status' | 'broj_kaveza'>>
@@ -81,12 +79,31 @@ export async function updateSezona(
   }
 }
 
-// Kreiraj novu sezonu
 export async function createSezona(
   userId: string,
-  data: Omit<Sezona, 'id' | 'created_at' | 'updated_at'>
+  data: Omit<Sezona, 'id' | 'created_at' | 'updated_at'>,
+  zavrsiTrenutnuId?: string
 ) {
   try {
+    // Provjera: postoji li sezona za istu godinu?
+    const postojece = get(sezone);
+    const duplikat = postojece.find(
+      (s) => s.godina === data.godina && s.status === 'aktiva'
+    );
+    if (duplikat) {
+      throw new Error(
+        `Sezona za godinu ${data.godina} već postoji i aktivna je. Završite je prije kreiranja nove.`
+      );
+    }
+
+    // Arhiviraj trenutnu aktivnu sezonu ako je naznačeno
+    if (zavrsiTrenutnuId) {
+      await updateSezona(zavrsiTrenutnuId, {
+        status: 'završena',
+        datum_kraja: new Date().toISOString().split('T')[0]
+      });
+    }
+
     const newSezona: Sezona = {
       ...data,
       id: crypto.randomUUID(),
@@ -108,7 +125,6 @@ export async function createSezona(
   }
 }
 
-// Učitaj kaveze za sezonu
 export async function loadKavezi(sezonaId: string) {
   try {
     const localKavezi = await db.kavezi.where('sezona_id').equals(sezonaId).toArray();
@@ -121,7 +137,6 @@ export async function loadKavezi(sezonaId: string) {
       .order('oznaka');
 
     if (error) throw error;
-
     if (data) {
       await db.kavezi.bulkPut(data);
       kavezi.set(data);
@@ -131,7 +146,6 @@ export async function loadKavezi(sezonaId: string) {
   }
 }
 
-// Kreiraj kavez za sezonu
 export async function createKavez(
   sezonaId: string,
   userId: string,
@@ -165,7 +179,6 @@ export async function createKavez(
   }
 }
 
-// Ažuriraj status kaveza
 export async function updateKavezStatus(
   kavezId: string,
   status: 'prazan' | 'aktivan' | 'alarm',

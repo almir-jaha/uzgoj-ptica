@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSezona, createKavez } from '$lib/stores/sezona';
+	import { createSezona, createKavez, aktivnaSezona } from '$lib/stores/sezona';
 
 	export let userId: string;
 	export let onClose: () => void;
@@ -12,8 +12,12 @@
 	let brojKaveza = 10;
 	let datumPocetka = today;
 	let naziv = '';
+	let zavrsiTrenutnu = true;
 	let loading = false;
 	let errorMsg = '';
+
+	// Provjera: postoji li aktivna sezona iste godine (blokira kreiranje)
+	$: duplikatGodina = $aktivnaSezona?.godina === godina && $aktivnaSezona?.status === 'aktiva';
 
 	async function handleSubmit() {
 		if (brojKaveza < 1 || brojKaveza > 50) return;
@@ -21,16 +25,19 @@
 		errorMsg = '';
 
 		try {
-			const sezona = await createSezona(userId, {
-				user_id: userId,
-				godina,
-				naziv: naziv.trim() || `Sezona ${godina}`,
-				broj_kaveza: brojKaveza,
-				datum_pocetka: datumPocetka,
-				status: 'aktiva'
-			});
+			const sezona = await createSezona(
+				userId,
+				{
+					user_id: userId,
+					godina,
+					naziv: naziv.trim() || `Sezona ${godina}`,
+					broj_kaveza: brojKaveza,
+					datum_pocetka: datumPocetka,
+					status: 'aktiva'
+				},
+				zavrsiTrenutnu && $aktivnaSezona ? $aktivnaSezona.id : undefined
+			);
 
-			// Kreiraj kaveze paralelno
 			await Promise.all(
 				Array.from({ length: brojKaveza }, (_, i) => createKavez(sezona.id, userId, i + 1))
 			);
@@ -44,7 +51,6 @@
 	}
 </script>
 
-<!-- Backdrop -->
 <div
 	class="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-4"
 	role="presentation"
@@ -87,6 +93,12 @@
 				</label>
 			</div>
 
+			{#if duplikatGodina}
+				<aside class="alert variant-filled-error py-2 px-3 text-sm">
+					<p>Sezona {godina} je već aktivna. Promijenite godinu ili završite aktivnu sezonu.</p>
+				</aside>
+			{/if}
+
 			<label class="label">
 				<span class="text-sm font-medium">Datum početka</span>
 				<input class="input" type="date" bind:value={datumPocetka} required disabled={loading} />
@@ -102,6 +114,21 @@
 					disabled={loading}
 				/>
 			</label>
+
+			<!-- Opcija arhiviranja samo ako postoji aktivna sezona i nije duplikat godina -->
+			{#if $aktivnaSezona && !duplikatGodina}
+				<label class="flex items-center gap-2 cursor-pointer">
+					<input
+						type="checkbox"
+						class="checkbox"
+						bind:checked={zavrsiTrenutnu}
+						disabled={loading}
+					/>
+					<span class="text-sm">
+						Završi sezonu {$aktivnaSezona.godina} i arhiviraj je
+					</span>
+				</label>
+			{/if}
 
 			{#if errorMsg}
 				<aside class="alert variant-filled-error py-2 px-3 text-sm">
@@ -121,11 +148,9 @@
 				<button
 					class="btn variant-filled-primary flex-1"
 					type="submit"
-					disabled={loading || brojKaveza < 1}
+					disabled={loading || brojKaveza < 1 || duplikatGodina}
 				>
-					{#if loading}
-						<span class="animate-spin mr-2">↻</span>
-					{/if}
+					{#if loading}<span class="animate-spin mr-2">↻</span>{/if}
 					Kreiraj sezonu
 				</button>
 			</div>

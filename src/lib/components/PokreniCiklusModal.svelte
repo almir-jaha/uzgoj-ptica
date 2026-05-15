@@ -10,10 +10,12 @@
 	export let onClose: () => void;
 	export let onSuccess: () => void;
 
-	// Parovi koji su aktivni i nisu već u aktivnom ciklusu
-	$: zauzetiParIds = $ciklusi.filter((c) => c.status === 'aktivan').map((c) => c.par_id);
+	// Parovi ove sezone koji nisu već u aktivnom ciklusu
+	$: zauzetiParIds = $ciklusi
+		.filter((c) => c.status === 'aktivan' && c.sezona_id === sezonaId)
+		.map((c) => c.par_id);
 	$: slobodniParovi = $parovi.filter(
-		(p) => p.status === 'aktivan' && !zauzetiParIds.includes(p.id)
+		(p) => p.status === 'aktivan' && p.sezona_id === sezonaId && !zauzetiParIds.includes(p.id)
 	);
 
 	function parLabel(par: Par): string {

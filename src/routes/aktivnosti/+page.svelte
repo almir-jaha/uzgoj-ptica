@@ -4,7 +4,7 @@
 	import type { AktivnostCiklusa, Ciklus, FazaCiklusa, Kavez } from '$lib/db/schema';
 
 	import { user } from '$lib/stores/auth';
-	import { aktivnaSezona, kavezi, loadSezone, loadKavezi } from '$lib/stores/sezona';
+	import { aktivnaSezona, prikazanaSezona, kavezi, loadSezone, loadKavezi } from '$lib/stores/sezona';
 	import { ciklusi, faze, loadCiklusi, loadFaze, updateAktivnost } from '$lib/stores/ciklus';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
@@ -104,12 +104,12 @@
 
 		// Brzo iz Dexie
 		await lokalnoSezone(currentUser.id);
-		let sezona = get(aktivnaSezona);
+		let sezona = get(prikazanaSezona);
 
 		// Direktna navigacija: sezone još nisu učitane
 		if (!sezona) {
 			await loadSezone(currentUser.id);
-			sezona = get(aktivnaSezona);
+			sezona = get(prikazanaSezona);
 		}
 
 		if (!sezona) { loading = false; return; }
@@ -163,8 +163,8 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h2 class="h3 font-bold">Aktivnosti</h2>
-			{#if $aktivnaSezona}
-				<p class="text-sm text-surface-500">Sezona {$aktivnaSezona.godina}</p>
+			{#if $prikazanaSezona}
+				<p class="text-sm text-surface-500">Sezona {$prikazanaSezona.godina}</p>
 			{/if}
 		</div>
 		{#if !loading && pending.length > 0}
@@ -179,7 +179,7 @@
 			{/each}
 		</div>
 
-	{:else if !$aktivnaSezona}
+	{:else if !$prikazanaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">📅</span>
 			<p class="h4 text-center">Nema aktivne sezone</p>

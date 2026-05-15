@@ -3,7 +3,7 @@
 	import { get } from 'svelte/store';
 
 	import { user } from '$lib/stores/auth';
-	import { aktivnaSezona, loadSezone } from '$lib/stores/sezona';
+	import { aktivnaSezona, prikazanaSezona, loadSezone } from '$lib/stores/sezona';
 	import { parovi, loadParovi, finishPar } from '$lib/stores/parovi';
 	import { ptice, loadPtice } from '$lib/stores/ptice';
 
@@ -25,12 +25,12 @@
 
 		// Brzo iz Dexie
 		await lokalnoSezone(currentUser.id);
-		let sezona = get(aktivnaSezona);
+		let sezona = get(prikazanaSezona);
 
 		// Direktna navigacija: sezone još nisu učitane
 		if (!sezona) {
 			await loadSezone(currentUser.id);
-			sezona = get(aktivnaSezona);
+			sezona = get(prikazanaSezona);
 		}
 
 		if (sezona) {
@@ -46,16 +46,16 @@
 		}
 	});
 
-	// Reaktivno: promjena sezone (season switcher) → reload parovi
+	// Reaktivno: promjena sezone (season switcher na kavezi stranici) → reload
 	let loadedSezonaId = '';
-	$: if ($aktivnaSezona && $aktivnaSezona.id !== loadedSezonaId && !loading) {
-		loadedSezonaId = $aktivnaSezona.id;
-		loadParovi($aktivnaSezona.id).catch(console.error);
+	$: if ($prikazanaSezona && $prikazanaSezona.id !== loadedSezonaId && !loading) {
+		loadedSezonaId = $prikazanaSezona.id;
+		loadParovi($prikazanaSezona.id).catch(console.error);
 	}
 
 	async function handleNovPar() {
 		novParOpen = false;
-		const sezona = get(aktivnaSezona);
+		const sezona = get(prikazanaSezona);
 		if (sezona) await loadParovi(sezona.id);
 	}
 
@@ -112,11 +112,11 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h2 class="h3 font-bold">Parovi</h2>
-			{#if $aktivnaSezona}
-				<p class="text-sm text-surface-500">Sezona {$aktivnaSezona.godina}</p>
+			{#if $prikazanaSezona}
+				<p class="text-sm text-surface-500">Sezona {$prikazanaSezona.godina}</p>
 			{/if}
 		</div>
-		{#if $aktivnaSezona && !loading}
+		{#if $prikazanaSezona && !loading}
 			<button class="btn variant-filled-primary btn-sm" on:click={() => (novParOpen = true)}>
 				+ Novi par
 			</button>
@@ -132,7 +132,7 @@
 		</div>
 
 	<!-- Nema aktivne sezone -->
-	{:else if !$aktivnaSezona}
+	{:else if !$prikazanaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">📅</span>
 			<p class="h4 text-center">Nema aktivne sezone</p>
@@ -295,9 +295,9 @@
 </div>
 
 <!-- Modal: novi par -->
-{#if novParOpen && $aktivnaSezona}
+{#if novParOpen && $prikazanaSezona}
 	<NovParModal
-		sezonaId={$aktivnaSezona.id}
+		sezonaId={$prikazanaSezona.id}
 		onClose={() => (novParOpen = false)}
 		onSuccess={handleNovPar}
 	/>
