@@ -117,6 +117,8 @@
 					</span>
 				{/if}
 			</div>
+		{:else if fazeZaVrstu.length === 0}
+			<p class="text-xs text-warning-500">⚠ Faze nisu postavljene</p>
 		{:else}
 			<p class="text-xs text-surface-400">{t.kavezi.sveRazePravrsene}</p>
 		{/if}

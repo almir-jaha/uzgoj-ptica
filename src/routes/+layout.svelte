@@ -2,11 +2,12 @@
 	import { onMount } from 'svelte';
 	import '../app.css';
 	import { initializeStores, AppShell, AppBar, Toast, getToastStore } from '@skeletonlabs/skeleton';
-	import { session, isAuthenticated, auth } from '$lib/stores/auth';
+	import { session, isAuthenticated, auth, user } from '$lib/stores/auth';
 	import { getCurrentUser } from '$lib/supabase/auth';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { isOnline } from '$lib/stores/network';
+	import { isAdmin } from '$lib/stores/admin';
 	import { t } from '$lib/i18n';
 
 	initializeStores();
@@ -121,6 +122,17 @@
 						>
 							{t.nav.statistike}
 						</a>
+						{#if isAdmin($user?.email)}
+							<a
+								href="/admin"
+								class="btn btn-sm {$page.url.pathname.startsWith('/admin')
+									? 'variant-filled-warning'
+									: 'variant-ghost-warning'}"
+								title="Administracija"
+							>
+								🔧
+							</a>
+						{/if}
 						<button
 							class="btn btn-sm variant-ghost-surface ml-1"
 							on:click={auth.signOut}
