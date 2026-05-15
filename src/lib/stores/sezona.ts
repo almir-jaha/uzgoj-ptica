@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store';
+import { isMreznaGreska } from '$lib/utils/offline';
 import type { Sezona, Kavez } from '../db/schema';
 import { supabase } from '../supabase/client';
 import { db, addOfflineAction } from '../db/dexie';
@@ -55,7 +56,7 @@ export async function createSezona(
     await addOfflineAction('create', 'sezona', newSezona);
 
     const { error } = await supabase.from('sezona').insert([newSezona]);
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
 
     return newSezona;
   } catch (err) {
@@ -112,7 +113,7 @@ export async function createKavez(
     await addOfflineAction('create', 'kavezi', newKavez);
 
     const { error } = await supabase.from('kavezi').insert([newKavez]);
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
 
     return newKavez;
   } catch (err) {
@@ -140,7 +141,7 @@ export async function updateKavezStatus(
     await addOfflineAction('update', 'kavezi', { id: kavezId, ...updated });
 
     const { error } = await supabase.from('kavezi').update(updated).eq('id', kavezId);
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
   } catch (err) {
     console.error('Greška pri ažuriranju kaveza:', err);
     throw err;

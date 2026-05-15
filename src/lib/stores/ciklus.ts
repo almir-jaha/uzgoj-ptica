@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store';
+import { isMreznaGreska } from '$lib/utils/offline';
 import type { Ciklus, AktivnostCiklusa, FazaCiklusa } from '../db/schema';
 import { supabase } from '../supabase/client';
 import { db, addOfflineAction } from '../db/dexie';
@@ -112,10 +113,10 @@ export async function createCiklus(ciklusData: Omit<Ciklus, 'id' | 'created_at' 
 
     // Pošalji na Supabase
     const { error: cError } = await supabase.from('ciklusi').insert([newCiklus]);
-    if (cError && cError.code !== '23505') throw cError;
+    if (cError && cError.code !== '23505' && !isMreznaGreska(cError)) throw cError;
 
     const { error: aError } = await supabase.from('aktivnosti_ciklusa').insert(aktivnostiArray);
-    if (aError && aError.code !== '23505') throw aError;
+    if (aError && aError.code !== '23505' && !isMreznaGreska(aError)) throw aError;
 
     return newCiklus;
   } catch (err) {
@@ -174,7 +175,7 @@ export async function updateAktivnost(
       .update(updated)
       .eq('id', aktivnostId);
 
-    if (error) throw error;
+    if (error && !isMreznaGreska(error)) throw error;
   } catch (err) {
     console.error('Greška pri ažuriranju aktivnosti:', err);
     throw err;
@@ -196,7 +197,7 @@ export async function finishCiklus(ciklusId: string, status: 'završen' | 'neusp
     await addOfflineAction('update', 'ciklusi', { id: ciklusId, ...updated });
 
     const { error } = await supabase.from('ciklusi').update(updated).eq('id', ciklusId);
-    if (error) throw error;
+    if (error && !isMreznaGreska(error)) throw error;
   } catch (err) {
     console.error('Greška pri završetku ciklusa:', err);
     throw err;

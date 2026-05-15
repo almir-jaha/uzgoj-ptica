@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store';
+import { isMreznaGreska } from '$lib/utils/offline';
 import type { Ptica, PticaWithRodovnik } from '../db/schema';
 import { supabase } from '../supabase/client';
 import { db, addOfflineAction, getPticaWithRodovnik } from '../db/dexie';
@@ -60,7 +61,7 @@ export async function createPtica(
 
     // Pokušaj da pošalješ na Supabase
     const { error } = await supabase.from('ptice').insert([newPtica]);
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
 
     return newPtica;
   } catch (err) {
@@ -87,7 +88,7 @@ export async function updatePtica(pticaId: string, updates: Partial<Ptica>) {
       .update(updated)
       .eq('id', pticaId);
 
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
   } catch (err) {
     pticaError.set(err instanceof Error ? err.message : 'Greška pri ažuriranju ptice');
     throw err;

@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { isMreznaGreska } from '$lib/utils/offline';
 import type { Par } from '../db/schema';
 import { supabase } from '../supabase/client';
 import { db, addOfflineAction } from '../db/dexie';
@@ -53,7 +54,7 @@ export async function createPar(
     await addOfflineAction('create', 'parovi', newPar);
 
     const { error } = await supabase.from('parovi').insert([newPar]);
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
 
     return newPar;
   } catch (err) {
@@ -77,7 +78,7 @@ export async function finishPar(parId: string, status: 'završen' | 'razdvojen')
     await addOfflineAction('update', 'parovi', { id: parId, ...updated });
 
     const { error } = await supabase.from('parovi').update(updated).eq('id', parId);
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
   } catch (err) {
     console.error('Greška pri završetku para:', err);
     throw err;
