@@ -2,7 +2,7 @@
   "name": "Uzgoj ptica",
   "short_name": "Uzgoj ptica",
   "description": "Aplikacija za praćenje uzgoja ptica — kavezi, parovi, legla, aktivnosti",
-  "start_url": "/kavezi",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
