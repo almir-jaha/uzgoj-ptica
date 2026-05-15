@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import '../app.css';
-	import { initializeStores, AppShell, AppBar, Toast } from '@skeletonlabs/skeleton';
+	import { initializeStores, AppShell, AppBar, Toast, getToastStore } from '@skeletonlabs/skeleton';
 	import { session, isAuthenticated, auth } from '$lib/stores/auth';
 	import { getCurrentUser } from '$lib/supabase/auth';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { isOnline } from '$lib/stores/network';
 
 	initializeStores();
+	const toastStore = getToastStore();
 
 	let authLoading = true;
 
@@ -15,6 +17,32 @@
 		const currentSession = await getCurrentUser();
 		session.set(currentSession);
 		authLoading = false;
+
+		// Registracija Service Workera
+		if ('serviceWorker' in navigator) {
+			try {
+				const { registerSW } = await import('virtual:pwa-register');
+				registerSW({
+					onOfflineReady() {
+						toastStore.trigger({
+							message: '✅ Aplikacija je spremna za rad bez interneta.',
+							background: 'variant-filled-success',
+							timeout: 4000
+						});
+					},
+					onNeedRefresh() {
+						// autoUpdate SW — samo obavijesti korisnika
+						toastStore.trigger({
+							message: '🔄 Nova verzija instalirana.',
+							background: 'variant-filled-surface',
+							timeout: 3000
+						});
+					}
+				});
+			} catch {
+				// SW nije dostupan (dev bez HTTPS)
+			}
+		}
 	});
 
 	// Preusmjeri prijavljenog korisnika sa login stranice
@@ -43,6 +71,11 @@
 			<AppBar padding="px-4 py-2" background="bg-surface-100-800-token">
 				<svelte:fragment slot="lead">
 					<span class="text-lg font-bold tracking-tight">🐦 Uzgoj ptica</span>
+					{#if !$isOnline}
+						<span class="badge variant-filled-warning text-xs ml-2" title="Nema interneta — podaci se čuvaju lokalno">
+							offline
+						</span>
+					{/if}
 				</svelte:fragment>
 				<svelte:fragment slot="trail">
 					<nav class="flex items-center gap-1">
