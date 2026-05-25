@@ -282,15 +282,21 @@
 				>
 					{t.notifikacije.iskljuci}
 				</button>
-			{:else if notifPermission === 'default'}
-				<button
-					class="btn btn-sm variant-ghost-primary text-xs"
-					on:click={ukljuciNotifikacije}
-					disabled={notifLoading}
-				>
-					{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
-					🔔 {t.notifikacije.ukljuci}
-				</button>
+			{:else if notifPermission !== 'denied'}
+				<!-- granted ili default ali bez aktivne subscription — dozvoli retry -->
+				<div class="flex flex-col gap-1 w-full">
+					<button
+						class="btn btn-sm variant-ghost-primary text-xs self-start"
+						on:click={ukljuciNotifikacije}
+						disabled={notifLoading}
+					>
+						{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
+						🔔 {t.notifikacije.ukljuci}
+					</button>
+					{#if notifError}
+						<p class="text-xs text-error-500">{notifError}</p>
+					{/if}
+				</div>
 			{/if}
 		</div>
 	{/if}
