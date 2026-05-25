@@ -15,9 +15,7 @@
 		isPushSubscribed,
 		subscribePush,
 		unsubscribePush,
-		syncSubscription,
-		hasDismissedBanner,
-		dismissBanner
+		syncSubscription
 	} from '$lib/utils/notifications';
 
 	type Hitnost = 'zakasnila' | 'danas' | 'uskoro' | 'buducnost';
@@ -41,19 +39,15 @@
 	let notifSubscribed = false;
 	let notifLoading = false;
 	let notifError = '';
-	let showNotifBanner = false;
 
 	async function initNotifStatus() {
 		notifPermission = getPermissionStatus();
 		if (notifPermission === 'unsupported') return;
 		notifSubscribed = await isPushSubscribed();
-		// Ako browser ima subscription ali DB možda nema — upiši tiho
 		if (notifSubscribed) {
 			const currentUser = get(user);
 			if (currentUser) await syncSubscription(currentUser.id);
 		}
-		showNotifBanner =
-			notifPermission === 'default' && !notifSubscribed && !hasDismissedBanner();
 	}
 
 	async function ukljuciNotifikacije() {
@@ -66,10 +60,8 @@
 		if (ok) {
 			notifSubscribed = true;
 			notifPermission = 'granted';
-			showNotifBanner = false;
 		} else if (error === 'permission_denied') {
 			notifPermission = 'denied';
-			showNotifBanner = false;
 		} else {
 			notifError = error ?? t.notifikacije.greska;
 		}
@@ -83,11 +75,6 @@
 		notifSubscribed = false;
 		notifPermission = getPermissionStatus();
 		notifLoading = false;
-	}
-
-	function odbijNotifikacije() {
-		dismissBanner();
-		showNotifBanner = false;
 	}
 
 	// Inline "obavi" state — samo jedna kartica je otvorena u isto vrijeme
@@ -237,66 +224,43 @@
 		{/if}
 	</div>
 
-	<!-- Push notifikacije — banner (prikazuje se samo jednom dok korisnik ne odgovori) -->
-	{#if showNotifBanner}
-		<div class="card p-3 variant-soft-primary flex items-start gap-3">
-			<span class="text-2xl shrink-0 mt-0.5">🔔</span>
-			<div class="flex-1 min-w-0">
-				<p class="text-sm font-semibold">{t.notifikacije.bannerTitle}</p>
-				<p class="text-xs text-surface-500 mt-0.5">{t.notifikacije.bannerOpis}</p>
-				{#if notifError}
-					<p class="text-xs text-error-500 mt-1">{notifError}</p>
+	<!-- Notifikacije — uvijek vidljiva kartica -->
+	{#if notifPermission !== 'unsupported'}
+		<div class="card p-3 flex items-center justify-between gap-3
+			{notifSubscribed ? 'variant-soft-success' : 'variant-soft-surface'}">
+			<div class="space-y-0.5">
+				<p class="text-sm font-semibold">
+					{notifSubscribed ? '🔔 ' + t.notifikacije.aktivna : '🔕 Push obavještenja'}
+				</p>
+				{#if notifPermission === 'denied'}
+					<p class="text-xs text-warning-500">{t.notifikacije.odbijeno}</p>
+				{:else if notifError}
+					<p class="text-xs text-error-500">{notifError}</p>
+				{:else if !notifSubscribed}
+					<p class="text-xs text-surface-500">{t.notifikacije.bannerOpis}</p>
 				{/if}
 			</div>
-			<div class="flex gap-2 shrink-0">
-				<button
-					class="btn btn-sm variant-ghost-surface"
-					on:click={odbijNotifikacije}
-					disabled={notifLoading}
-				>
-					{t.notifikacije.neHvala}
-				</button>
-				<button
-					class="btn btn-sm variant-filled-primary"
-					on:click={ukljuciNotifikacije}
-					disabled={notifLoading}
-				>
-					{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
-					{t.notifikacije.ukljuci}
-				</button>
-			</div>
-		</div>
-	{/if}
 
-	<!-- Status notifikacija ako su već uključene -->
-	{#if !showNotifBanner && notifPermission !== 'unsupported'}
-		<div class="flex items-center justify-between px-1">
-			{#if notifPermission === 'denied'}
-				<p class="text-xs text-warning-500">{t.notifikacije.odbijeno}</p>
-			{:else if notifSubscribed}
-				<p class="text-xs text-success-500">{t.notifikacije.aktivna}</p>
-				<button
-					class="btn btn-sm variant-ghost-error text-xs"
-					on:click={iskljuciNotifikacije}
-					disabled={notifLoading}
-				>
-					{t.notifikacije.iskljuci}
-				</button>
-			{:else if notifPermission !== 'denied'}
-				<!-- granted ili default ali bez aktivne subscription — dozvoli retry -->
-				<div class="flex flex-col gap-1 w-full">
+			{#if notifPermission !== 'denied'}
+				{#if notifSubscribed}
 					<button
-						class="btn btn-sm variant-ghost-primary text-xs self-start"
+						class="btn btn-sm variant-ghost-error shrink-0"
+						on:click={iskljuciNotifikacije}
+						disabled={notifLoading}
+					>
+						{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
+						{t.notifikacije.iskljuci}
+					</button>
+				{:else}
+					<button
+						class="btn btn-sm variant-filled-primary shrink-0"
 						on:click={ukljuciNotifikacije}
 						disabled={notifLoading}
 					>
 						{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
-						🔔 {t.notifikacije.ukljuci}
+						{t.notifikacije.ukljuci}
 					</button>
-					{#if notifError}
-						<p class="text-xs text-error-500">{notifError}</p>
-					{/if}
-				</div>
+				{/if}
 			{/if}
 		</div>
 	{/if}
