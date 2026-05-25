@@ -46,11 +46,11 @@ export async function subscribePush(userId: string): Promise<{ ok: boolean; erro
 		if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth)
 			return { ok: false, error: 'Subscription nema ključeve' };
 
-		const { error } = await supabase.from('push_subscriptions').upsert(
-			{ user_id: userId, endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth },
-			{ onConflict: 'user_id,endpoint' }
+		const { error } = await supabase.from('push_subscriptions').insert(
+			{ user_id: userId, endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth }
 		);
-		if (error) return { ok: false, error: error.message };
+		// 23505 = unique violation — subscription već postoji, to je OK
+		if (error && error.code !== '23505') return { ok: false, error: error.message };
 
 		return { ok: true };
 	} catch (err) {
@@ -80,10 +80,10 @@ export async function syncSubscription(userId: string): Promise<void> {
 		if (!sub) return;
 		const json = sub.toJSON();
 		if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) return;
-		await supabase.from('push_subscriptions').upsert(
-			{ user_id: userId, endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth },
-			{ onConflict: 'user_id,endpoint' }
+		const { error: syncErr } = await supabase.from('push_subscriptions').insert(
+			{ user_id: userId, endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth }
 		);
+		if (syncErr && syncErr.code !== '23505') console.warn('syncSubscription:', syncErr.message);
 	} catch {
 		// tiho — ne blokiraj UI
 	}
