@@ -15,6 +15,7 @@
 		isPushSubscribed,
 		subscribePush,
 		unsubscribePush,
+		syncSubscription,
 		hasDismissedBanner,
 		dismissBanner
 	} from '$lib/utils/notifications';
@@ -46,6 +47,11 @@
 		notifPermission = getPermissionStatus();
 		if (notifPermission === 'unsupported') return;
 		notifSubscribed = await isPushSubscribed();
+		// Ako browser ima subscription ali DB možda nema — upiši tiho
+		if (notifSubscribed) {
+			const currentUser = get(user);
+			if (currentUser) await syncSubscription(currentUser.id);
+		}
 		showNotifBanner =
 			notifPermission === 'default' && !notifSubscribed && !hasDismissedBanner();
 	}

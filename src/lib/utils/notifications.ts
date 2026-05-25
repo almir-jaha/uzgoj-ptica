@@ -71,6 +71,24 @@ export async function unsubscribePush(userId: string): Promise<void> {
 	}
 }
 
+// Ako browser ima subscription ali DB nema — upiši je (npr. po reinstalaciji, promjeni adaptera)
+export async function syncSubscription(userId: string): Promise<void> {
+	if (!('serviceWorker' in navigator)) return;
+	try {
+		const sw = await navigator.serviceWorker.ready;
+		const sub = await sw.pushManager.getSubscription();
+		if (!sub) return;
+		const json = sub.toJSON();
+		if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) return;
+		await supabase.from('push_subscriptions').upsert(
+			{ user_id: userId, endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth },
+			{ onConflict: 'user_id,endpoint' }
+		);
+	} catch {
+		// tiho — ne blokiraj UI
+	}
+}
+
 export function hasDismissedBanner(): boolean {
 	return localStorage.getItem('notif_banner_dismissed') === '1';
 }
