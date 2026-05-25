@@ -250,6 +250,17 @@ export const bs = {
 		legloSufiksPlural: 'legla'
 	},
 
+	notifikacije: {
+		bannerTitle: 'Obavještenja o aktivnostima',
+		bannerOpis: 'Primaj push notifikaciju kad aktivnost dospijeva danas ili sutra',
+		ukljuci: 'Uključi',
+		neHvala: 'Ne hvala',
+		aktivna: '🔔 Push obavještenja aktivna',
+		iskljuci: 'Isključi',
+		odbijeno: 'Obavještenja su blokirana u postavkama browsera',
+		greska: 'Greška pri aktivaciji obavještenja'
+	},
+
 	modali: {
 		zatvoriBtnTitle: '✕',
 		ciklus: {

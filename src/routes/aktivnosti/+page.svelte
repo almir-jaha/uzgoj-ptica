@@ -10,6 +10,14 @@
 	import { supabase } from '$lib/supabase/client';
 	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
 	import { t } from '$lib/i18n';
+	import {
+		getPermissionStatus,
+		isPushSubscribed,
+		subscribePush,
+		unsubscribePush,
+		hasDismissedBanner,
+		dismissBanner
+	} from '$lib/utils/notifications';
 
 	type Hitnost = 'zakasnila' | 'danas' | 'uskoro' | 'buducnost';
 
@@ -26,6 +34,55 @@
 	let obavljene: AktivnostCiklusa[] = [];
 	let prikaziObavljene = false;
 	let today = '';
+
+	// Notifikacije
+	let notifPermission: 'unsupported' | 'denied' | 'granted' | 'default' = 'unsupported';
+	let notifSubscribed = false;
+	let notifLoading = false;
+	let notifError = '';
+	let showNotifBanner = false;
+
+	async function initNotifStatus() {
+		notifPermission = getPermissionStatus();
+		if (notifPermission === 'unsupported') return;
+		notifSubscribed = await isPushSubscribed();
+		showNotifBanner =
+			notifPermission === 'default' && !notifSubscribed && !hasDismissedBanner();
+	}
+
+	async function ukljuciNotifikacije() {
+		const currentUser = get(user);
+		if (!currentUser) return;
+		notifLoading = true;
+		notifError = '';
+		const { ok, error } = await subscribePush(currentUser.id);
+		notifLoading = false;
+		if (ok) {
+			notifSubscribed = true;
+			notifPermission = 'granted';
+			showNotifBanner = false;
+		} else if (error === 'permission_denied') {
+			notifPermission = 'denied';
+			showNotifBanner = false;
+		} else {
+			notifError = error ?? t.notifikacije.greska;
+		}
+	}
+
+	async function iskljuciNotifikacije() {
+		const currentUser = get(user);
+		if (!currentUser) return;
+		notifLoading = true;
+		await unsubscribePush(currentUser.id);
+		notifSubscribed = false;
+		notifPermission = getPermissionStatus();
+		notifLoading = false;
+	}
+
+	function odbijNotifikacije() {
+		dismissBanner();
+		showNotifBanner = false;
+	}
 
 	// Inline "obavi" state — samo jedna kartica je otvorena u isto vrijeme
 	let obavljaId: string | null = null;
@@ -118,6 +175,7 @@
 		await lokalnoPodaci(sezona.id, currentUser.id);
 		await ucitajAktivnosti();
 		loading = false;
+		await initNotifStatus();
 
 		// Background: bez loadSezone — izaziva race condition na parovi/aktivnosti stranicama
 		Promise.all([
@@ -172,6 +230,64 @@
 			<span class="badge variant-filled-warning">{pending.length} {t.aktivnosti.naCekanju}</span>
 		{/if}
 	</div>
+
+	<!-- Push notifikacije — banner (prikazuje se samo jednom dok korisnik ne odgovori) -->
+	{#if showNotifBanner}
+		<div class="card p-3 variant-soft-primary flex items-start gap-3">
+			<span class="text-2xl shrink-0 mt-0.5">🔔</span>
+			<div class="flex-1 min-w-0">
+				<p class="text-sm font-semibold">{t.notifikacije.bannerTitle}</p>
+				<p class="text-xs text-surface-500 mt-0.5">{t.notifikacije.bannerOpis}</p>
+				{#if notifError}
+					<p class="text-xs text-error-500 mt-1">{notifError}</p>
+				{/if}
+			</div>
+			<div class="flex gap-2 shrink-0">
+				<button
+					class="btn btn-sm variant-ghost-surface"
+					on:click={odbijNotifikacije}
+					disabled={notifLoading}
+				>
+					{t.notifikacije.neHvala}
+				</button>
+				<button
+					class="btn btn-sm variant-filled-primary"
+					on:click={ukljuciNotifikacije}
+					disabled={notifLoading}
+				>
+					{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
+					{t.notifikacije.ukljuci}
+				</button>
+			</div>
+		</div>
+	{/if}
+
+	<!-- Status notifikacija ako su već uključene -->
+	{#if !showNotifBanner && notifPermission !== 'unsupported'}
+		<div class="flex items-center justify-between px-1">
+			{#if notifPermission === 'denied'}
+				<p class="text-xs text-warning-500">{t.notifikacije.odbijeno}</p>
+			{:else if notifSubscribed}
+				<p class="text-xs text-success-500">{t.notifikacije.aktivna}</p>
+				<button
+					class="btn btn-sm variant-ghost-error text-xs"
+					on:click={iskljuciNotifikacije}
+					disabled={notifLoading}
+				>
+					{t.notifikacije.iskljuci}
+				</button>
+			{:else if notifPermission === 'default'}
+				<button
+					class="btn btn-sm variant-ghost-primary text-xs"
+					on:click={ukljuciNotifikacije}
+					disabled={notifLoading}
+				>
+					{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
+					🔔 {t.notifikacije.ukljuci}
+				</button>
+			{/if}
+		</div>
+	{/if}
 
 	{#if loading}
 		<div class="space-y-3">
