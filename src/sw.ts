@@ -2,12 +2,8 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import {
-	precacheAndRoute,
-	cleanupOutdatedCaches,
-	createHandlerBoundToURL
-} from 'workbox-precaching';
-import { registerRoute, NavigationRoute } from 'workbox-routing';
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
+import { registerRoute } from 'workbox-routing';
 import { NetworkFirst, CacheFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
@@ -20,13 +16,6 @@ self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim(
 // Precache statičkih asseta — vite-plugin-pwa injektuje manifest ovdje
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
-
-// SPA navigation fallback — sve navigacije idu na index.html
-registerRoute(
-	new NavigationRoute(createHandlerBoundToURL('/index.html'), {
-		denylist: [/^\/_app\/immutable\//, /^\/api\//]
-	})
-);
 
 // Supabase API — NetworkFirst s 8s timeout-om
 registerRoute(

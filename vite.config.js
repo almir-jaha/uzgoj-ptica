@@ -18,11 +18,7 @@ export default defineConfig({
 			manifest: false,
 
 			injectManifest: {
-				globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff,woff2}'],
-				additionalManifestEntries: [
-					{ url: '/index.html', revision: buildRevision },
-					{ url: '/', revision: buildRevision }
-				]
+				globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff,woff2}']
 			}
 		})
 	]

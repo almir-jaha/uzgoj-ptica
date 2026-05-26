@@ -36,7 +36,12 @@ export async function subscribePush(userId: string): Promise<{ ok: boolean; erro
 		const permission = await Notification.requestPermission();
 		if (permission !== 'granted') return { ok: false, error: 'permission_denied' };
 
-		const sw = await navigator.serviceWorker.ready;
+		const sw = await Promise.race([
+			navigator.serviceWorker.ready,
+			new Promise<never>((_, reject) =>
+				setTimeout(() => reject(new Error('Service worker nije spreman — osvježi stranicu (F5) i pokušaj ponovo')), 8000)
+			)
+		]);
 		const sub = await sw.pushManager.subscribe({
 			userVisibleOnly: true,
 			applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
