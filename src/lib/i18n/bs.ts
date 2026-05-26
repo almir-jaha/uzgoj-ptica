@@ -206,7 +206,29 @@ export const bs = {
 		greska: 'Greška pri snimanju',
 		odaberiteVrstuGreska: 'Odaberite vrstu ptice',
 		katalogPrazan: 'Katalog vrsta je prazan',
-		katalogPrazanOpis: 'Pokrenite SQL migraciju'
+		katalogPrazanOpis: 'Pokrenite SQL migraciju',
+		slika: 'Slika ptice',
+		rezultati: 'Rezultati (trke / izložbe)',
+		rezultatiPlaceholder: 'Trka Xyz 2026 – 1. mjesto, 234 km\nIzložba ABC – Odlično...',
+		napomenaRodovnik: 'Napomena za rodovnik',
+		napomenaRodovnikPlaceholder: 'Osobine po standardu, nagrade, atributi...',
+		rodovnikSekcija: '📋 Rodovnik'
+	},
+
+	uzgajivac: {
+		title: 'Uzgajivačnica',
+		naziv: 'Naziv uzgajivačnice',
+		nazivPlaceholder: 'npr. Uzgajivačnica Jaha',
+		imePrezime: 'Ime i prezime',
+		imePrezimePlaceholder: 'Almir Jaha',
+		adresa: 'Adresa',
+		adresaPlaceholder: 'Ul. Maršala Tita 1, Sarajevo',
+		telefon: 'Telefon',
+		telefonPlaceholder: '+387 61 000 000',
+		slika: 'Logo / slika uzgajivača',
+		sacuvaj: 'Sačuvaj profil',
+		sacuvano: 'Profil sačuvan',
+		greska: 'Greška pri čuvanju profila'
 	},
 
 	aktivnosti: {

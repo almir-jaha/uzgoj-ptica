@@ -24,6 +24,9 @@ export interface Ptica {
   majka_id?: string; // nullable - ako je kupljena
   datum_rodjenja?: string;
   godina?: number;
+  rezultati?: string;
+  napomena_rodovnik?: string;
+  slika_url?: string;
   napomena?: string;
   created_at: string;
   updated_at: string;
@@ -32,6 +35,11 @@ export interface Ptica {
 export interface UserSettings {
   user_id: string;
   prsten_prefiks?: string;
+  naziv_uzgajivacnice?: string;
+  ime_prezime?: string;
+  adresa?: string;
+  telefon?: string;
+  slika_url?: string;
   updated_at: string;
 }
 

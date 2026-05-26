@@ -2,6 +2,7 @@
 	import { createPtica, updatePtica, pticeMuzjaci, pticeSenke } from '$lib/stores/ptice';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
+	import SlikaUnos from './SlikaUnos.svelte';
 
 	export let userId: string;
 	export let vrstePtica: VrstaPtica[] = [];
@@ -21,15 +22,21 @@
 	let otacId = editPtica?.otac_id ?? '';
 	let majkaId = editPtica?.majka_id ?? '';
 	let napomena = editPtica?.napomena ?? '';
+	let rezultati = editPtica?.rezultati ?? '';
+	let napomenaRodovnik = editPtica?.napomena_rodovnik ?? '';
+	let slikaUrl: string | undefined = editPtica?.slika_url;
+	let loading = false;
+	let errorMsg = '';
+	let rodovnikOtvoren = !!(editPtica?.otac_id || editPtica?.majka_id);
+	let rodovnikPodaciOtvoreni = !!(editPtica?.rezultati || editPtica?.napomena_rodovnik || editPtica?.slika_url);
+
+	let slikaKomponenta: SlikaUnos;
 
 	// Auto-popuni godinu iz datuma rodjenja (samo ako godina još nije unesena)
 	$: if (datumRodjenja && godina === '') {
 		const y = new Date(datumRodjenja).getFullYear();
 		if (y > 2000) godina = y;
 	}
-	let loading = false;
-	let errorMsg = '';
-	let rodovnikOtvoren = !!(editPtica?.otac_id || editPtica?.majka_id);
 
 	// Isključi samu pticu iz dropdown roditelja (edit mod)
 	$: dostupniOcevi = $pticeMuzjaci.filter((p) => p.id !== editPtica?.id);
@@ -43,6 +50,8 @@
 		errorMsg = '';
 
 		try {
+				const finalSlikaUrl = slikaKomponenta ? await slikaKomponenta.saveImage() : slikaUrl;
+
 			const zajednickiPodaci = {
 				spol,
 				vrsta_ptica_id: vrstaId,
@@ -53,7 +62,10 @@
 				godina: godina !== '' ? Number(godina) : undefined,
 				otac_id: otacId || undefined,
 				majka_id: majkaId || undefined,
-				napomena: napomena.trim() || undefined
+				napomena: napomena.trim() || undefined,
+				rezultati: rezultati.trim() || undefined,
+				napomena_rodovnik: napomenaRodovnik.trim() || undefined,
+				slika_url: finalSlikaUrl || undefined
 			};
 
 			if (editPtica) {
@@ -240,6 +252,51 @@
 						disabled={loading}
 					/>
 				</label>
+
+				<!-- Rodovnik podaci (collapsible) -->
+				<div class="space-y-2">
+					<button
+						type="button"
+						class="btn btn-sm variant-ghost w-full justify-between"
+						on:click={() => (rodovnikPodaciOtvoreni = !rodovnikPodaciOtvoreni)}
+						disabled={loading}
+					>
+						<span class="text-sm">{t.ptice.rodovnikSekcija}</span>
+						<span>{rodovnikPodaciOtvoreni ? '▲' : '▼'}</span>
+					</button>
+					{#if rodovnikPodaciOtvoreni}
+						<div class="card variant-soft p-3 space-y-3">
+							<SlikaUnos
+								bind:this={slikaKomponenta}
+								bind:slika_url={slikaUrl}
+								bucket="ptice"
+								{userId}
+								disabled={loading}
+								label={t.ptice.slika}
+							/>
+							<label class="label">
+								<span class="text-sm">{t.ptice.rezultati}</span>
+								<textarea
+									class="textarea text-sm font-mono"
+									rows="4"
+									bind:value={rezultati}
+									placeholder={t.ptice.rezultatiPlaceholder}
+									disabled={loading}
+								/>
+							</label>
+							<label class="label">
+								<span class="text-sm">{t.ptice.napomenaRodovnik}</span>
+								<textarea
+									class="textarea text-sm"
+									rows="3"
+									bind:value={napomenaRodovnik}
+									placeholder={t.ptice.napomenaRodovnikPlaceholder}
+									disabled={loading}
+								/>
+							</label>
+						</div>
+					{/if}
+				</div>
 
 				{#if errorMsg}
 					<aside class="alert variant-filled-error py-2 px-3 text-sm">

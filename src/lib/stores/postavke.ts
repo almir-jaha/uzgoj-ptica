@@ -24,10 +24,12 @@ export async function loadPostavke(userId: string): Promise<void> {
 }
 
 export async function savePostavke(userId: string, izmjene: Partial<Omit<UserSettings, 'user_id' | 'updated_at'>>): Promise<void> {
+	const existing = await db.user_settings.get(userId);
 	const nova: UserSettings = {
+		...(existing ?? {}),
 		user_id: userId,
-		updated_at: new Date().toISOString(),
-		...izmjene
+		...izmjene,
+		updated_at: new Date().toISOString()
 	};
 
 	const { error } = await supabase
