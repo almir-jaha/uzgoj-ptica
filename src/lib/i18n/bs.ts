@@ -9,8 +9,8 @@ export const bs = {
 	},
 
 	nav: {
-		kavezi: '🏠 Kavezi',
-		parovi: '🫂 Parovi',
+		uzgajivacnica: '🏡 Uzgajivačnica',
+		sezone: '📅 Sezone',
 		ptice: '🐦 Ptice',
 		aktivnosti: '📋 Aktivnosti',
 		statistike: '📊 Statistike',
@@ -59,7 +59,7 @@ export const bs = {
 		datumPocetka: 'Datum početka',
 		datumZavrsetka: 'Datum završetka',
 		sezona: 'Sezona',
-		idite: 'Idi na Kaveze'
+		idite: 'Idi na Sezone'
 	},
 
 	sezona: {
@@ -67,7 +67,7 @@ export const bs = {
 		novaSezona: 'Nova sezona',
 		urediSezonu: 'Uredi sezonu',
 		kreirajSezonu: 'Kreiraj sezonu',
-		pageTitle: 'Kavezi – Uzgoj ptica',
+		pageTitle: 'Sezone – Uzgoj ptica',
 		nemaSezone: 'Nema aktivne sezone',
 		nemaSezoneOpis: 'Kreirajte prvu sezonu kako biste počeli pratiti kaveze.',
 		godina: 'Godina',
@@ -229,6 +229,15 @@ export const bs = {
 		sacuvaj: 'Sačuvaj profil',
 		sacuvano: 'Profil sačuvan',
 		greska: 'Greška pri čuvanju profila'
+	},
+
+	uzgajivacnica: {
+		pageTitle: 'Uzgajivačnica – Uzgoj ptica',
+		title: 'Moja uzgajivačnica',
+		ukupnoPtica: 'ukupno ptica',
+		aktivnaSezona: 'aktivna sezona',
+		nemaPoDataka: 'Profil nije popunjen. Dodajte podatke o uzgajivačnici.',
+		urediProfil: 'Uredi profil'
 	},
 
 	aktivnosti: {

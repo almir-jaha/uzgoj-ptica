@@ -47,7 +47,7 @@
 	});
 
 	$: if (!authLoading && $isAuthenticated && $page.url.pathname === '/') {
-		goto('/kavezi');
+		goto('/uzgajivacnica');
 	}
 
 	$: if (!authLoading && !$isAuthenticated && $page.url.pathname !== '/') {
@@ -55,11 +55,11 @@
 	}
 
 	const navLinks = [
-		{ href: '/kavezi',      icon: '🏠', label: 'Kavezi' },
-		{ href: '/parovi',      icon: '🫂', label: 'Parovi' },
-		{ href: '/ptice',       icon: '🐦', label: 'Ptice' },
-		{ href: '/aktivnosti',  icon: '📋', label: 'Akt.' },
-		{ href: '/statistike',  icon: '📊', label: 'Stat.' }
+		{ href: '/uzgajivacnica', icon: '🏡', label: 'Uzgajivač.' },
+		{ href: '/sezone',        icon: '📅', label: 'Sezone' },
+		{ href: '/ptice',         icon: '🐦', label: 'Ptice' },
+		{ href: '/aktivnosti',    icon: '📋', label: 'Akt.' },
+		{ href: '/statistike',    icon: '📊', label: 'Stat.' }
 	];
 </script>
 
@@ -87,11 +87,11 @@
 				<svelte:fragment slot="trail">
 					<!-- Desktop nav -->
 					<nav class="hidden sm:flex items-center gap-1">
-						<a href="/kavezi" class="btn btn-sm {$page.url.pathname.startsWith('/kavezi') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.kavezi}</a>
-						<a href="/parovi" class="btn btn-sm {$page.url.pathname.startsWith('/parovi') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.parovi}</a>
-						<a href="/ptice"  class="btn btn-sm {$page.url.pathname.startsWith('/ptice')  ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.ptice}</a>
-						<a href="/aktivnosti" class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.aktivnosti}</a>
-						<a href="/statistike" class="btn btn-sm {$page.url.pathname.startsWith('/statistike') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.statistike}</a>
+						<a href="/uzgajivacnica" class="btn btn-sm {$page.url.pathname.startsWith('/uzgajivacnica') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.uzgajivacnica}</a>
+						<a href="/sezone"        class="btn btn-sm {$page.url.pathname.startsWith('/sezone') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.sezone}</a>
+						<a href="/ptice"         class="btn btn-sm {$page.url.pathname.startsWith('/ptice') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.ptice}</a>
+						<a href="/aktivnosti"    class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.aktivnosti}</a>
+						<a href="/statistike"    class="btn btn-sm {$page.url.pathname.startsWith('/statistike') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.statistike}</a>
 						{#if isAdmin($user?.email)}
 							<a href="/admin" class="btn btn-sm {$page.url.pathname.startsWith('/admin') ? 'variant-filled-warning' : 'variant-ghost-warning'}" title="Administracija">🔧</a>
 						{/if}

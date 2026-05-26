@@ -4,14 +4,13 @@
 
 	import { user } from '$lib/stores/auth';
 	import { ptice, pticeMuzjaci, pticeSenke, pticaLoading, loadPtice } from '$lib/stores/ptice';
-	import { postavke, loadPostavke, savePostavke } from '$lib/stores/postavke';
+	import { postavke, loadPostavke } from '$lib/stores/postavke';
 	import { aktivnaSezona } from '$lib/stores/sezona';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
 
 	import NovaPticaModal from '$lib/components/NovaPticaModal.svelte';
-	import SlikaUnos from '$lib/components/SlikaUnos.svelte';
 	import { t } from '$lib/i18n';
 
 	type Filter = 'sve' | 'muzjaci' | 'zenke' | 'ovaSezone' | 'ostale';
@@ -21,13 +20,6 @@
 	let loading = true;
 	let modalOtvoren = false;
 	let editPtica: Ptica | null = null;
-
-	// Uzgajivačnica
-	let editUzgajivac = false;
-	let uzgajivacInput = { naziv_uzgajivacnice: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '' };
-	let uzgajivacSaving = false;
-	let uzgajivacSlikaUrl: string | undefined;
-	let uzgajivacSlikaKomponenta: SlikaUnos;
 
 	let pretragaBroj = '';
 	let pretragaGodina = '';
@@ -65,31 +57,7 @@
 		loadPtice(currentUser.id);
 		loadVrstePtica();
 		await loadPostavke(currentUser.id);
-		uzgajivacInput = {
-			naziv_uzgajivacnice: $postavke?.naziv_uzgajivacnice ?? '',
-			ime_prezime: $postavke?.ime_prezime ?? '',
-			adresa: $postavke?.adresa ?? '',
-			telefon: $postavke?.telefon ?? '',
-			prsten_prefiks: $postavke?.prsten_prefiks ?? ''
-		};
-		uzgajivacSlikaUrl = $postavke?.slika_url;
 	});
-
-	async function sacuvajUzgajivaca() {
-		const currentUser = get(user);
-		if (!currentUser) return;
-		uzgajivacSaving = true;
-		const finalSlikaUrl = uzgajivacSlikaKomponenta
-			? await uzgajivacSlikaKomponenta.saveImage()
-			: uzgajivacSlikaUrl;
-		await savePostavke(currentUser.id, {
-			...uzgajivacInput,
-			prsten_prefiks: uzgajivacInput.prsten_prefiks.trim(),
-			slika_url: finalSlikaUrl
-		});
-		uzgajivacSaving = false;
-		editUzgajivac = false;
-	}
 
 	async function handleSacuvano() {
 		modalOtvoren = false;
@@ -181,88 +149,6 @@
 			</button>
 		{/if}
 	</div>
-
-	<!-- Uzgajivačnica -->
-	{#if !loading}
-		<div class="card p-3 variant-soft-surface space-y-2">
-			<div class="flex items-center justify-between gap-2">
-				<p class="text-sm font-medium">{t.uzgajivac.title}</p>
-				{#if !editUzgajivac}
-					<button class="btn btn-sm variant-ghost" on:click={() => {
-						editUzgajivac = true;
-						uzgajivacInput = {
-							naziv_uzgajivacnice: $postavke?.naziv_uzgajivacnice ?? '',
-							ime_prezime: $postavke?.ime_prezime ?? '',
-							adresa: $postavke?.adresa ?? '',
-							telefon: $postavke?.telefon ?? '',
-							prsten_prefiks: $postavke?.prsten_prefiks ?? ''
-						};
-						uzgajivacSlikaUrl = $postavke?.slika_url;
-					}}>✏️</button>
-				{/if}
-			</div>
-
-			{#if !editUzgajivac}
-				<!-- Prikaz -->
-				<div class="flex items-start gap-3">
-					{#if $postavke?.slika_url}
-						<img src={$postavke.slika_url} alt="Logo" class="w-12 h-12 rounded-lg object-cover shrink-0" />
-					{/if}
-					<div class="text-xs text-surface-500 space-y-0.5 min-w-0">
-						{#if $postavke?.naziv_uzgajivacnice}<p class="font-medium text-surface-700-200-token">{$postavke.naziv_uzgajivacnice}</p>{/if}
-						{#if $postavke?.ime_prezime}<p>{$postavke.ime_prezime}</p>{/if}
-						{#if $postavke?.adresa}<p>{$postavke.adresa}</p>{/if}
-						{#if $postavke?.telefon}<p>{$postavke.telefon}</p>{/if}
-						{#if $postavke?.prsten_prefiks}<p>📍 {t.ptice.prsten_prefiks}: <span class="font-mono">{$postavke.prsten_prefiks}</span></p>{/if}
-						{#if !$postavke?.naziv_uzgajivacnice && !$postavke?.ime_prezime && !$postavke?.prsten_prefiks}<p>—</p>{/if}
-					</div>
-				</div>
-			{:else}
-				<!-- Edit forma -->
-				<div class="space-y-3">
-					<SlikaUnos
-						bind:this={uzgajivacSlikaKomponenta}
-						bind:slika_url={uzgajivacSlikaUrl}
-						bucket="uzgajivaci"
-						userId={$user?.id ?? ''}
-						disabled={uzgajivacSaving}
-						label={t.uzgajivac.slika}
-						roundedFull={false}
-					/>
-					<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-						<label class="label">
-							<span class="text-xs font-medium">{t.uzgajivac.naziv}</span>
-							<input class="input input-sm" type="text" bind:value={uzgajivacInput.naziv_uzgajivacnice} placeholder={t.uzgajivac.nazivPlaceholder} disabled={uzgajivacSaving} />
-						</label>
-						<label class="label">
-							<span class="text-xs font-medium">{t.uzgajivac.imePrezime}</span>
-							<input class="input input-sm" type="text" bind:value={uzgajivacInput.ime_prezime} placeholder={t.uzgajivac.imePrezimePlaceholder} disabled={uzgajivacSaving} />
-						</label>
-						<label class="label">
-							<span class="text-xs font-medium">{t.uzgajivac.adresa}</span>
-							<input class="input input-sm" type="text" bind:value={uzgajivacInput.adresa} placeholder={t.uzgajivac.adresaPlaceholder} disabled={uzgajivacSaving} />
-						</label>
-						<label class="label">
-							<span class="text-xs font-medium">{t.uzgajivac.telefon}</span>
-							<input class="input input-sm" type="tel" bind:value={uzgajivacInput.telefon} placeholder={t.uzgajivac.telefonPlaceholder} disabled={uzgajivacSaving} />
-						</label>
-						<label class="label sm:col-span-2">
-							<span class="text-xs font-medium">{t.ptice.prsten_prefiks}</span>
-							<input class="input input-sm" type="text" bind:value={uzgajivacInput.prsten_prefiks} placeholder={t.ptice.prsten_prefiksPlaceholder} disabled={uzgajivacSaving} />
-							<span class="text-xs text-surface-400 mt-0.5">{t.ptice.prsten_prefiksOpis}</span>
-						</label>
-					</div>
-					<div class="flex gap-2 justify-end">
-						<button class="btn btn-sm variant-ghost" on:click={() => (editUzgajivac = false)} disabled={uzgajivacSaving}>✕</button>
-						<button class="btn btn-sm variant-filled-primary" on:click={sacuvajUzgajivaca} disabled={uzgajivacSaving}>
-							{#if uzgajivacSaving}<span class="animate-spin mr-1">↻</span>{/if}
-							{t.uzgajivac.sacuvaj}
-						</button>
-					</div>
-				</div>
-			{/if}
-		</div>
-	{/if}
 
 	<!-- Filter tabovi -->
 	{#if !loading && $ptice.length > 0}
