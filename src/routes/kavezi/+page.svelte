@@ -23,11 +23,13 @@
 	import type { KavezWithDetails } from '$lib/db/schema';
 
 	import KavezKartica from '$lib/components/KavezKartica.svelte';
+	import KavezAkcijeDrawer from '$lib/components/KavezAkcijeDrawer.svelte';
 	import { t } from '$lib/i18n';
 	import NovaSezonaModal from '$lib/components/NovaSezonaModal.svelte';
 	import UrediSezonuModal from '$lib/components/UrediSezonuModal.svelte';
 	import PokreniCiklusModal from '$lib/components/PokreniCiklusModal.svelte';
 	import ZavrsiCiklusModal from '$lib/components/ZavrsiCiklusModal.svelte';
+	import { postavke, loadPostavke } from '$lib/stores/postavke';
 
 	let kaveziDetails: KavezWithDetails[] = [];
 	let kavezChannel: RealtimeChannel | null = null;
@@ -39,6 +41,7 @@
 	let prikaziSezone = false;
 	let pokreniKavezId: string | null = null;
 	let zavrsiDetails: KavezWithDetails | null = null;
+	let aktivniKavezDetails: KavezWithDetails | null = null;
 
 	async function ucitajDetalje() {
 		const trenutniKavezi = get(kavezi);
@@ -127,6 +130,9 @@
 
 		// 5. Učitaj sve sezone za switcher (background)
 		loadSezone(currentUser.id).catch(console.error);
+
+		// 6. Učitaj korisničke postavke (prefiks prstena)
+		loadPostavke(currentUser.id).catch(console.error);
 	});
 
 	onDestroy(() => {
@@ -335,8 +341,7 @@
 					{details}
 					faze={$faze}
 					readonly={!!pregledArhive}
-					on:pokrenuCiklus={() => !pregledArhive && (pokreniKavezId = details.id)}
-					on:zavrsiCiklus={() => !pregledArhive && (zavrsiDetails = details)}
+					on:kliknut={() => !pregledArhive && (aktivniKavezDetails = details)}
 				/>
 			{/each}
 		</div>
@@ -380,5 +385,37 @@
 		details={zavrsiDetails}
 		onClose={() => (zavrsiDetails = null)}
 		onSuccess={handleCiklusZavrsen}
+	/>
+{/if}
+
+{#if aktivniKavezDetails && $user && !pregledArhive}
+	<KavezAkcijeDrawer
+		details={aktivniKavezDetails}
+		faze={$faze}
+		svePtice={$ptice}
+		prstenPrefiks={$postavke?.prsten_prefiks ?? ''}
+		userId={$user.id}
+		on:zatvori={() => (aktivniKavezDetails = null)}
+		on:pokreniCiklus={() => {
+			const kavez = aktivniKavezDetails;
+			aktivniKavezDetails = null;
+			if (kavez) pokreniKavezId = kavez.id;
+		}}
+		on:zavrsiCiklus={() => {
+			zavrsiDetails = aktivniKavezDetails;
+			aktivniKavezDetails = null;
+		}}
+		on:refresh={async () => {
+			const sezona = get(prikazanaSezona);
+			const currentUser = get(user);
+			if (!sezona || !currentUser) return;
+			await loadPtice(currentUser.id);
+			await ucitajDetalje();
+			const kavezId = aktivniKavezDetails?.id;
+			if (kavezId) {
+				const updated = kaveziDetails.find((k) => k.id === kavezId);
+				if (updated) aktivniKavezDetails = updated;
+			}
+		}}
 	/>
 {/if}

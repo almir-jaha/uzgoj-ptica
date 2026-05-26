@@ -8,12 +8,8 @@
 	export let faze: FazaCiklusa[] = [];
 	export let readonly = false;
 
-	const dispatch = createEventDispatcher<{
-		pokrenuCiklus: void;
-		zavrsiCiklus: void;
-	}>();
+	const dispatch = createEventDispatcher<{ kliknut: void }>();
 
-	// Faze za vrstu ptice aktivnog ciklusa
 	$: fazeZaVrstu = details.aktivni_ciklus
 		? faze
 				.filter((f) => f.vrsta_ptica_id === details.aktivni_ciklus!.vrsta_ptica_id)
@@ -23,7 +19,6 @@
 	$: trenutnaFaza = details.aktivni_ciklus ? getCurrentPhase(details.aktivni_ciklus, faze) : undefined;
 	$: daniDo = details.aktivni_ciklus ? getDaysUntilNextPhase(details.aktivni_ciklus, faze) : null;
 
-	// Alarm: datum sljedeće aktivnosti je danas ili prošao
 	$: todayStr = new Date().toISOString().split('T')[0];
 	$: isAlarm =
 		details.status === 'alarm' ||
@@ -31,7 +26,6 @@
 			? details.sledeca_aktivnost.potreban_datum <= todayStr
 			: false);
 
-	// Labeli iz para (embedded u KavezWithDetails)
 	$: ptica1Label =
 		details.aktivni_ciklus?.par?.ptica1?.naziv ||
 		details.aktivni_ciklus?.par?.ptica1?.prstena_oznaka ||
@@ -41,7 +35,6 @@
 		details.aktivni_ciklus?.par?.ptica2?.prstena_oznaka ||
 		'?';
 
-	// Border boja na osnovu statusa
 	$: borderColor = isAlarm
 		? '#ef4444'
 		: details.status === 'aktivan'
@@ -53,11 +46,15 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
-	class="card p-3 flex flex-col gap-2 border-l-4 min-h-[160px]"
+	class="card p-3 flex flex-col gap-2 border-l-4 min-h-[160px] {readonly ? '' : 'cursor-pointer hover:brightness-95 active:scale-[0.98] transition-transform'}"
 	style="border-left-color: {borderColor}"
+	role={readonly ? undefined : 'button'}
+	tabindex={readonly ? undefined : 0}
+	on:click={() => !readonly && dispatch('kliknut')}
 >
-	<!-- Header: oznaka + alarm badge -->
+	<!-- Header -->
 	<div class="flex items-start justify-between">
 		<span class="font-bold text-lg leading-none">K{details.oznaka}</span>
 		{#if isAlarm && details.status !== 'prazan'}
@@ -67,19 +64,12 @@
 		{/if}
 	</div>
 
-	<!-- Sadržaj po statusu -->
 	{#if details.status === 'prazan'}
 		<div class="flex-1 flex items-center justify-center">
 			<p class="text-surface-400 text-xs text-center">{t.kavezi.prazan}</p>
 		</div>
-
 		{#if !readonly}
-			<button
-				class="btn btn-sm variant-filled-primary w-full text-xs"
-				on:click={() => dispatch('pokrenuCiklus')}
-			>
-				{t.kavezi.pokreniCiklus}
-			</button>
+			<p class="text-xs text-surface-400 text-center mt-auto">↑ {t.kavezi.pokreniCiklus}</p>
 		{/if}
 	{:else}
 		<!-- Par -->
@@ -128,18 +118,6 @@
 			<p class="text-xs text-surface-500">
 				📅 {formatDatum(details.sledeca_aktivnost.potreban_datum)}
 			</p>
-		{/if}
-
-		<!-- Akcijsko dugme -->
-		{#if !readonly}
-			<button
-				class="btn btn-sm {isAlarm
-					? 'variant-filled-error'
-					: 'variant-soft-warning'} w-full text-xs mt-auto"
-				on:click={() => dispatch('zavrsiCiklus')}
-			>
-				{t.kavezi.zavrsiCiklus}
-			</button>
 		{/if}
 	{/if}
 </div>

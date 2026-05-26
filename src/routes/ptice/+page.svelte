@@ -124,6 +124,10 @@
 	function spolSimbol(spol: string): string {
 		return spol === 'M' ? '♂' : spol === 'Ž' ? '♀' : '?';
 	}
+
+	function postaviFilter(val: string) {
+		filter = val as Filter;
+	}
 </script>
 
 <svelte:head>
@@ -182,10 +186,10 @@
 	<!-- Filter tabovi -->
 	{#if !loading && $ptice.length > 0}
 		<div class="flex gap-2 flex-wrap">
-			{#each [['sve', t.ptice.filtar.sve, $ptice.length], ['muzjaci', t.ptice.filtar.muzjaci, $pticeMuzjaci.length], ['zenke', t.ptice.filtar.zenke, $pticeSenke.length]] as [val, label, count]}
+			{#each [['sve', t.ptice.filtar.sve, $ptice.length], ['muzjaci', t.ptice.filtar.muzjaci, $pticeMuzjaci.length], ['zenke', t.ptice.filtar.zenke, $pticeSenke.length]] as [val, label, count] (val)}
 				<button
 					class="btn btn-sm {filter === val ? 'variant-filled-primary' : 'variant-soft'}"
-					on:click={() => (filter = val)}
+					on:click={() => postaviFilter(val)}
 				>
 					{label}
 					<span class="badge {filter === val ? 'bg-white/30' : 'variant-soft'} text-xs ml-1 px-1">

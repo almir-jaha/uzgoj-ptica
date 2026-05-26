@@ -108,10 +108,16 @@ export const bs = {
 		nemaKaveza: 'Sezona nema kaveza.',
 		pokreniCiklus: 'Pokreni ciklus',
 		zavrsiCiklus: 'Završi ciklus',
+		unosMladih: 'Unos mladih',
+		pregledMladih: 'Pregled mladih',
 		prazan: 'Prazan',
 		sveRazePravrsene: 'Sve faze završene',
 		danas: 'Danas',
-		sutra: 'Sutra'
+		sutra: 'Sutra',
+		brziUnosMlade: 'Nova mlada ptica',
+		nemaMladih: 'Nema unesenih mladih za ovaj par.',
+		roditelji: 'Roditelji',
+		ukupnoMladih: 'mlad.'
 	},
 
 	parovi: {
