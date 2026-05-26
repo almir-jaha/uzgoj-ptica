@@ -163,6 +163,8 @@ export const bs = {
 			sve: 'Sve',
 			muzjaci: '♂ Mužjaci',
 			zenke: '♀ Ženke',
+			mladi: '🐣 Mladi',
+			odrasli: '🦅 Odrasli',
 			nemaPticaZaFilter: 'Nema ptica za odabrani filter.'
 		},
 		nemaPtica: 'Nema unesenih ptica',

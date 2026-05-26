@@ -12,7 +12,7 @@
 	import NovaPticaModal from '$lib/components/NovaPticaModal.svelte';
 	import { t } from '$lib/i18n';
 
-	type Filter = 'sve' | 'muzjaci' | 'zenke';
+	type Filter = 'sve' | 'muzjaci' | 'zenke' | 'mladi' | 'odrasli';
 
 	let vrstePtica: VrstaPtica[] = [];
 	let filter: Filter = 'sve';
@@ -86,9 +86,17 @@
 		modalOtvoren = true;
 	}
 
+	// Mladi = ptice s unesenim roditeljima (uzgojene), Odrasli = bez roditelja
+	$: pticeMladi = $ptice.filter((p) => !!(p.otac_id || p.majka_id));
+	$: pticeOdrasli = $ptice.filter((p) => !p.otac_id && !p.majka_id);
+
 	// Filtrirane + pretražene ptice
 	$: bazaPtica =
-		filter === 'muzjaci' ? $pticeMuzjaci : filter === 'zenke' ? $pticeSenke : $ptice;
+		filter === 'muzjaci' ? $pticeMuzjaci :
+		filter === 'zenke'   ? $pticeSenke :
+		filter === 'mladi'   ? pticeMladi :
+		filter === 'odrasli' ? pticeOdrasli :
+		$ptice;
 
 	$: filtriranePtice = bazaPtica.filter((p) => {
 		const brojOk = pretragaBroj === '' ||
@@ -186,7 +194,13 @@
 	<!-- Filter tabovi -->
 	{#if !loading && $ptice.length > 0}
 		<div class="flex gap-2 flex-wrap">
-			{#each [['sve', t.ptice.filtar.sve, $ptice.length], ['muzjaci', t.ptice.filtar.muzjaci, $pticeMuzjaci.length], ['zenke', t.ptice.filtar.zenke, $pticeSenke.length]] as [val, label, count] (val)}
+			{#each [
+				['sve',      t.ptice.filtar.sve,     $ptice.length],
+				['muzjaci',  t.ptice.filtar.muzjaci,  $pticeMuzjaci.length],
+				['zenke',    t.ptice.filtar.zenke,    $pticeSenke.length],
+				['mladi',    t.ptice.filtar.mladi,    pticeMladi.length],
+				['odrasli',  t.ptice.filtar.odrasli,  pticeOdrasli.length]
+			] as [val, label, count] (val)}
 				<button
 					class="btn btn-sm {filter === val ? 'variant-filled-primary' : 'variant-soft'}"
 					on:click={() => postaviFilter(val)}
@@ -253,7 +267,9 @@
 	{:else}
 		<div class="space-y-2">
 			{#each filtriranePtice as ptica (ptica.id)}
-				<div class="card p-4">
+				<div class="card p-4 border-l-4"
+					style="border-left-color: {(ptica.otac_id || ptica.majka_id) ? '#22c55e' : 'transparent'}"
+				>
 					<div class="flex items-start gap-3">
 						<!-- Spol badge -->
 						<span class="badge {spolBoja(ptica.spol)} text-lg w-9 h-9 flex items-center justify-center shrink-0 rounded-full">
