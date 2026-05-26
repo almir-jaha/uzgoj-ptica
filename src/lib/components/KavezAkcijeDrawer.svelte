@@ -17,9 +17,11 @@
 
 	// Brzi unos — stanje forme
 	let unosSpol: 'M' | 'Ž' | '?' = '?';
+	let unosNaziv = '';
 	let unosOznaka = prstenPrefiks;
 	let unosRedniBroj: number | '' = '';
 	let unosDatum = new Date().toISOString().split('T')[0];
+	let unosGodina: number | '' = sezonaGodina;
 	let unosLoading = false;
 	let unosError = '';
 
@@ -61,9 +63,11 @@
 
 	function otvoriUnos() {
 		unosSpol = '?';
+		unosNaziv = '';
 		unosOznaka = prstenPrefiks;
 		unosRedniBroj = '';
 		unosDatum = new Date().toISOString().split('T')[0];
+		unosGodina = sezonaGodina;
 		unosError = '';
 		pogled = 'unos';
 	}
@@ -77,10 +81,11 @@
 				user_id: userId,
 				spol: unosSpol,
 				vrsta_ptica_id: details.aktivni_ciklus.vrsta_ptica_id,
+				naziv: unosNaziv.trim() || undefined,
 				prstena_oznaka: unosOznaka.trim() || undefined,
 				prsten_redni_broj: unosRedniBroj !== '' ? Number(unosRedniBroj) : undefined,
 				datum_rodjenja: unosDatum || undefined,
-				godina: sezonaGodina,
+				godina: unosGodina !== '' ? Number(unosGodina) : undefined,
 				otac_id: otac?.id,
 				majka_id: majka?.id
 			});
@@ -236,6 +241,12 @@
 					</div>
 				{/if}
 
+				<!-- Naziv -->
+				<label class="label">
+					<span class="text-sm font-medium">{t.ptice.naziv}</span>
+					<input class="input" type="text" bind:value={unosNaziv} placeholder={t.ptice.nazivPlaceholder} disabled={unosLoading} />
+				</label>
+
 				<!-- Spol -->
 				<fieldset>
 					<legend class="text-sm font-medium mb-2">{t.ptice.spol}</legend>
@@ -261,11 +272,17 @@
 					</label>
 				</div>
 
-				<!-- Datum -->
-				<label class="label">
-					<span class="text-sm font-medium">{t.ptice.datumRodjenja}</span>
-					<input class="input" type="date" bind:value={unosDatum} disabled={unosLoading} />
-				</label>
+				<!-- Datum + Godina -->
+				<div class="grid grid-cols-2 gap-3">
+					<label class="label">
+						<span class="text-sm font-medium">{t.ptice.datumRodjenja}</span>
+						<input class="input" type="date" bind:value={unosDatum} disabled={unosLoading} />
+					</label>
+					<label class="label">
+						<span class="text-sm font-medium">{t.ptice.godinaUzgoja}</span>
+						<input class="input" type="number" min="2000" max="2099" bind:value={unosGodina} disabled={unosLoading} />
+					</label>
+				</div>
 
 				{#if unosError}
 					<aside class="alert variant-filled-error py-2 px-3 text-sm"><p>{unosError}</p></aside>

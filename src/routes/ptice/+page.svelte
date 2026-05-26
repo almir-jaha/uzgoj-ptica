@@ -26,9 +26,9 @@
 	let prefiksInput = '';
 	let prefiksSaving = false;
 
-	// Pretraga po broju prstena
-	let pretragaBroj = '';
-	let pretragaGodina = '';
+	// Pretraga po broju prstena (type=number → Svelte daje number, ne string)
+	let pretragaBroj: number | '' = '';
+	let pretragaGodina: number | '' = '';
 
 	async function loadVrstePtica() {
 		const local = await db.vrsta_ptica.toArray();
@@ -104,10 +104,10 @@
 
 	$: filtriranePtice = bazaPtica.filter((p) => {
 		const brojOk = pretragaBroj === '' ||
-			(p.prsten_redni_broj != null && String(p.prsten_redni_broj) === pretragaBroj.trim());
+			(p.prsten_redni_broj != null && p.prsten_redni_broj === Number(pretragaBroj));
 		const godinaOk = pretragaGodina === '' ||
-			String(p.godina) === pretragaGodina.trim() ||
-			(p.datum_rodjenja?.startsWith(pretragaGodina.trim()));
+			p.godina === Number(pretragaGodina) ||
+			p.datum_rodjenja?.startsWith(String(pretragaGodina));
 		return brojOk && godinaOk;
 	});
 
