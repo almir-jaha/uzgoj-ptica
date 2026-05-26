@@ -347,6 +347,7 @@
 				<KavezKartica
 					{details}
 					faze={$faze}
+					svePtice={$ptice}
 					readonly={!!pregledArhive}
 					on:kliknut={() => !pregledArhive && (aktivniKavezDetails = details)}
 				/>

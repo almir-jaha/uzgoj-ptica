@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { getCurrentPhase, getDaysUntilNextPhase } from '$lib/stores/ciklus';
-	import type { KavezWithDetails, FazaCiklusa } from '$lib/db/schema';
+	import type { KavezWithDetails, FazaCiklusa, Ptica } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
 
 	export let details: KavezWithDetails;
 	export let faze: FazaCiklusa[] = [];
+	export let svePtice: Ptica[] = [];
 	export let readonly = false;
 
 	const dispatch = createEventDispatcher<{ kliknut: void }>();
@@ -35,11 +36,22 @@
 		details.aktivni_ciklus?.par?.ptica2?.prstena_oznaka ||
 		'?';
 
+	$: ptica1Id = details.aktivni_ciklus?.par?.ptica1?.id;
+	$: ptica2Id = details.aktivni_ciklus?.par?.ptica2?.id;
+	$: mladiCount = svePtice.filter(
+		(p) =>
+			p.id !== ptica1Id &&
+			p.id !== ptica2Id &&
+			((p.otac_id === ptica1Id && p.majka_id === ptica2Id) ||
+				(p.otac_id === ptica2Id && p.majka_id === ptica1Id) ||
+				(p.otac_id === ptica1Id && !ptica2Id) ||
+				(p.otac_id === ptica2Id && !ptica1Id))
+	).length;
+
+	// Boja bordera: alarm > boja faze > siva (prazan)
 	$: borderColor = isAlarm
 		? '#ef4444'
-		: details.status === 'aktivan'
-			? '#22c55e'
-			: '#64748b';
+		: trenutnaFaza?.boja ?? (details.status === 'aktivan' ? '#22c55e' : '#64748b');
 
 	function formatDatum(datum: string): string {
 		return new Date(datum).toLocaleDateString('hr-BA', { day: '2-digit', month: '2-digit' });
@@ -72,10 +84,15 @@
 			<p class="text-xs text-surface-400 text-center mt-auto">↑ {t.kavezi.pokreniCiklus}</p>
 		{/if}
 	{:else}
-		<!-- Par -->
-		<p class="text-xs font-medium truncate text-surface-700-200-token">
-			{ptica1Label} / {ptica2Label}
-		</p>
+		<!-- Par + broj mladih -->
+		<div class="flex items-center gap-1 min-w-0">
+			<p class="text-xs font-medium truncate text-surface-700-200-token flex-1">
+				{ptica1Label} / {ptica2Label}
+			</p>
+			{#if mladiCount > 0}
+				<span class="text-xs shrink-0 font-semibold text-surface-500">🐣{mladiCount}</span>
+			{/if}
+		</div>
 
 		<!-- Traka faza -->
 		{#if fazeZaVrstu.length > 0}
@@ -91,8 +108,11 @@
 
 		<!-- Trenutna faza + dani -->
 		{#if trenutnaFaza}
-			<div class="flex items-center justify-between">
-				<span class="text-xs font-medium truncate" style="color: {trenutnaFaza.boja}">
+			<div class="flex items-center justify-between gap-1">
+				<span
+					class="text-xs font-semibold px-1.5 py-0.5 rounded truncate text-white leading-tight"
+					style="background-color: {trenutnaFaza.boja}"
+				>
 					{trenutnaFaza.naziv}
 				</span>
 				{#if daniDo !== null}
