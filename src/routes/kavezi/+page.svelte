@@ -17,7 +17,7 @@
 	import { parovi, loadParovi } from '$lib/stores/parovi';
 	import { ciklusi, faze, loadCiklusi, loadFaze } from '$lib/stores/ciklus';
 	import { ptice, loadPtice } from '$lib/stores/ptice';
-	import { listenToKavezi, listenToCiklusi, unsubscribe } from '$lib/supabase/realtime';
+	import { listenToKavezi, listenToCiklusi, listenToPtice, unsubscribe } from '$lib/supabase/realtime';
 	import { getKavezWithDetails } from '$lib/db/dexie';
 	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
 	import type { KavezWithDetails } from '$lib/db/schema';
@@ -34,6 +34,7 @@
 	let kaveziDetails: KavezWithDetails[] = [];
 	let kavezChannel: RealtimeChannel | null = null;
 	let ciklusChannel: RealtimeChannel | null = null;
+	let pticeChannel: RealtimeChannel | null = null;
 	let pageLoading = true;
 
 	let novaSezonaOpen = false;
@@ -51,15 +52,20 @@
 			.sort((a, b) => a.oznaka - b.oznaka);
 	}
 
-	async function pokreniRealtime(sezonaId: string) {
+	async function pokreniRealtime(sezonaId: string, userId: string) {
 		if (kavezChannel) unsubscribe(kavezChannel);
 		if (ciklusChannel) unsubscribe(ciklusChannel);
+		if (pticeChannel) unsubscribe(pticeChannel);
 		kavezChannel = listenToKavezi(sezonaId, async () => {
 			await loadKavezi(sezonaId);
 			await ucitajDetalje();
 		});
 		ciklusChannel = listenToCiklusi(sezonaId, async () => {
 			await loadCiklusi(sezonaId);
+			await ucitajDetalje();
+		});
+		pticeChannel = listenToPtice(userId, async () => {
+			await loadPtice(userId);
 			await ucitajDetalje();
 		});
 	}
@@ -80,7 +86,7 @@
 		])
 			.then(async () => {
 				await ucitajDetalje();
-				if (realtime) await pokreniRealtime(sezonaId);
+				if (realtime) await pokreniRealtime(sezonaId, userId);
 			})
 			.catch(console.error);
 	}
@@ -138,6 +144,7 @@
 	onDestroy(() => {
 		if (kavezChannel) unsubscribe(kavezChannel);
 		if (ciklusChannel) unsubscribe(ciklusChannel);
+		if (pticeChannel) unsubscribe(pticeChannel);
 	});
 
 	// Switcher: promijeni sezonu za pregled

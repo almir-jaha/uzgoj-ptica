@@ -51,6 +51,22 @@ export function listenToCiklusi(sezonaId: string, callback: Callback): RealtimeC
     .subscribe();
 }
 
+export function listenToPtice(userId: string, callback: Callback): RealtimeChannel {
+  return supabase
+    .channel(`ptice:${userId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'ptice',
+        filter: `user_id=eq.${userId}`
+      },
+      callback
+    )
+    .subscribe();
+}
+
 export function unsubscribe(channel: RealtimeChannel) {
   supabase.removeChannel(channel);
 }

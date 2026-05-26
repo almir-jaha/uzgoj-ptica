@@ -100,13 +100,15 @@
 	on:click={() => dispatch('zatvori')}
 ></div>
 
-<!-- Bottom sheet -->
+<!-- Wrapper: bottom sheet na mobile, centar na desktop -->
+<div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
+<!-- Sheet -->
 <div
-	class="fixed bottom-0 left-0 right-0 z-50 bg-surface-100-800-token rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col"
+	class="w-full sm:w-[420px] pointer-events-auto bg-surface-100-800-token rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[85vh] flex flex-col"
 	transition:fly={{ y: 400, duration: 280 }}
 >
-	<!-- Handle -->
-	<div class="flex justify-center pt-3 pb-1 shrink-0">
+	<!-- Handle (samo na mobile) -->
+	<div class="flex justify-center pt-3 pb-1 shrink-0 sm:hidden">
 		<div class="w-10 h-1 rounded-full bg-surface-300-600-token"></div>
 	</div>
 
@@ -279,4 +281,5 @@
 			</div>
 		{/if}
 	</div>
+</div>
 </div>
