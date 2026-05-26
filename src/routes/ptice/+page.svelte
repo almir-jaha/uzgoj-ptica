@@ -5,6 +5,7 @@
 	import { user } from '$lib/stores/auth';
 	import { ptice, pticeMuzjaci, pticeSenke, pticaLoading, loadPtice } from '$lib/stores/ptice';
 	import { postavke, loadPostavke, savePostavke } from '$lib/stores/postavke';
+	import { aktivnaSezona } from '$lib/stores/sezona';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
@@ -12,7 +13,7 @@
 	import NovaPticaModal from '$lib/components/NovaPticaModal.svelte';
 	import { t } from '$lib/i18n';
 
-	type Filter = 'sve' | 'muzjaci' | 'zenke' | 'mladi' | 'odrasli';
+	type Filter = 'sve' | 'muzjaci' | 'zenke' | 'ovaSezone' | 'ostale';
 
 	let vrstePtica: VrstaPtica[] = [];
 	let filter: Filter = 'sve';
@@ -86,22 +87,26 @@
 		modalOtvoren = true;
 	}
 
-	// Mladi = ptice s unesenim roditeljima (uzgojene), Odrasli = bez roditelja
-	$: pticeMladi = $ptice.filter((p) => !!(p.otac_id || p.majka_id));
-	$: pticeOdrasli = $ptice.filter((p) => !p.otac_id && !p.majka_id);
+	// Godina aktivne sezone (ili tekuća godina ako nema sezone)
+	$: tekucaGodina = $aktivnaSezona?.godina ?? new Date().getFullYear();
+
+	// Ove sezone = ptice s unesenom godinom koja odgovara aktivnoj sezoni
+	$: pticeOveSezone = $ptice.filter((p) => p.godina === tekucaGodina);
+	$: pticeOstale = $ptice.filter((p) => p.godina !== tekucaGodina);
 
 	// Filtrirane + pretražene ptice
 	$: bazaPtica =
-		filter === 'muzjaci' ? $pticeMuzjaci :
-		filter === 'zenke'   ? $pticeSenke :
-		filter === 'mladi'   ? pticeMladi :
-		filter === 'odrasli' ? pticeOdrasli :
+		filter === 'muzjaci'   ? $pticeMuzjaci :
+		filter === 'zenke'     ? $pticeSenke :
+		filter === 'ovaSezone' ? pticeOveSezone :
+		filter === 'ostale'    ? pticeOstale :
 		$ptice;
 
 	$: filtriranePtice = bazaPtica.filter((p) => {
 		const brojOk = pretragaBroj === '' ||
 			(p.prsten_redni_broj != null && String(p.prsten_redni_broj) === pretragaBroj.trim());
 		const godinaOk = pretragaGodina === '' ||
+			String(p.godina) === pretragaGodina.trim() ||
 			(p.datum_rodjenja?.startsWith(pretragaGodina.trim()));
 		return brojOk && godinaOk;
 	});
@@ -133,9 +138,7 @@
 		return spol === 'M' ? '♂' : spol === 'Ž' ? '♀' : '?';
 	}
 
-	function postaviFilter(val: string) {
-		filter = val as Filter;
-	}
+	function postaviFilter(val: string) { filter = val as Filter; }
 </script>
 
 <svelte:head>
@@ -195,11 +198,11 @@
 	{#if !loading && $ptice.length > 0}
 		<div class="flex gap-2 flex-wrap">
 			{#each [
-				['sve',      t.ptice.filtar.sve,     $ptice.length],
-				['muzjaci',  t.ptice.filtar.muzjaci,  $pticeMuzjaci.length],
-				['zenke',    t.ptice.filtar.zenke,    $pticeSenke.length],
-				['mladi',    t.ptice.filtar.mladi,    pticeMladi.length],
-				['odrasli',  t.ptice.filtar.odrasli,  pticeOdrasli.length]
+				['sve',        t.ptice.filtar.sve,           $ptice.length],
+				['muzjaci',    t.ptice.filtar.muzjaci,        $pticeMuzjaci.length],
+				['zenke',      t.ptice.filtar.zenke,          $pticeSenke.length],
+				['ovaSezone',  `🐣 ${tekucaGodina}`,          pticeOveSezone.length],
+				['ostale',     t.ptice.filtar.ostale,         pticeOstale.length]
 			] as [val, label, count] (val)}
 				<button
 					class="btn btn-sm {filter === val ? 'variant-filled-primary' : 'variant-soft'}"
@@ -268,7 +271,7 @@
 		<div class="space-y-2">
 			{#each filtriranePtice as ptica (ptica.id)}
 				<div class="card p-4 border-l-4"
-					style="border-left-color: {(ptica.otac_id || ptica.majka_id) ? '#22c55e' : 'transparent'}"
+					style="border-left-color: {ptica.godina === tekucaGodina ? '#22c55e' : 'transparent'}"
 				>
 					<div class="flex items-start gap-3">
 						<!-- Spol badge -->
@@ -301,6 +304,8 @@
 								{/if}
 								{#if ptica.datum_rodjenja}
 									<span>🎂 {formatDatum(ptica.datum_rodjenja)}</span>
+								{:else if ptica.godina}
+									<span>📅 {ptica.godina}</span>
 								{/if}
 							</div>
 

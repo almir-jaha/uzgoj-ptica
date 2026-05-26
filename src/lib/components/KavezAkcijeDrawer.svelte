@@ -10,6 +10,7 @@
 	export let svePtice: Ptica[] = [];
 	export let prstenPrefiks = '';
 	export let userId: string;
+	export let sezonaGodina: number = new Date().getFullYear();
 
 	type Pogled = 'akcije' | 'mladi' | 'unos';
 	let pogled: Pogled = 'akcije';
@@ -79,6 +80,7 @@
 				prstena_oznaka: unosOznaka.trim() || undefined,
 				prsten_redni_broj: unosRedniBroj !== '' ? Number(unosRedniBroj) : undefined,
 				datum_rodjenja: unosDatum || undefined,
+				godina: sezonaGodina,
 				otac_id: otac?.id,
 				majka_id: majka?.id
 			});

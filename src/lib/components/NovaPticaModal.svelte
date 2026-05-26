@@ -17,9 +17,16 @@
 	let prstenaOznaka = editPtica?.prstena_oznaka ?? (editPtica ? '' : prstenPrefiks);
 	let prstenRedniBroj: number | '' = editPtica?.prsten_redni_broj ?? '';
 	let datumRodjenja = editPtica?.datum_rodjenja ?? '';
+	let godina: number | '' = editPtica?.godina ?? '';
 	let otacId = editPtica?.otac_id ?? '';
 	let majkaId = editPtica?.majka_id ?? '';
 	let napomena = editPtica?.napomena ?? '';
+
+	// Auto-popuni godinu iz datuma rodjenja (samo ako godina još nije unesena)
+	$: if (datumRodjenja && godina === '') {
+		const y = new Date(datumRodjenja).getFullYear();
+		if (y > 2000) godina = y;
+	}
 	let loading = false;
 	let errorMsg = '';
 	let rodovnikOtvoren = !!(editPtica?.otac_id || editPtica?.majka_id);
@@ -43,6 +50,7 @@
 				prstena_oznaka: prstenaOznaka.trim() || undefined,
 				prsten_redni_broj: prstenRedniBroj !== '' ? Number(prstenRedniBroj) : undefined,
 				datum_rodjenja: datumRodjenja || undefined,
+				godina: godina !== '' ? Number(godina) : undefined,
 				otac_id: otacId || undefined,
 				majka_id: majkaId || undefined,
 				napomena: napomena.trim() || undefined
@@ -161,11 +169,25 @@
 					</label>
 				</div>
 
-				<!-- Datum rođenja -->
-				<label class="label">
-					<span class="text-sm font-medium">{t.ptice.datumRodjenja}</span>
-					<input class="input" type="date" bind:value={datumRodjenja} disabled={loading} />
-				</label>
+				<!-- Datum rođenja + godina uzgoja -->
+				<div class="grid grid-cols-2 gap-3">
+					<label class="label">
+						<span class="text-sm font-medium">{t.ptice.datumRodjenja}</span>
+						<input class="input" type="date" bind:value={datumRodjenja} disabled={loading} />
+					</label>
+					<label class="label">
+						<span class="text-sm font-medium">{t.ptice.godinaUzgoja}</span>
+						<input
+							class="input"
+							type="number"
+							min="2000"
+							max="2099"
+							bind:value={godina}
+							placeholder={t.ptice.godinaUzgojaPlaceholder}
+							disabled={loading}
+						/>
+					</label>
+				</div>
 
 				<!-- Rodovnik (collapsible) -->
 				<div class="space-y-2">

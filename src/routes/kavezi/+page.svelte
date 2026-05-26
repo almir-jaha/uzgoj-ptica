@@ -402,6 +402,7 @@
 		faze={$faze}
 		svePtice={$ptice}
 		prstenPrefiks={$postavke?.prsten_prefiks ?? ''}
+		sezonaGodina={$prikazanaSezona?.godina ?? new Date().getFullYear()}
 		userId={$user.id}
 		on:zatvori={() => (aktivniKavezDetails = null)}
 		on:pokreniCiklus={() => {

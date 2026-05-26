@@ -44,6 +44,9 @@ export class UzgojPticaDB extends Dexie {
       ptice: 'id, user_id, vrsta_ptica_id, otac_id, majka_id, prsten_redni_broj',
       user_settings: 'user_id'
     });
+    this.version(3).stores({
+      ptice: 'id, user_id, vrsta_ptica_id, otac_id, majka_id, prsten_redni_broj, godina'
+    });
   }
 }
 

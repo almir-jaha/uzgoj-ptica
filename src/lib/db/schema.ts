@@ -23,6 +23,7 @@ export interface Ptica {
   otac_id?: string; // nullable - ako je kupljena
   majka_id?: string; // nullable - ako je kupljena
   datum_rodjenja?: string;
+  godina?: number;
   napomena?: string;
   created_at: string;
   updated_at: string;
