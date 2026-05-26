@@ -150,6 +150,8 @@
 		today = new Date().toISOString().split('T')[0];
 		obavljaDatum = today;
 
+		await initNotifStatus();
+
 		const currentUser = get(user);
 		if (!currentUser) return;
 
@@ -168,7 +170,6 @@
 		await lokalnoPodaci(sezona.id, currentUser.id);
 		await ucitajAktivnosti();
 		loading = false;
-		await initNotifStatus();
 
 		// Background: bez loadSezone — izaziva race condition na parovi/aktivnosti stranicama
 		Promise.all([
