@@ -22,8 +22,6 @@
 
 		// Registracija Service Workera
 		if ('serviceWorker' in navigator) {
-			// Kad novi SW preuzme kontrolu — reload da se učita nova index.html
-			// Bez ovoga stari JS hashevi postaju 404 i app se ruši
 			let reloadPending = false;
 			navigator.serviceWorker.addEventListener('controllerchange', () => {
 				if (reloadPending) return;
@@ -48,15 +46,21 @@
 		}
 	});
 
-	// Preusmjeri prijavljenog korisnika sa login stranice
 	$: if (!authLoading && $isAuthenticated && $page.url.pathname === '/') {
 		goto('/kavezi');
 	}
 
-	// Preusmjeri neprijavljenog korisnika sa zaštićenih ruta
 	$: if (!authLoading && !$isAuthenticated && $page.url.pathname !== '/') {
 		goto('/');
 	}
+
+	const navLinks = [
+		{ href: '/kavezi',      icon: '🏠', label: 'Kavezi' },
+		{ href: '/parovi',      icon: '🫂', label: 'Parovi' },
+		{ href: '/ptice',       icon: '🐦', label: 'Ptice' },
+		{ href: '/aktivnosti',  icon: '📋', label: 'Akt.' },
+		{ href: '/statistike',  icon: '📊', label: 'Stat.' }
+	];
 </script>
 
 <Toast position="br" />
@@ -69,11 +73,11 @@
 		</div>
 	</div>
 {:else if $isAuthenticated}
-	<AppShell>
+	<AppShell slotPageContent="pb-20 sm:pb-0">
 		<svelte:fragment slot="header">
 			<AppBar padding="px-4 py-2" background="bg-surface-100-800-token">
 				<svelte:fragment slot="lead">
-					<span class="text-lg font-bold tracking-tight">{t.app.name}</span>
+					<span class="text-lg font-bold tracking-tight">{t.app.nameShort}</span>
 					{#if !$isOnline}
 						<span class="badge variant-filled-warning text-xs ml-2" title={t.app.offlineTitle}>
 							{t.app.offlineBadge}
@@ -81,47 +85,21 @@
 					{/if}
 				</svelte:fragment>
 				<svelte:fragment slot="trail">
-					<nav class="flex items-center gap-1">
-						<a
-							href="/kavezi"
-							class="btn btn-sm {$page.url.pathname.startsWith('/kavezi')
-								? 'variant-filled-primary'
-								: 'variant-ghost-surface'}"
-						>
-							{t.nav.kavezi}
-						</a>
-						<a
-							href="/parovi"
-							class="btn btn-sm {$page.url.pathname.startsWith('/parovi')
-								? 'variant-filled-primary'
-								: 'variant-ghost-surface'}"
-						>
-							{t.nav.parovi}
-						</a>
-						<a
-							href="/ptice"
-							class="btn btn-sm {$page.url.pathname.startsWith('/ptice')
-								? 'variant-filled-primary'
-								: 'variant-ghost-surface'}"
-						>
-							{t.nav.ptice}
-						</a>
-						<a
-							href="/aktivnosti"
-							class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti')
-								? 'variant-filled-primary'
-								: 'variant-ghost-surface'}"
-						>
-							{t.nav.aktivnosti}
-						</a>
-						<a
-							href="/statistike"
-							class="btn btn-sm {$page.url.pathname.startsWith('/statistike')
-								? 'variant-filled-primary'
-								: 'variant-ghost-surface'}"
-						>
-							{t.nav.statistike}
-						</a>
+					<!-- Desktop nav -->
+					<nav class="hidden sm:flex items-center gap-1">
+						<a href="/kavezi" class="btn btn-sm {$page.url.pathname.startsWith('/kavezi') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.kavezi}</a>
+						<a href="/parovi" class="btn btn-sm {$page.url.pathname.startsWith('/parovi') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.parovi}</a>
+						<a href="/ptice"  class="btn btn-sm {$page.url.pathname.startsWith('/ptice')  ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.ptice}</a>
+						<a href="/aktivnosti" class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.aktivnosti}</a>
+						<a href="/statistike" class="btn btn-sm {$page.url.pathname.startsWith('/statistike') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.statistike}</a>
+						{#if isAdmin($user?.email)}
+							<a href="/admin" class="btn btn-sm {$page.url.pathname.startsWith('/admin') ? 'variant-filled-warning' : 'variant-ghost-warning'}" title="Administracija">🔧</a>
+						{/if}
+						<button class="btn btn-sm variant-ghost-surface ml-1" on:click={auth.signOut} title={t.nav.odjavaTitle}>⎋</button>
+					</nav>
+
+					<!-- Mobile: samo sign out i eventualno admin -->
+					<div class="flex sm:hidden items-center gap-1">
 						{#if isAdmin($user?.email)}
 							<a
 								href="/admin"
@@ -134,19 +112,38 @@
 							</a>
 						{/if}
 						<button
-							class="btn btn-sm variant-ghost-surface ml-1"
+							class="btn btn-sm variant-ghost-surface"
 							on:click={auth.signOut}
 							title={t.nav.odjavaTitle}
 						>
 							<span>⎋</span>
 						</button>
-					</nav>
+					</div>
 				</svelte:fragment>
 			</AppBar>
 		</svelte:fragment>
 
 		<slot />
 	</AppShell>
+
+	<!-- Mobile bottom navigation -->
+	<nav
+		class="fixed bottom-0 left-0 right-0 z-30 flex sm:hidden bg-surface-100-800-token border-t border-surface-300-600-token"
+		style="padding-bottom: env(safe-area-inset-bottom, 0px)"
+	>
+		{#each navLinks as link}
+			<a
+				href={link.href}
+				class="flex-1 flex flex-col items-center pt-2 pb-1 gap-0.5 text-[10px] font-medium transition-colors
+					{$page.url.pathname.startsWith(link.href)
+						? 'text-primary-500'
+						: 'text-surface-400 dark:text-surface-500'}"
+			>
+				<span class="text-2xl leading-none">{link.icon}</span>
+				<span>{link.label}</span>
+			</a>
+		{/each}
+	</nav>
 {:else}
 	<slot />
 {/if}

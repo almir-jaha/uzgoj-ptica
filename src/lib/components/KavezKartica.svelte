@@ -56,6 +56,14 @@
 	function formatDatum(datum: string): string {
 		return new Date(datum).toLocaleDateString('hr-BA', { day: '2-digit', month: '2-digit' });
 	}
+
+	// Crni tekst za svjetle boje, bijeli za tamne
+	function chipTextColor(hex: string): string {
+		const r = parseInt(hex.slice(1, 3), 16) / 255;
+		const g = parseInt(hex.slice(3, 5), 16) / 255;
+		const b = parseInt(hex.slice(5, 7), 16) / 255;
+		return 0.299 * r + 0.587 * g + 0.114 * b > 0.55 ? '#000000' : '#ffffff';
+	}
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -110,8 +118,8 @@
 		{#if trenutnaFaza}
 			<div class="flex items-center justify-between gap-1">
 				<span
-					class="text-xs font-semibold px-1.5 py-0.5 rounded truncate text-white leading-tight"
-					style="background-color: {trenutnaFaza.boja}"
+					class="text-xs font-semibold px-1.5 py-0.5 rounded truncate leading-tight"
+					style="background-color: {trenutnaFaza.boja}; color: {chipTextColor(trenutnaFaza.boja)}"
 				>
 					{trenutnaFaza.naziv}
 				</span>
