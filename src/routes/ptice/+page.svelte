@@ -26,9 +26,13 @@
 	let prefiksInput = '';
 	let prefiksSaving = false;
 
-	// Pretraga po broju prstena (type=number → Svelte daje number, ne string)
-	let pretragaBroj: number | '' = '';
-	let pretragaGodina: number | '' = '';
+	let pretragaBroj = '';
+	let pretragaGodina = '';
+
+	function resetujPretragu() {
+		pretragaBroj = '';
+		pretragaGodina = '';
+	}
 
 	async function loadVrstePtica() {
 		const local = await db.vrsta_ptica.toArray();
@@ -102,12 +106,16 @@
 		filter === 'ostale'    ? pticeOstale :
 		$ptice;
 
+	$: pretragaAktivna = pretragaBroj.trim() !== '' || pretragaGodina.trim() !== '';
+
 	$: filtriranePtice = bazaPtica.filter((p) => {
-		const brojOk = pretragaBroj === '' ||
-			(p.prsten_redni_broj != null && p.prsten_redni_broj === Number(pretragaBroj));
-		const godinaOk = pretragaGodina === '' ||
-			p.godina === Number(pretragaGodina) ||
-			p.datum_rodjenja?.startsWith(String(pretragaGodina));
+		const broj = pretragaBroj.trim();
+		const godina = pretragaGodina.trim();
+		const brojOk = broj === '' ||
+			(p.prsten_redni_broj != null && String(p.prsten_redni_broj) === broj);
+		const godinaOk = godina === '' ||
+			String(p.godina ?? '') === godina ||
+			(p.datum_rodjenja?.startsWith(godina) ?? false);
 		return brojOk && godinaOk;
 	});
 
@@ -217,13 +225,13 @@
 		</div>
 
 		<!-- Pretraga po prstenu -->
-		<div class="flex gap-2">
+		<div class="flex gap-2 items-end">
 			<label class="label flex-1">
 				<span class="text-xs text-surface-500">{t.ptice.pretragaPoRednomBroju}</span>
 				<input
 					class="input input-sm"
-					type="number"
-					min="1"
+					type="text"
+					inputmode="numeric"
 					bind:value={pretragaBroj}
 					placeholder="1, 2, 3..."
 				/>
@@ -232,13 +240,19 @@
 				<span class="text-xs text-surface-500">{t.ptice.pretragaPoGodini}</span>
 				<input
 					class="input input-sm"
-					type="number"
-					min="2000"
-					max="2099"
+					type="text"
+					inputmode="numeric"
 					bind:value={pretragaGodina}
 					placeholder="2026"
 				/>
 			</label>
+			{#if pretragaAktivna}
+				<button
+					class="btn btn-sm variant-ghost-error mb-0.5 shrink-0"
+					on:click={resetujPretragu}
+					title="Resetuj pretragu"
+				>✕</button>
+			{/if}
 		</div>
 	{/if}
 
