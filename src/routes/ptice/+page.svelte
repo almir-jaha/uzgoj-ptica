@@ -22,14 +22,9 @@
 	let modalOtvoren = false;
 	let editPtica: Ptica | null = null;
 
-	// Postavke / prefiks
-	let editPrefiks = false;
-	let prefiksInput = '';
-	let prefiksSaving = false;
-
 	// Uzgajivačnica
 	let editUzgajivac = false;
-	let uzgajivacInput = { naziv_uzgajivacnice: '', ime_prezime: '', adresa: '', telefon: '' };
+	let uzgajivacInput = { naziv_uzgajivacnice: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '' };
 	let uzgajivacSaving = false;
 	let uzgajivacSlikaUrl: string | undefined;
 	let uzgajivacSlikaKomponenta: SlikaUnos;
@@ -70,12 +65,12 @@
 		loadPtice(currentUser.id);
 		loadVrstePtica();
 		await loadPostavke(currentUser.id);
-		prefiksInput = $postavke?.prsten_prefiks ?? '';
 		uzgajivacInput = {
 			naziv_uzgajivacnice: $postavke?.naziv_uzgajivacnice ?? '',
 			ime_prezime: $postavke?.ime_prezime ?? '',
 			adresa: $postavke?.adresa ?? '',
-			telefon: $postavke?.telefon ?? ''
+			telefon: $postavke?.telefon ?? '',
+			prsten_prefiks: $postavke?.prsten_prefiks ?? ''
 		};
 		uzgajivacSlikaUrl = $postavke?.slika_url;
 	});
@@ -89,19 +84,11 @@
 			: uzgajivacSlikaUrl;
 		await savePostavke(currentUser.id, {
 			...uzgajivacInput,
+			prsten_prefiks: uzgajivacInput.prsten_prefiks.trim(),
 			slika_url: finalSlikaUrl
 		});
 		uzgajivacSaving = false;
 		editUzgajivac = false;
-	}
-
-	async function sacuvajPrefiks() {
-		const currentUser = get(user);
-		if (!currentUser) return;
-		prefiksSaving = true;
-		await savePostavke(currentUser.id, { prsten_prefiks: prefiksInput.trim() });
-		prefiksSaving = false;
-		editPrefiks = false;
 	}
 
 	async function handleSacuvano() {
@@ -195,43 +182,8 @@
 		{/if}
 	</div>
 
-	<!-- Postavke prefiksa -->
+	<!-- Uzgajivačnica -->
 	{#if !loading}
-		<div class="card p-3 variant-soft-surface space-y-2">
-			<div class="flex items-center justify-between gap-2">
-				<div>
-					<p class="text-sm font-medium">{t.ptice.prsten_prefiks}</p>
-					{#if !editPrefiks}
-						<p class="text-xs text-surface-500">
-							{$postavke?.prsten_prefiks || '—'}
-						</p>
-					{/if}
-				</div>
-				{#if !editPrefiks}
-					<button class="btn btn-sm variant-ghost" on:click={() => { editPrefiks = true; prefiksInput = $postavke?.prsten_prefiks ?? ''; }}>
-						✏️
-					</button>
-				{/if}
-			</div>
-			{#if editPrefiks}
-				<div class="flex gap-2">
-					<input
-						class="input input-sm flex-1"
-						type="text"
-						bind:value={prefiksInput}
-						placeholder={t.ptice.prsten_prefiksPlaceholder}
-					/>
-					<button class="btn btn-sm variant-filled-primary" on:click={sacuvajPrefiks} disabled={prefiksSaving}>
-						{#if prefiksSaving}<span class="animate-spin mr-1">↻</span>{/if}
-						{t.ptice.sacuvajPostavke}
-					</button>
-					<button class="btn btn-sm variant-ghost" on:click={() => (editPrefiks = false)}>✕</button>
-				</div>
-				<p class="text-xs text-surface-400">{t.ptice.prsten_prefiksOpis}</p>
-			{/if}
-		</div>
-
-		<!-- Uzgajivačnica -->
 		<div class="card p-3 variant-soft-surface space-y-2">
 			<div class="flex items-center justify-between gap-2">
 				<p class="text-sm font-medium">{t.uzgajivac.title}</p>
@@ -242,7 +194,8 @@
 							naziv_uzgajivacnice: $postavke?.naziv_uzgajivacnice ?? '',
 							ime_prezime: $postavke?.ime_prezime ?? '',
 							adresa: $postavke?.adresa ?? '',
-							telefon: $postavke?.telefon ?? ''
+							telefon: $postavke?.telefon ?? '',
+							prsten_prefiks: $postavke?.prsten_prefiks ?? ''
 						};
 						uzgajivacSlikaUrl = $postavke?.slika_url;
 					}}>✏️</button>
@@ -260,7 +213,8 @@
 						{#if $postavke?.ime_prezime}<p>{$postavke.ime_prezime}</p>{/if}
 						{#if $postavke?.adresa}<p>{$postavke.adresa}</p>{/if}
 						{#if $postavke?.telefon}<p>{$postavke.telefon}</p>{/if}
-						{#if !$postavke?.naziv_uzgajivacnice && !$postavke?.ime_prezime}<p>—</p>{/if}
+						{#if $postavke?.prsten_prefiks}<p>📍 {t.ptice.prsten_prefiks}: <span class="font-mono">{$postavke.prsten_prefiks}</span></p>{/if}
+						{#if !$postavke?.naziv_uzgajivacnice && !$postavke?.ime_prezime && !$postavke?.prsten_prefiks}<p>—</p>{/if}
 					</div>
 				</div>
 			{:else}
@@ -291,6 +245,11 @@
 						<label class="label">
 							<span class="text-xs font-medium">{t.uzgajivac.telefon}</span>
 							<input class="input input-sm" type="tel" bind:value={uzgajivacInput.telefon} placeholder={t.uzgajivac.telefonPlaceholder} disabled={uzgajivacSaving} />
+						</label>
+						<label class="label sm:col-span-2">
+							<span class="text-xs font-medium">{t.ptice.prsten_prefiks}</span>
+							<input class="input input-sm" type="text" bind:value={uzgajivacInput.prsten_prefiks} placeholder={t.ptice.prsten_prefiksPlaceholder} disabled={uzgajivacSaving} />
+							<span class="text-xs text-surface-400 mt-0.5">{t.ptice.prsten_prefiksOpis}</span>
 						</label>
 					</div>
 					<div class="flex gap-2 justify-end">
