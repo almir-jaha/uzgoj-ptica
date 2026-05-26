@@ -4,6 +4,7 @@
 
 	import { user } from '$lib/stores/auth';
 	import { ptice, pticeMuzjaci, pticeSenke, pticaLoading, loadPtice } from '$lib/stores/ptice';
+	import { postavke, loadPostavke, savePostavke } from '$lib/stores/postavke';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
@@ -18,6 +19,15 @@
 	let loading = true;
 	let modalOtvoren = false;
 	let editPtica: Ptica | null = null;
+
+	// Postavke / prefiks
+	let editPrefiks = false;
+	let prefiksInput = '';
+	let prefiksSaving = false;
+
+	// Pretraga po broju prstena
+	let pretragaBroj = '';
+	let pretragaGodina = '';
 
 	async function loadVrstePtica() {
 		const local = await db.vrsta_ptica.toArray();
@@ -36,7 +46,6 @@
 		const currentUser = get(user);
 		if (!currentUser) return;
 
-		// Brzo iz Dexie
 		const [localPtice, localVrste] = await Promise.all([
 			db.ptice.where('user_id').equals(currentUser.id).toArray(),
 			db.vrsta_ptica.toArray()
@@ -45,10 +54,20 @@
 		vrstePtica = localVrste.sort((a, b) => a.naziv.localeCompare(b.naziv));
 		loading = false;
 
-		// Background Supabase sync
 		loadPtice(currentUser.id);
 		loadVrstePtica();
+		await loadPostavke(currentUser.id);
+		prefiksInput = $postavke?.prsten_prefiks ?? '';
 	});
+
+	async function sacuvajPrefiks() {
+		const currentUser = get(user);
+		if (!currentUser) return;
+		prefiksSaving = true;
+		await savePostavke(currentUser.id, { prsten_prefiks: prefiksInput.trim() });
+		prefiksSaving = false;
+		editPrefiks = false;
+	}
 
 	async function handleSacuvano() {
 		modalOtvoren = false;
@@ -67,11 +86,18 @@
 		modalOtvoren = true;
 	}
 
-	// Filtrirane ptice
-	$: filtriranePtice =
+	// Filtrirane + pretražene ptice
+	$: bazaPtica =
 		filter === 'muzjaci' ? $pticeMuzjaci : filter === 'zenke' ? $pticeSenke : $ptice;
 
-	// Helpers
+	$: filtriranePtice = bazaPtica.filter((p) => {
+		const brojOk = pretragaBroj === '' ||
+			(p.prsten_redni_broj != null && String(p.prsten_redni_broj) === pretragaBroj.trim());
+		const godinaOk = pretragaGodina === '' ||
+			(p.datum_rodjenja?.startsWith(pretragaGodina.trim()));
+		return brojOk && godinaOk;
+	});
+
 	function vrstaLabel(vrstaId: string): string {
 		return vrstePtica.find((v) => v.id === vrstaId)?.naziv ?? '—';
 	}
@@ -116,9 +142,46 @@
 		{/if}
 	</div>
 
+	<!-- Postavke prefiksa -->
+	{#if !loading}
+		<div class="card p-3 variant-soft-surface space-y-2">
+			<div class="flex items-center justify-between gap-2">
+				<div>
+					<p class="text-sm font-medium">{t.ptice.prsten_prefiks}</p>
+					{#if !editPrefiks}
+						<p class="text-xs text-surface-500">
+							{$postavke?.prsten_prefiks || '—'}
+						</p>
+					{/if}
+				</div>
+				{#if !editPrefiks}
+					<button class="btn btn-sm variant-ghost" on:click={() => { editPrefiks = true; prefiksInput = $postavke?.prsten_prefiks ?? ''; }}>
+						✏️
+					</button>
+				{/if}
+			</div>
+			{#if editPrefiks}
+				<div class="flex gap-2">
+					<input
+						class="input input-sm flex-1"
+						type="text"
+						bind:value={prefiksInput}
+						placeholder={t.ptice.prsten_prefiksPlaceholder}
+					/>
+					<button class="btn btn-sm variant-filled-primary" on:click={sacuvajPrefiks} disabled={prefiksSaving}>
+						{#if prefiksSaving}<span class="animate-spin mr-1">↻</span>{/if}
+						{t.ptice.sacuvajPostavke}
+					</button>
+					<button class="btn btn-sm variant-ghost" on:click={() => (editPrefiks = false)}>✕</button>
+				</div>
+				<p class="text-xs text-surface-400">{t.ptice.prsten_prefiksOpis}</p>
+			{/if}
+		</div>
+	{/if}
+
 	<!-- Filter tabovi -->
 	{#if !loading && $ptice.length > 0}
-		<div class="flex gap-2">
+		<div class="flex gap-2 flex-wrap">
 			{#each [['sve', t.ptice.filtar.sve, $ptice.length], ['muzjaci', t.ptice.filtar.muzjaci, $pticeMuzjaci.length], ['zenke', t.ptice.filtar.zenke, $pticeSenke.length]] as [val, label, count]}
 				<button
 					class="btn btn-sm {filter === val ? 'variant-filled-primary' : 'variant-soft'}"
@@ -130,6 +193,31 @@
 					</span>
 				</button>
 			{/each}
+		</div>
+
+		<!-- Pretraga po prstenu -->
+		<div class="flex gap-2">
+			<label class="label flex-1">
+				<span class="text-xs text-surface-500">{t.ptice.pretragaPoRednomBroju}</span>
+				<input
+					class="input input-sm"
+					type="number"
+					min="1"
+					bind:value={pretragaBroj}
+					placeholder="1, 2, 3..."
+				/>
+			</label>
+			<label class="label w-28">
+				<span class="text-xs text-surface-500">{t.ptice.pretragaPoGodini}</span>
+				<input
+					class="input input-sm"
+					type="number"
+					min="2000"
+					max="2099"
+					bind:value={pretragaGodina}
+					placeholder="2026"
+				/>
+			</label>
 		</div>
 	{/if}
 
@@ -184,10 +272,12 @@
 
 							<p class="text-sm text-surface-500">{vrstaLabel(ptica.vrsta_ptica_id)}</p>
 
-							<!-- Prsten + datum u jednom redu -->
+							<!-- Prsten + redni broj + datum -->
 							<div class="flex items-center gap-3 text-xs text-surface-500 flex-wrap">
-								{#if ptica.prstena_oznaka && ptica.naziv}
-									<span>📍 {ptica.prstena_oznaka}</span>
+								{#if ptica.prstena_oznaka}
+									<span>📍 {ptica.prstena_oznaka}{ptica.prsten_redni_broj != null ? `-${ptica.prsten_redni_broj}` : ''}</span>
+								{:else if ptica.prsten_redni_broj != null}
+									<span>📍 #{ptica.prsten_redni_broj}</span>
 								{/if}
 								{#if ptica.datum_rodjenja}
 									<span>🎂 {formatDatum(ptica.datum_rodjenja)}</span>
@@ -220,6 +310,7 @@
 		userId={$user.id}
 		{vrstePtica}
 		{editPtica}
+		prstenPrefiks={$postavke?.prsten_prefiks ?? ''}
 		onClose={() => { modalOtvoren = false; editPtica = null; }}
 		onSuccess={handleSacuvano}
 	/>

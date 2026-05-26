@@ -9,7 +9,8 @@ import type {
   Ciklus,
   AktivnostCiklusa,
   Istorija,
-  OfflineAction
+  OfflineAction,
+  UserSettings
 } from './schema';
 
 export class UzgojPticaDB extends Dexie {
@@ -23,6 +24,7 @@ export class UzgojPticaDB extends Dexie {
   aktivnosti_ciklusa!: Table<AktivnostCiklusa>;
   istorija!: Table<Istorija>;
   offlineQueue!: Table<OfflineAction & { id?: number }>;
+  user_settings!: Table<UserSettings>;
 
   constructor() {
     super('UzgojPticaDB');
@@ -36,8 +38,11 @@ export class UzgojPticaDB extends Dexie {
       ciklusi: 'id, par_id, kavez_id, sezona_id, status, vrsta_ptica_id',
       aktivnosti_ciklusa: 'id, ciklus_id, faza_id, potreban_datum',
       istorija: 'id, sezona_id, tip_entiteta',
-      // ++id = auto-increment, lakše brisanje po ID-u
       offlineQueue: '++id, table, timestamp, synced'
+    });
+    this.version(2).stores({
+      ptice: 'id, user_id, vrsta_ptica_id, otac_id, majka_id, prsten_redni_broj',
+      user_settings: 'user_id'
     });
   }
 }

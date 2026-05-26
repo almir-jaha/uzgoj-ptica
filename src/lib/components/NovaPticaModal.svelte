@@ -8,12 +8,14 @@
 	export let editPtica: Ptica | null = null; // null = kreiranje, Ptica = uređivanje
 	export let onClose: () => void;
 	export let onSuccess: () => void;
+	export let prstenPrefiks: string = '';
 
 	// Popuni polja ako je mod uređivanje
 	let spol: 'M' | 'Ž' | '?' = editPtica?.spol ?? 'M';
 	let vrstaId = editPtica?.vrsta_ptica_id ?? '';
 	let naziv = editPtica?.naziv ?? '';
-	let prstenaOznaka = editPtica?.prstena_oznaka ?? '';
+	let prstenaOznaka = editPtica?.prstena_oznaka ?? (editPtica ? '' : prstenPrefiks);
+	let prstenRedniBroj: number | '' = editPtica?.prsten_redni_broj ?? '';
 	let datumRodjenja = editPtica?.datum_rodjenja ?? '';
 	let otacId = editPtica?.otac_id ?? '';
 	let majkaId = editPtica?.majka_id ?? '';
@@ -39,6 +41,7 @@
 				vrsta_ptica_id: vrstaId,
 				naziv: naziv.trim() || undefined,
 				prstena_oznaka: prstenaOznaka.trim() || undefined,
+				prsten_redni_broj: prstenRedniBroj !== '' ? Number(prstenRedniBroj) : undefined,
 				datum_rodjenja: datumRodjenja || undefined,
 				otac_id: otacId || undefined,
 				majka_id: majkaId || undefined,
@@ -121,18 +124,20 @@
 					</select>
 				</label>
 
-				<!-- Naziv i prsten -->
-				<div class="grid grid-cols-2 gap-3">
-					<label class="label">
-						<span class="text-sm font-medium">{t.ptice.naziv}</span>
-						<input
-							class="input"
-							type="text"
-							bind:value={naziv}
-							placeholder={t.ptice.nazivPlaceholder}
-							disabled={loading}
-						/>
-					</label>
+				<!-- Naziv -->
+				<label class="label">
+					<span class="text-sm font-medium">{t.ptice.naziv}</span>
+					<input
+						class="input"
+						type="text"
+						bind:value={naziv}
+						placeholder={t.ptice.nazivPlaceholder}
+						disabled={loading}
+					/>
+				</label>
+
+				<!-- Prsten: oznaka + redni broj -->
+				<div class="grid grid-cols-[1fr_auto] gap-3 items-end">
 					<label class="label">
 						<span class="text-sm font-medium">{t.ptice.prstenaOznaka}</span>
 						<input
@@ -140,6 +145,17 @@
 							type="text"
 							bind:value={prstenaOznaka}
 							placeholder={t.ptice.prstenaOznakaPlaceholder}
+							disabled={loading}
+						/>
+					</label>
+					<label class="label w-24">
+						<span class="text-sm font-medium">{t.ptice.prstenRedniBroj}</span>
+						<input
+							class="input"
+							type="number"
+							min="1"
+							bind:value={prstenRedniBroj}
+							placeholder={t.ptice.prstenRedniBrojPlaceholder}
 							disabled={loading}
 						/>
 					</label>

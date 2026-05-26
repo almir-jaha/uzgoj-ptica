@@ -18,12 +18,19 @@ export interface Ptica {
   vrsta_ptica_id: string;
   spol: 'M' | 'Ž' | '?';
   prstena_oznaka?: string;
+  prsten_redni_broj?: number;
   naziv?: string;
   otac_id?: string; // nullable - ako je kupljena
   majka_id?: string; // nullable - ako je kupljena
   datum_rodjenja?: string;
   napomena?: string;
   created_at: string;
+  updated_at: string;
+}
+
+export interface UserSettings {
+  user_id: string;
+  prsten_prefiks?: string;
   updated_at: string;
 }
 
