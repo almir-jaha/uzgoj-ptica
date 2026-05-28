@@ -11,7 +11,7 @@
 
 	let editMode = false;
 	let saving = false;
-	let input = { naziv_uzgajivacnice: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '' };
+	let input = { naziv_uzgajivacnice: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
 	let slikaUrl: string | undefined;
 	let slikaKomponenta: SlikaUnos;
 
@@ -31,7 +31,8 @@
 			ime_prezime: $postavke?.ime_prezime ?? '',
 			adresa: $postavke?.adresa ?? '',
 			telefon: $postavke?.telefon ?? '',
-			prsten_prefiks: $postavke?.prsten_prefiks ?? ''
+			prsten_prefiks: $postavke?.prsten_prefiks ?? '',
+			app_url: $postavke?.app_url ?? ''
 		};
 		slikaUrl = $postavke?.slika_url;
 		editMode = true;
@@ -45,6 +46,7 @@
 		await savePostavke(currentUser.id, {
 			...input,
 			prsten_prefiks: input.prsten_prefiks.trim(),
+			app_url: input.app_url.trim(),
 			slika_url: finalSlikaUrl
 		});
 		saving = false;
@@ -112,6 +114,12 @@
 						<div class="flex gap-3 items-center">
 							<span class="text-surface-400 shrink-0">🔖</span>
 							<span>{t.ptice.prsten_prefiks}: <span class="font-mono">{$postavke.prsten_prefiks}</span></span>
+						</div>
+					{/if}
+					{#if $postavke?.app_url}
+						<div class="flex gap-3 items-center">
+							<span class="text-surface-400 shrink-0">🔗</span>
+							<span class="text-sm font-mono truncate">{$postavke.app_url}</span>
 						</div>
 					{/if}
 				</div>
@@ -195,6 +203,17 @@
 						disabled={saving}
 					/>
 					<span class="text-xs text-surface-400">{t.ptice.prsten_prefiksOpis}</span>
+				</label>
+				<label class="label">
+					<span class="text-sm font-medium">{t.uzgajivac.appUrl}</span>
+					<input
+						class="input font-mono text-sm"
+						type="url"
+						bind:value={input.app_url}
+						placeholder={t.uzgajivac.appUrlPlaceholder}
+						disabled={saving}
+					/>
+					<span class="text-xs text-surface-400">{t.uzgajivac.appUrlOpis}</span>
 				</label>
 			</div>
 

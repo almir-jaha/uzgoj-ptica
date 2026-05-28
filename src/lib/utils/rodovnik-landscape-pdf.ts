@@ -172,7 +172,7 @@ export async function generirajLandscapeRodovnikPDF(pticaId: string): Promise<vo
 		info?.slika_url ? urlToBase64(info.slika_url) : Promise.resolve(null),
 		urlToBase64('/app-logo.png'),
 		QRCode.toDataURL(
-			typeof window !== 'undefined' ? `${window.location.origin}/ptica/${pticaId}` : pticaId,
+			`${info?.app_url?.trim() || (typeof window !== 'undefined' ? window.location.origin : '')}/ptica/${pticaId}`,
 			{ width: 140, margin: 1, errorCorrectionLevel: 'M' }
 		) as Promise<string>
 	]);

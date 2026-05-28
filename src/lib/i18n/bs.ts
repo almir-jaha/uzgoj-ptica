@@ -226,6 +226,9 @@ export const bs = {
 		telefon: 'Telefon',
 		telefonPlaceholder: '+387 61 000 000',
 		slika: 'Logo / slika uzgajivača',
+		appUrl: 'URL aplikacije (za QR kodove)',
+		appUrlPlaceholder: 'https://vasa-app.vercel.app',
+		appUrlOpis: 'Ovaj link se upisuje u QR kod na rodovnicima. Upišite javnu adresu vaše aplikacije.',
 		sacuvaj: 'Sačuvaj profil',
 		sacuvano: 'Profil sačuvan',
 		greska: 'Greška pri čuvanju profila'

@@ -42,6 +42,7 @@ export interface UserSettings {
   adresa?: string;
   telefon?: string;
   slika_url?: string;
+  app_url?: string;
   updated_at: string;
 }
 

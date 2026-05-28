@@ -229,7 +229,7 @@ export async function generirajRodovnikPDF(pticaId: string): Promise<void> {
 		info?.slika_url ? urlToBase64(info.slika_url) : Promise.resolve(null),
 		urlToBase64('/app-logo.png'),
 		QRCode.toDataURL(
-			typeof window !== 'undefined' ? `${window.location.origin}/ptica/${pticaId}` : pticaId,
+			`${info?.app_url?.trim() || (typeof window !== 'undefined' ? window.location.origin : '')}/ptica/${pticaId}`,
 			{ width: 150, margin: 1, errorCorrectionLevel: 'M' }
 		) as Promise<string>
 	]);
