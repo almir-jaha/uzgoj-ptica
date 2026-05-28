@@ -24,6 +24,8 @@ export interface Ptica {
   majka_id?: string; // nullable - ako je kupljena
   datum_rodjenja?: string;
   godina?: number;
+  boja?: string;
+  status_ptica?: string;
   rezultati?: string;
   napomena_rodovnik?: string;
   slika_url?: string;

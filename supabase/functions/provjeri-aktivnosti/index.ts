@@ -28,37 +28,60 @@ Deno.serve(async (req) => {
 	let body: Record<string, string> = {};
 	try { body = await req.json(); } catch { /* prazan body */ }
 
+	// Save mode: briše sve stare i upisuje novu subscription (service role, zaobilazi RLS)
+	if (body.save_subscription) {
+		const sub = body.save_subscription as {
+			user_id: string; endpoint: string; p256dh: string; auth: string;
+		};
+		// Obriši sve stare (čisti test rows i expired)
+		await db.from('push_subscriptions').delete().eq('user_id', sub.user_id);
+		// Upiši novu
+		const { data, error } = await db
+			.from('push_subscriptions')
+			.insert({ user_id: sub.user_id, endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth })
+			.select('id, created_at');
+		return new Response(JSON.stringify({ saved: !error, data, error }), {
+			status: error ? 500 : 200,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+
 	// Test mode: direktan push na uređaj korisnika
 	if (body.test_user_id) {
-		const { data: subs } = await db
+		const { data: subs, error: selErr } = await db
 			.from('push_subscriptions')
 			.select('endpoint, p256dh, auth')
 			.eq('user_id', body.test_user_id);
 
+		// Debug: vrati info o stanju tabele ako nema rezultata
 		if (!subs?.length) {
-			return new Response(JSON.stringify({ error: 'Nema push subscriptions za ovog korisnika' }), {
-				status: 404, headers: { 'Content-Type': 'application/json' }
-			});
+			const { data: all, error: allErr } = await db.from('push_subscriptions').select('user_id').limit(5);
+			return new Response(JSON.stringify({
+				error: 'Nema push subscriptions za ovog korisnika',
+				debug: { selErr, allRows: all, allErr }
+			}), { status: 404, headers: { 'Content-Type': 'application/json' } });
 		}
 
 		const payload = JSON.stringify({
 			title: body.test_title ?? '🧪 Test — Uzgoj ptica',
 			body: body.test_body ?? 'Push notifikacije rade ispravno!',
 			url: '/aktivnosti',
-			tag: 'uzgoj-test',
+			tag: `uzgoj-test-${Date.now()}`,
 			hitnost: 'danas'
 		});
 
 		let sent = 0;
+		const errors: string[] = [];
 		for (const sub of subs) {
 			try {
 				await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, payload);
 				sent++;
-			} catch (err) {
-				console.error('Test push failed:', (err as Error).message);
+			} catch (err: unknown) {
+				const e = err as { message?: string; statusCode?: number; body?: string };
+				errors.push(`${e.statusCode ?? '?'}: ${e.message} — ${e.body ?? ''}`);
 			}
 		}
-		return new Response(JSON.stringify({ test: true, sent, devices: subs.length }), {
+		return new Response(JSON.stringify({ test: true, sent, devices: subs.length, errors }), {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	}

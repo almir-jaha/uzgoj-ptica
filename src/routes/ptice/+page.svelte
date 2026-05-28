@@ -11,6 +11,7 @@
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
 
 	import NovaPticaModal from '$lib/components/NovaPticaModal.svelte';
+	import RodovnikModal from '$lib/components/RodovnikModal.svelte';
 	import { t } from '$lib/i18n';
 
 	type Filter = 'sve' | 'muzjaci' | 'zenke' | 'ovaSezone' | 'ostale';
@@ -20,6 +21,8 @@
 	let loading = true;
 	let modalOtvoren = false;
 	let editPtica: Ptica | null = null;
+	let rodovnikModalOtvoren = false;
+	let rodovnikPtica: Ptica | null = null;
 
 	let pretragaBroj = '';
 	let pretragaGodina = '';
@@ -69,6 +72,11 @@
 	function otvoriUredi(ptica: Ptica) {
 		editPtica = ptica;
 		modalOtvoren = true;
+	}
+
+	function otvoriRodovnik(ptica: Ptica) {
+		rodovnikPtica = ptica;
+		rodovnikModalOtvoren = true;
 	}
 
 	function otvoriNova() {
@@ -247,12 +255,20 @@
 								<p class="font-semibold truncate">
 									{ptica.naziv || ptica.prstena_oznaka || ptica.id.slice(0, 8)}
 								</p>
-								<button
-									class="btn btn-sm variant-ghost-surface shrink-0"
-									on:click={() => otvoriUredi(ptica)}
-								>
-									{t.ptice.uredi}
-								</button>
+								<div class="flex gap-1 shrink-0">
+									<button
+										class="btn btn-sm variant-ghost-surface"
+										on:click={() => otvoriUredi(ptica)}
+									>
+										{t.ptice.uredi}
+									</button>
+									<button
+										class="btn btn-sm variant-ghost-tertiary"
+										on:click={() => otvoriRodovnik(ptica)}
+									>
+										Pedigre
+									</button>
+								</div>
 							</div>
 
 							<p class="text-sm text-surface-500">{vrstaLabel(ptica.vrsta_ptica_id)}</p>
@@ -300,5 +316,13 @@
 		prstenPrefiks={$postavke?.prsten_prefiks ?? ''}
 		onClose={() => { modalOtvoren = false; editPtica = null; }}
 		onSuccess={handleSacuvano}
+	/>
+{/if}
+
+<!-- Rodovnik Modal -->
+{#if rodovnikModalOtvoren && rodovnikPtica}
+	<RodovnikModal
+		ptica={rodovnikPtica}
+		onClose={() => { rodovnikModalOtvoren = false; rodovnikPtica = null; }}
 	/>
 {/if}

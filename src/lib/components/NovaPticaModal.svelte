@@ -19,6 +19,8 @@
 	let prstenRedniBroj: number | '' = editPtica?.prsten_redni_broj ?? '';
 	let datumRodjenja = editPtica?.datum_rodjenja ?? '';
 	let godina: number | '' = editPtica?.godina ?? '';
+	let boja = editPtica?.boja ?? '';
+	let statusPtica = editPtica?.status_ptica ?? '';
 	let otacId = editPtica?.otac_id ?? '';
 	let majkaId = editPtica?.majka_id ?? '';
 	let napomena = editPtica?.napomena ?? '';
@@ -28,7 +30,7 @@
 	let loading = false;
 	let errorMsg = '';
 	let rodovnikOtvoren = !!(editPtica?.otac_id || editPtica?.majka_id);
-	let rodovnikPodaciOtvoreni = !!(editPtica?.rezultati || editPtica?.napomena_rodovnik || editPtica?.slika_url);
+	let rodovnikPodaciOtvoreni = !!(editPtica?.rezultati || editPtica?.napomena_rodovnik || editPtica?.slika_url || editPtica?.boja || editPtica?.status_ptica);
 
 	let slikaKomponenta: SlikaUnos;
 
@@ -60,6 +62,8 @@
 				prsten_redni_broj: prstenRedniBroj !== '' ? Number(prstenRedniBroj) : undefined,
 				datum_rodjenja: datumRodjenja || undefined,
 				godina: godina !== '' ? Number(godina) : undefined,
+				boja: boja.trim() || undefined,
+				status_ptica: statusPtica.trim() || undefined,
 				otac_id: otacId || undefined,
 				majka_id: majkaId || undefined,
 				napomena: napomena.trim() || undefined,
@@ -274,6 +278,28 @@
 								disabled={loading}
 								label={t.ptice.slika}
 							/>
+							<div class="grid grid-cols-2 gap-3">
+								<label class="label">
+									<span class="text-sm">Boja / Mutacija</span>
+									<input
+										class="input"
+										type="text"
+										bind:value={boja}
+										placeholder="npr. bijela, šarena..."
+										disabled={loading}
+									/>
+								</label>
+								<label class="label">
+									<span class="text-sm">Status</span>
+									<input
+										class="input"
+										type="text"
+										bind:value={statusPtica}
+										placeholder="npr. aktivan, prodan..."
+										disabled={loading}
+									/>
+								</label>
+							</div>
 							<label class="label">
 								<span class="text-sm">{t.ptice.rezultati}</span>
 								<textarea
