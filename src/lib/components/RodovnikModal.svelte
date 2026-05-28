@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { generirajRodovnikPDF } from '$lib/utils/rodovnik-pdf';
+	import { generirajLandscapeRodovnikPDF } from '$lib/utils/rodovnik-landscape-pdf';
 	import type { Ptica } from '$lib/db/schema';
 
 	export let ptica: Ptica;
@@ -7,6 +8,7 @@
 
 	let loading = false;
 	let error = '';
+	let format: 'portrait' | 'landscape' = 'portrait';
 
 	function spolSimbol(spol: string) {
 		return spol === 'M' ? '♂' : spol === 'Ž' ? '♀' : '?';
@@ -23,7 +25,11 @@
 		loading = true;
 		error = '';
 		try {
-			await generirajRodovnikPDF(ptica.id);
+			if (format === 'landscape') {
+				await generirajLandscapeRodovnikPDF(ptica.id);
+			} else {
+				await generirajRodovnikPDF(ptica.id);
+			}
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Greška pri generiranju rodovnika';
 		} finally {
@@ -58,10 +64,32 @@
 			{/if}
 		</div>
 
-		<!-- Format info -->
-		<div class="space-y-1 text-sm text-surface-500">
-			<p>Format: <span class="font-medium text-surface-700-200-token">A4 Portrait · 4 generacije</span></p>
-			<p class="text-xs">Slike: ptica + roditelji. Rodovnik se generira iz lokalnih podataka.</p>
+		<!-- Format izbor -->
+		<div class="space-y-2">
+			<p class="text-xs text-surface-500 font-medium">Odaberi format:</p>
+			<div class="grid grid-cols-2 gap-2">
+				<button
+					class="btn btn-sm {format === 'portrait' ? 'variant-filled-primary' : 'variant-soft'}"
+					on:click={() => format = 'portrait'}
+					disabled={loading}
+				>
+					<span class="mr-1">📄</span> Portrait A4
+				</button>
+				<button
+					class="btn btn-sm {format === 'landscape' ? 'variant-filled-primary' : 'variant-soft'}"
+					on:click={() => format = 'landscape'}
+					disabled={loading}
+				>
+					<span class="mr-1">🖼</span> Landscape A4
+				</button>
+			</div>
+			<p class="text-xs text-surface-400">
+				{#if format === 'portrait'}
+					4 generacije · Portrait · QR kod · Potpis
+				{:else}
+					4 generacije · Landscape · Info uzgajivačnice lijevo
+				{/if}
+			</p>
 		</div>
 
 		{#if error}

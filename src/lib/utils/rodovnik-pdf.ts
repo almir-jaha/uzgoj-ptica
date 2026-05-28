@@ -229,7 +229,7 @@ export async function generirajRodovnikPDF(pticaId: string): Promise<void> {
 		info?.slika_url ? urlToBase64(info.slika_url) : Promise.resolve(null),
 		urlToBase64('/app-logo.png'),
 		QRCode.toDataURL(
-			typeof window !== 'undefined' ? `${window.location.origin}/ptice/${pticaId}` : pticaId,
+			typeof window !== 'undefined' ? `${window.location.origin}/ptica/${pticaId}` : pticaId,
 			{ width: 150, margin: 1, errorCorrectionLevel: 'M' }
 		) as Promise<string>
 	]);
@@ -280,7 +280,7 @@ export async function generirajRodovnikPDF(pticaId: string): Promise<void> {
 			// Header: bordered uzgajivačnica box + app logo desno
 			{
 				columns: [
-					...(logoBase64 ? [{ image: logoBase64, width: 52, height: 52 }] : []),
+					...(logoBase64 ? [{ image: logoBase64, fit: [90, 90] }] : []),
 					{ stack: infoStack, width: '*' },
 					...(appLogoBase64 ? [{ image: appLogoBase64, width: 64, height: 64 }] : [])
 				],

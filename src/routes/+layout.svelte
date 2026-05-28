@@ -50,7 +50,7 @@
 		goto('/uzgajivacnica');
 	}
 
-	$: if (!authLoading && !$isAuthenticated && $page.url.pathname !== '/') {
+	$: if (!authLoading && !$isAuthenticated && $page.url.pathname !== '/' && !$page.url.pathname.startsWith('/ptica/')) {
 		goto('/');
 	}
 
