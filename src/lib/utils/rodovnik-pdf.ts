@@ -1,7 +1,7 @@
 import type { Ptica } from '$lib/db/schema';
 import { db } from '$lib/db/dexie';
 import { get } from 'svelte/store';
-import { postavke } from '$lib/stores/postavke';
+import { aktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
 
 interface RodovnikNode {
 	ptica: Ptica;
@@ -223,7 +223,7 @@ export async function generirajRodovnikPDF(pticaId: string): Promise<void> {
 	const tree = await buildTree(pticaId, 1);
 	if (!tree) throw new Error('Ptica nije pronađena');
 
-	const info = get(postavke);
+	const info = get(aktivnaUzgajivacnica);
 
 	const [logoBase64, appLogoRaw, qrBase64] = await Promise.all([
 		info?.slika_url ? urlToBase64(info.slika_url) : Promise.resolve(null),
@@ -262,7 +262,7 @@ export async function generirajRodovnikPDF(pticaId: string): Promise<void> {
 	];
 
 	const infoStack: object[] = [
-		{ text: info?.naziv_uzgajivacnice || 'Uzgajivacnica', fontSize: 17, bold: true, color: '#222' },
+		{ text: info?.naziv || 'Uzgajivacnica', fontSize: 17, bold: true, color: '#222' },
 		...(info?.ime_prezime ? [{ text: info.ime_prezime, fontSize: 11, color: '#555', margin: [0, 2, 0, 0] }] : []),
 		...(info?.adresa ? [{ text: info.adresa, fontSize: 10, color: '#777' }] : []),
 		...(info?.telefon ? [{ text: `Tel: ${info.telefon}`, fontSize: 10, color: '#777' }] : [])

@@ -22,7 +22,7 @@
 	}
 
 	interface BreederInfo {
-		naziv_uzgajivacnice?: string;
+		naziv?: string;
 		ime_prezime?: string;
 		adresa?: string;
 		telefon?: string;
@@ -202,7 +202,7 @@
 		</div>
 
 		<!-- Breeder card -->
-		{#if breeder && (breeder.naziv_uzgajivacnice || breeder.ime_prezime)}
+		{#if breeder && (breeder.naziv || breeder.ime_prezime)}
 		<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
 			<p class="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-3">Uzgajivač</p>
 			<div class="flex gap-3 items-start">
@@ -219,8 +219,8 @@
 				{/if}
 
 				<div class="flex-1 min-w-0">
-					{#if breeder.naziv_uzgajivacnice}
-					<p class="font-bold text-gray-900 text-base">{breeder.naziv_uzgajivacnice}</p>
+					{#if breeder.naziv}
+					<p class="font-bold text-gray-900 text-base">{breeder.naziv}</p>
 					{/if}
 					{#if breeder.ime_prezime}
 					<p class="text-sm text-gray-600 mt-0.5">{breeder.ime_prezime}</p>

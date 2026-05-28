@@ -5,6 +5,7 @@
 	import SlikaUnos from './SlikaUnos.svelte';
 
 	export let userId: string;
+	export let uzgajivacnicaId: string = '';
 	export let vrstePtica: VrstaPtica[] = [];
 	export let editPtica: Ptica | null = null; // null = kreiranje, Ptica = uređivanje
 	export let onClose: () => void;
@@ -75,7 +76,11 @@
 			if (editPtica) {
 				await updatePtica(editPtica.id, zajednickiPodaci);
 			} else {
-				await createPtica(userId, { ...zajednickiPodaci, user_id: userId });
+				await createPtica(userId, {
+					...zajednickiPodaci,
+					user_id: userId,
+					uzgajivacnica_id: uzgajivacnicaId || undefined
+				});
 			}
 
 			onSuccess();

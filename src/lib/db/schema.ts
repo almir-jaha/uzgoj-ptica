@@ -11,10 +11,27 @@ export interface VrstaPtica {
   updated_at: string;
 }
 
+// Uzgajivačnica (korisnik može imati više: ptice, golubovi, itd.)
+export interface Uzgajivacnica {
+  id: string;
+  user_id: string;
+  naziv: string;
+  prsten_prefiks?: string;
+  ime_prezime?: string;
+  adresa?: string;
+  telefon?: string;
+  slika_url?: string;
+  app_url?: string;
+  napomena?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // GLOBALNA EVIDENCIJA PTICA - ključno je user_id FK
 export interface Ptica {
   id: string;
   user_id: string;
+  uzgajivacnica_id?: string;
   vrsta_ptica_id: string;
   spol: 'M' | 'Ž' | '?';
   prstena_oznaka?: string;
@@ -50,6 +67,7 @@ export interface UserSettings {
 export interface Sezona {
   id: string;
   user_id: string;
+  uzgajivacnica_id?: string;
   godina: number;
   naziv?: string;
   broj_kaveza: number;

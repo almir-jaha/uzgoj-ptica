@@ -3,15 +3,23 @@
 	import { get } from 'svelte/store';
 
 	import { user } from '$lib/stores/auth';
-	import { postavke, loadPostavke, savePostavke } from '$lib/stores/postavke';
-	import { ptice, loadPtice } from '$lib/stores/ptice';
+	import { ptice, filtriranePtice, loadPtice } from '$lib/stores/ptice';
 	import { aktivnaSezona, loadSezone } from '$lib/stores/sezona';
+	import {
+		uzgajivacnice,
+		aktivnaUzgajivacnica,
+		loadUzgajivacnice,
+		setAktivnaUzgajivacnica,
+		createUzgajivacnica,
+		updateUzgajivacnica
+	} from '$lib/stores/uzgajivacnica';
 	import SlikaUnos from '$lib/components/SlikaUnos.svelte';
 	import { t } from '$lib/i18n';
 
-	let editMode = false;
+	let editId: string | null = null; // ID uzgajivačnice koja se uređuje (null = nova)
+	let showForm = false;
 	let saving = false;
-	let input = { naziv_uzgajivacnice: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
+	let input = { naziv: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
 	let slikaUrl: string | undefined;
 	let slikaKomponenta: SlikaUnos;
 
@@ -19,38 +27,60 @@
 		const currentUser = get(user);
 		if (!currentUser) return;
 		await Promise.all([
-			loadPostavke(currentUser.id),
+			loadUzgajivacnice(currentUser.id),
 			loadPtice(currentUser.id),
 			loadSezone(currentUser.id)
 		]);
 	});
 
-	function otvoriEdit() {
+	function otvoriNova() {
+		editId = null;
+		input = { naziv: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
+		slikaUrl = undefined;
+		showForm = true;
+	}
+
+	function otvoriEdit(uz: typeof $uzgajivacnice[0]) {
+		editId = uz.id;
 		input = {
-			naziv_uzgajivacnice: $postavke?.naziv_uzgajivacnice ?? '',
-			ime_prezime: $postavke?.ime_prezime ?? '',
-			adresa: $postavke?.adresa ?? '',
-			telefon: $postavke?.telefon ?? '',
-			prsten_prefiks: $postavke?.prsten_prefiks ?? '',
-			app_url: $postavke?.app_url ?? ''
+			naziv: uz.naziv ?? '',
+			ime_prezime: uz.ime_prezime ?? '',
+			adresa: uz.adresa ?? '',
+			telefon: uz.telefon ?? '',
+			prsten_prefiks: uz.prsten_prefiks ?? '',
+			app_url: uz.app_url ?? ''
 		};
-		slikaUrl = $postavke?.slika_url;
-		editMode = true;
+		slikaUrl = uz.slika_url;
+		showForm = true;
 	}
 
 	async function sacuvaj() {
 		const currentUser = get(user);
-		if (!currentUser) return;
+		if (!currentUser || !input.naziv.trim()) return;
 		saving = true;
-		const finalSlikaUrl = slikaKomponenta ? await slikaKomponenta.saveImage() : slikaUrl;
-		await savePostavke(currentUser.id, {
-			...input,
-			prsten_prefiks: input.prsten_prefiks.trim(),
-			app_url: input.app_url.trim(),
-			slika_url: finalSlikaUrl
-		});
-		saving = false;
-		editMode = false;
+		try {
+			const finalSlikaUrl = slikaKomponenta ? await slikaKomponenta.saveImage() : slikaUrl;
+			const podaci = {
+				...input,
+				naziv: input.naziv.trim(),
+				prsten_prefiks: input.prsten_prefiks.trim(),
+				app_url: input.app_url.trim(),
+				slika_url: finalSlikaUrl
+			};
+
+			if (editId) {
+				await updateUzgajivacnica(editId, podaci);
+			} else {
+				const nova = await createUzgajivacnica(currentUser.id, {
+					user_id: currentUser.id,
+					...podaci
+				});
+				setAktivnaUzgajivacnica(nova.id);
+			}
+			showForm = false;
+		} finally {
+			saving = false;
+		}
 	}
 </script>
 
@@ -62,87 +92,93 @@
 
 	<div class="flex items-center justify-between">
 		<h2 class="h3 font-bold">{t.uzgajivacnica.title}</h2>
-		{#if !editMode}
-			<button class="btn btn-sm variant-ghost" on:click={otvoriEdit}>
-				✏️ {t.common.uredi}
+		{#if !showForm}
+			<button class="btn btn-sm variant-filled-primary" on:click={otvoriNova}>
+				+ Nova uzgajivačnica
 			</button>
 		{/if}
 	</div>
 
-	{#if !editMode}
-		<!-- Prikaz profila -->
-		<div class="card p-5 space-y-4">
-			<div class="flex items-center gap-4">
-				{#if $postavke?.slika_url}
-					<img
-						src={$postavke.slika_url}
-						alt="Logo uzgajivačnice"
-						class="w-24 h-24 rounded-xl object-cover shrink-0 border border-surface-300-600-token"
-					/>
-				{:else}
-					<div class="w-24 h-24 rounded-xl bg-surface-200-700-token flex items-center justify-center text-4xl shrink-0">
-						🏡
+	{#if !showForm}
+		<!-- Lista uzgajivačnica -->
+		<div class="space-y-3">
+			{#each $uzgajivacnice as uz (uz.id)}
+				{@const jeAktivna = $aktivnaUzgajivacnica?.id === uz.id}
+				{@const brojPtica = $ptice.filter((p) => !p.uzgajivacnica_id || p.uzgajivacnica_id === uz.id).length}
+				<div
+					class="card p-4 cursor-pointer border-2 transition-colors {jeAktivna
+						? 'border-primary-500 bg-primary-50 dark:bg-primary-950'
+						: 'border-transparent'}"
+					on:click={() => setAktivnaUzgajivacnica(uz.id)}
+					on:keypress={(e) => e.key === 'Enter' && setAktivnaUzgajivacnica(uz.id)}
+					role="button"
+					tabindex="0"
+				>
+					<div class="flex items-center gap-4">
+						{#if uz.slika_url}
+							<img src={uz.slika_url} alt={uz.naziv} class="w-14 h-14 rounded-xl object-cover shrink-0" />
+						{:else}
+							<div class="w-14 h-14 rounded-xl bg-surface-200-700-token flex items-center justify-center text-2xl shrink-0">
+								🏡
+							</div>
+						{/if}
+						<div class="flex-1 min-w-0">
+							<div class="flex items-center gap-2">
+								<p class="font-bold truncate">{uz.naziv}</p>
+								{#if jeAktivna}
+									<span class="badge variant-filled-primary text-xs">Aktivna</span>
+								{/if}
+							</div>
+							{#if uz.ime_prezime}
+								<p class="text-sm text-surface-500 truncate">{uz.ime_prezime}</p>
+							{/if}
+							<div class="flex gap-3 mt-1 text-xs text-surface-400">
+								{#if uz.prsten_prefiks}
+									<span>🔖 {uz.prsten_prefiks}</span>
+								{/if}
+								<span>🐦 {brojPtica} ptica</span>
+								{#if jeAktivna && $aktivnaSezona}
+									<span>📅 Sezona {$aktivnaSezona.godina}</span>
+								{/if}
+							</div>
+						</div>
+						<button
+							class="btn btn-sm variant-ghost shrink-0"
+							on:click|stopPropagation={() => otvoriEdit(uz)}
+						>
+							✏️
+						</button>
 					</div>
-				{/if}
-				<div class="space-y-1 min-w-0">
-					{#if $postavke?.naziv_uzgajivacnice}
-						<h3 class="h4 font-bold truncate">{$postavke.naziv_uzgajivacnice}</h3>
-					{:else}
-						<h3 class="h4 font-bold text-surface-400">—</h3>
-					{/if}
-					{#if $postavke?.ime_prezime}
-						<p class="text-sm text-surface-500">{$postavke.ime_prezime}</p>
-					{/if}
 				</div>
-			</div>
-
-			{#if $postavke?.adresa || $postavke?.telefon || $postavke?.prsten_prefiks}
-				<div class="border-t border-surface-200-700-token pt-3 space-y-2 text-sm">
-					{#if $postavke?.adresa}
-						<div class="flex gap-3 items-start">
-							<span class="text-surface-400 shrink-0">📍</span>
-							<span>{$postavke.adresa}</span>
-						</div>
-					{/if}
-					{#if $postavke?.telefon}
-						<div class="flex gap-3 items-center">
-							<span class="text-surface-400 shrink-0">📞</span>
-							<span>{$postavke.telefon}</span>
-						</div>
-					{/if}
-					{#if $postavke?.prsten_prefiks}
-						<div class="flex gap-3 items-center">
-							<span class="text-surface-400 shrink-0">🔖</span>
-							<span>{t.ptice.prsten_prefiks}: <span class="font-mono">{$postavke.prsten_prefiks}</span></span>
-						</div>
-					{/if}
-					{#if $postavke?.app_url}
-						<div class="flex gap-3 items-center">
-							<span class="text-surface-400 shrink-0">🔗</span>
-							<span class="text-sm font-mono truncate">{$postavke.app_url}</span>
-						</div>
-					{/if}
-				</div>
-			{:else if !$postavke?.naziv_uzgajivacnice && !$postavke?.ime_prezime}
-				<p class="text-sm text-surface-400 text-center py-2">{t.uzgajivacnica.nemaPoDataka}</p>
-			{/if}
+			{/each}
 		</div>
 
-		<!-- Statistike -->
-		<div class="grid grid-cols-2 gap-3">
-			<div class="card p-4 text-center space-y-1">
-				<p class="text-3xl font-bold text-primary-500">{$ptice.length}</p>
-				<p class="text-xs text-surface-500">{t.uzgajivacnica.ukupnoPtica}</p>
+		{#if $uzgajivacnice.length === 0}
+			<div class="card p-8 text-center text-surface-400">
+				<p class="text-4xl mb-2">🏡</p>
+				<p class="text-sm">Nemate uzgajivačnica. Kreirajte prvu.</p>
 			</div>
-			<div class="card p-4 text-center space-y-1">
-				<p class="text-3xl font-bold text-success-500">{$aktivnaSezona?.godina ?? '—'}</p>
-				<p class="text-xs text-surface-500">{t.uzgajivacnica.aktivnaSezona}</p>
+		{/if}
+
+		<!-- Statistike aktivne uzgajivačnice -->
+		{#if $aktivnaUzgajivacnica}
+			<div class="grid grid-cols-2 gap-3">
+				<div class="card p-4 text-center space-y-1">
+					<p class="text-3xl font-bold text-primary-500">{$filtriranePtice.length}</p>
+					<p class="text-xs text-surface-500">{t.uzgajivacnica.ukupnoPtica}</p>
+				</div>
+				<div class="card p-4 text-center space-y-1">
+					<p class="text-3xl font-bold text-success-500">{$aktivnaSezona?.godina ?? '—'}</p>
+					<p class="text-xs text-surface-500">{t.uzgajivacnica.aktivnaSezona}</p>
+				</div>
 			</div>
-		</div>
+		{/if}
 
 	{:else}
-		<!-- Edit forma -->
+		<!-- Forma za kreiranje / uređivanje -->
 		<div class="card p-5 space-y-4">
+			<h3 class="font-bold text-lg">{editId ? 'Uredi uzgajivačnicu' : 'Nova uzgajivačnica'}</h3>
+
 			<SlikaUnos
 				bind:this={slikaKomponenta}
 				bind:slika_url={slikaUrl}
@@ -154,12 +190,12 @@
 
 			<div class="space-y-3">
 				<label class="label">
-					<span class="text-sm font-medium">{t.uzgajivac.naziv}</span>
+					<span class="text-sm font-medium">Naziv uzgajivačnice *</span>
 					<input
 						class="input"
 						type="text"
-						bind:value={input.naziv_uzgajivacnice}
-						placeholder={t.uzgajivac.nazivPlaceholder}
+						bind:value={input.naziv}
+						placeholder="npr. Uzgajivačnica ptica, Golubnjak..."
 						disabled={saving}
 					/>
 				</label>
@@ -218,10 +254,14 @@
 			</div>
 
 			<div class="flex gap-3 pt-1">
-				<button class="btn variant-ghost flex-1" on:click={() => (editMode = false)} disabled={saving}>
+				<button class="btn variant-ghost flex-1" on:click={() => (showForm = false)} disabled={saving}>
 					{t.common.odustani}
 				</button>
-				<button class="btn variant-filled-primary flex-1" on:click={sacuvaj} disabled={saving}>
+				<button
+					class="btn variant-filled-primary flex-1"
+					on:click={sacuvaj}
+					disabled={saving || !input.naziv.trim()}
+				>
 					{#if saving}<span class="animate-spin mr-2">↻</span>{/if}
 					{t.uzgajivac.sacuvaj}
 				</button>

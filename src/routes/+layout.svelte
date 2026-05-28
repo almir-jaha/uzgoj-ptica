@@ -9,6 +9,7 @@
 	import { isOnline } from '$lib/stores/network';
 	import { isAdmin } from '$lib/stores/admin';
 	import { t } from '$lib/i18n';
+	import { uzgajivacnice, aktivnaUzgajivacnica, loadUzgajivacnice, setAktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
 
 	initializeStores();
 	const toastStore = getToastStore();
@@ -19,6 +20,9 @@
 		const currentSession = await getCurrentUser();
 		session.set(currentSession);
 		authLoading = false;
+		if (currentSession?.user?.id) {
+			loadUzgajivacnice(currentSession.user.id);
+		}
 
 		// Registracija Service Workera
 		if ('serviceWorker' in navigator) {
@@ -81,6 +85,21 @@
 					{#if !$isOnline}
 						<span class="badge variant-filled-warning text-xs ml-2" title={t.app.offlineTitle}>
 							{t.app.offlineBadge}
+						</span>
+					{/if}
+					{#if $uzgajivacnice.length > 1}
+						<select
+							class="select text-xs py-0.5 px-2 h-7 ml-2 max-w-[130px] truncate"
+							value={$aktivnaUzgajivacnica?.id ?? ''}
+							on:change={(e) => setAktivnaUzgajivacnica(e.currentTarget.value)}
+						>
+							{#each $uzgajivacnice as uz}
+								<option value={uz.id}>{uz.naziv}</option>
+							{/each}
+						</select>
+					{:else if $aktivnaUzgajivacnica}
+						<span class="text-xs text-surface-400 ml-2 hidden sm:inline truncate max-w-[120px]">
+							{$aktivnaUzgajivacnica.naziv}
 						</span>
 					{/if}
 				</svelte:fragment>

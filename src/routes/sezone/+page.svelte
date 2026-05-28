@@ -8,7 +8,7 @@
 		aktivnaSezona,
 		prikazanaSezona,
 		sezonaZaPregled,
-		sezone,
+		filtriraneSezone,
 		kavezi,
 		sezonaLoading,
 		loadSezone,
@@ -29,7 +29,7 @@
 	import UrediSezonuModal from '$lib/components/UrediSezonuModal.svelte';
 	import PokreniCiklusModal from '$lib/components/PokreniCiklusModal.svelte';
 	import ZavrsiCiklusModal from '$lib/components/ZavrsiCiklusModal.svelte';
-	import { postavke, loadPostavke } from '$lib/stores/postavke';
+	import { aktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
 
 	let kaveziDetails: KavezWithDetails[] = [];
 	let kavezChannel: RealtimeChannel | null = null;
@@ -128,7 +128,6 @@
 		ucitajZaSezonu(sezona.id, currentUser.id, jeAktivna);
 
 		loadSezone(currentUser.id).catch(console.error);
-		loadPostavke(currentUser.id).catch(console.error);
 	});
 
 	onDestroy(() => {
@@ -195,7 +194,7 @@
 	).length;
 
 	$: pregledArhive = $prikazanaSezona && $aktivnaSezona && $prikazanaSezona.id !== $aktivnaSezona.id;
-	$: sortiraneSeezone = [...$sezone].sort((a, b) => b.godina - a.godina || b.created_at.localeCompare(a.created_at));
+	$: sortiraneSeezone = [...$filtriraneSezone].sort((a, b) => b.godina - a.godina || b.created_at.localeCompare(a.created_at));
 </script>
 
 <svelte:head>
@@ -345,6 +344,7 @@
 {#if novaSezonaOpen && $user}
 	<NovaSezonaModal
 		userId={$user.id}
+		uzgajivacnicaId={$aktivnaUzgajivacnica?.id ?? ''}
 		onClose={() => (novaSezonaOpen = false)}
 		onSuccess={handleSezonaKreirana}
 	/>
@@ -380,7 +380,7 @@
 		details={aktivniKavezDetails}
 		faze={$faze}
 		svePtice={$ptice}
-		prstenPrefiks={$postavke?.prsten_prefiks ?? ''}
+		prstenPrefiks={$aktivnaUzgajivacnica?.prsten_prefiks ?? ''}
 		sezonaGodina={$prikazanaSezona?.godina ?? new Date().getFullYear()}
 		userId={$user.id}
 		on:zatvori={() => (aktivniKavezDetails = null)}

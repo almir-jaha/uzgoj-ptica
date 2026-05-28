@@ -4,6 +4,7 @@ import type { Ptica, PticaWithRodovnik } from '../db/schema';
 import { supabase } from '../supabase/client';
 import { db, addOfflineAction, getPticaWithRodovnik } from '../db/dexie';
 import { user } from './auth';
+import { aktivnaUzgajivacnica } from './uzgajivacnica';
 
 export const ptice = writable<Ptica[]>([]);
 export const pticaLoading = writable(false);
@@ -100,13 +101,22 @@ export async function getPticaWithFamily(pticaId: string): Promise<PticaWithRodo
   return getPticaWithRodovnik(pticaId);
 }
 
-// Filter - ptice po vrsti
-export const pticePo = (vrstaId: string) =>
-  derived(ptice, ($ptice) => $ptice.filter((p) => p.vrsta_ptica_id === vrstaId));
+// Samo ptice aktivne uzgajivačnice
+export const filtriranePtice = derived(
+  [ptice, aktivnaUzgajivacnica],
+  ([$ptice, $aktiv]) => {
+    if (!$aktiv) return $ptice;
+    return $ptice.filter((p) => !p.uzgajivacnica_id || p.uzgajivacnica_id === $aktiv.id);
+  }
+);
 
-// Filter - mužjaci/ženke
-export const pticeMuzjaci = derived(ptice, ($ptice) => $ptice.filter((p) => p.spol === 'M'));
-export const pticeSenke = derived(ptice, ($ptice) => $ptice.filter((p) => p.spol === 'Ž'));
+// Filter - ptice po vrsti (iz aktivne uzgajivačnice)
+export const pticePo = (vrstaId: string) =>
+  derived(filtriranePtice, ($ptice) => $ptice.filter((p) => p.vrsta_ptica_id === vrstaId));
+
+// Filter - mužjaci/ženke (iz aktivne uzgajivačnice)
+export const pticeMuzjaci = derived(filtriranePtice, ($ptice) => $ptice.filter((p) => p.spol === 'M'));
+export const pticeSenke = derived(filtriranePtice, ($ptice) => $ptice.filter((p) => p.spol === 'Ž'));
 
 // Pregled rodovnika
 export async function getRodovnik(pticaId: string) {

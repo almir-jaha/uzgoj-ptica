@@ -3,9 +3,9 @@
 	import { get } from 'svelte/store';
 
 	import { user } from '$lib/stores/auth';
-	import { ptice, pticeMuzjaci, pticeSenke, pticaLoading, loadPtice } from '$lib/stores/ptice';
-	import { postavke, loadPostavke } from '$lib/stores/postavke';
+	import { ptice, filtriranePtice, pticeMuzjaci, pticeSenke, pticaLoading, loadPtice } from '$lib/stores/ptice';
 	import { aktivnaSezona } from '$lib/stores/sezona';
+	import { aktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
@@ -59,7 +59,6 @@
 
 		loadPtice(currentUser.id);
 		loadVrstePtica();
-		await loadPostavke(currentUser.id);
 	});
 
 	async function handleSacuvano() {
@@ -87,9 +86,9 @@
 	// Godina aktivne sezone (ili tekuća godina ako nema sezone)
 	$: tekucaGodina = $aktivnaSezona?.godina ?? new Date().getFullYear();
 
-	// Ove sezone = ptice s unesenom godinom koja odgovara aktivnoj sezoni
-	$: pticeOveSezone = $ptice.filter((p) => p.godina === tekucaGodina);
-	$: pticeOstale = $ptice.filter((p) => p.godina !== tekucaGodina);
+	// Ove sezone = ptice s unesenom godinom koja odgovara aktivnoj sezoni (iz aktivne uzgajivačnice)
+	$: pticeOveSezone = $filtriranePtice.filter((p) => p.godina === tekucaGodina);
+	$: pticeOstale = $filtriranePtice.filter((p) => p.godina !== tekucaGodina);
 
 	// Filtrirane + pretražene ptice
 	$: bazaPtica =
@@ -97,11 +96,11 @@
 		filter === 'zenke'     ? $pticeSenke :
 		filter === 'ovaSezone' ? pticeOveSezone :
 		filter === 'ostale'    ? pticeOstale :
-		$ptice;
+		$filtriranePtice;
 
 	$: pretragaAktivna = pretragaBroj.trim() !== '' || pretragaGodina.trim() !== '';
 
-	$: filtriranePtice = bazaPtica.filter((p) => {
+	$: pticaSearch = bazaPtica.filter((p) => {
 		const broj = pretragaBroj.trim();
 		const godina = pretragaGodina.trim();
 		const brojOk = broj === '' ||
@@ -234,12 +233,12 @@
 		</div>
 
 	<!-- Lista ptica -->
-	{:else if filtriranePtice.length === 0}
+	{:else if pticaSearch.length === 0}
 		<p class="text-center text-surface-500 py-8">{t.ptice.filtar.nemaPticaZaFilter}</p>
 
 	{:else}
 		<div class="space-y-2">
-			{#each filtriranePtice as ptica (ptica.id)}
+			{#each pticaSearch as ptica (ptica.id)}
 				<div class="card p-4 border-l-4"
 					style="border-left-color: {ptica.godina === tekucaGodina ? '#22c55e' : 'transparent'}"
 				>
@@ -311,9 +310,10 @@
 {#if modalOtvoren && $user}
 	<NovaPticaModal
 		userId={$user.id}
+		uzgajivacnicaId={$aktivnaUzgajivacnica?.id ?? ''}
 		{vrstePtica}
 		{editPtica}
-		prstenPrefiks={$postavke?.prsten_prefiks ?? ''}
+		prstenPrefiks={$aktivnaUzgajivacnica?.prsten_prefiks ?? ''}
 		onClose={() => { modalOtvoren = false; editPtica = null; }}
 		onSuccess={handleSacuvano}
 	/>

@@ -25,7 +25,7 @@ export interface BirdNode {
 }
 
 export interface BreederInfo {
-	naziv_uzgajivacnice?: string;
+	naziv?: string;
 	ime_prezime?: string;
 	adresa?: string;
 	telefon?: string;
@@ -86,10 +86,11 @@ export async function load({ params }: { params: { id: string } }) {
 			return { tree: null, breeder: null, error: 'Ptica nije pronađena' };
 		}
 
+		// Dohvati uzgajivačnicu ptice (via uzgajivacnica_id) ili prvu uzgajivačnicu vlasnika
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const { data: breeder } = await (supabase as any)
-			.from('user_settings')
-			.select('naziv_uzgajivacnice, ime_prezime, adresa, telefon, slika_url')
+			.from('uzgajivacnice')
+			.select('naziv, ime_prezime, adresa, telefon, slika_url')
 			.eq('user_id', tree.user_id)
 			.maybeSingle();
 

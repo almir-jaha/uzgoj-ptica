@@ -3,6 +3,7 @@
 	import { t } from '$lib/i18n';
 
 	export let userId: string;
+	export let uzgajivacnicaId: string = '';
 	export let onClose: () => void;
 	export let onSuccess: () => void;
 
@@ -30,6 +31,7 @@
 				userId,
 				{
 					user_id: userId,
+					uzgajivacnica_id: uzgajivacnicaId || undefined,
 					godina,
 					naziv: naziv.trim() || `Sezona ${godina}`,
 					broj_kaveza: brojKaveza,

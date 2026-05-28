@@ -4,14 +4,24 @@ import { isMreznaGreska } from '$lib/utils/offline';
 import type { Sezona, Kavez } from '../db/schema';
 import { supabase } from '../supabase/client';
 import { db, addOfflineAction } from '../db/dexie';
+import { aktivnaUzgajivacnica } from './uzgajivacnica';
 
 export const sezone = writable<Sezona[]>([]);
 export const sezonaLoading = writable(false);
 export const sezonaError = writable<string | null>(null);
 export const kavezi = writable<Kavez[]>([]);
 
-// Jedina aktivna sezona (status === 'aktiva') — uvijek max jedna
-export const aktivnaSezona = derived(sezone, ($sezone) =>
+// Samo sezone aktivne uzgajivačnice
+export const filtriraneSezone = derived(
+  [sezone, aktivnaUzgajivacnica],
+  ([$sezone, $aktiv]) => {
+    if (!$aktiv) return $sezone;
+    return $sezone.filter((s) => !s.uzgajivacnica_id || s.uzgajivacnica_id === $aktiv.id);
+  }
+);
+
+// Aktivna sezona — samo iz trenutne uzgajivačnice
+export const aktivnaSezona = derived(filtriraneSezone, ($sezone) =>
   $sezone.find((s) => s.status === 'aktiva')
 );
 
@@ -25,9 +35,9 @@ if (browser) {
   });
 }
 
-// Sezona koja se prikazuje: eksplicitno odabrana ili aktivna
+// Sezona koja se prikazuje: eksplicitno odabrana (iz iste uzgajivačnice) ili aktivna
 export const prikazanaSezona = derived(
-  [sezone, sezonaZaPregled, aktivnaSezona],
+  [filtriraneSezone, sezonaZaPregled, aktivnaSezona],
   ([$sezone, $pregledId, $aktivna]) => {
     if ($pregledId) {
       const found = $sezone.find((s) => s.id === $pregledId);
@@ -103,8 +113,8 @@ export async function createSezona(
   zavrsiTrenutnuId?: string
 ) {
   try {
-    // Provjera: postoji li sezona za istu godinu?
-    const postojece = get(sezone);
+    // Provjera: postoji li aktivna sezona za istu godinu unutar iste uzgajivačnice?
+    const postojece = get(filtriraneSezone);
     const duplikat = postojece.find(
       (s) => s.godina === data.godina && s.status === 'aktiva'
     );
