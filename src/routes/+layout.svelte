@@ -18,15 +18,20 @@
 	const toastStore = getToastStore();
 
 	let authLoading = true;
+	let lastLoadedUserId: string | null = null;
+
+	// Reaktivno učitaj podatke svaki put kad se user promijeni (login, switch)
+	$: if (!authLoading && $user?.id && $user.id !== lastLoadedUserId) {
+		lastLoadedUserId = $user.id;
+		loadUzgajivacnice($user.id);
+		loadUserTier($user.id, $user.email ?? '');
+	}
 
 	onMount(async () => {
 		const currentSession = await getCurrentUser();
 		session.set(currentSession);
 		authLoading = false;
-		if (currentSession?.user?.id) {
-			loadUzgajivacnice(currentSession.user.id);
-			loadUserTier(currentSession.user.id, currentSession.user.email ?? '');
-		}
+		// Učitavanje podataka se sada radi reaktivno ($: if !authLoading && $user...)
 
 		// Registracija Service Workera
 		if ('serviceWorker' in navigator) {
@@ -60,6 +65,7 @@
 
 	$: if (!authLoading && !$isAuthenticated && $page.url.pathname !== '/' && !$page.url.pathname.startsWith('/ptica/')) {
 		// Očisti sve store-ove i localStorage pri logout-u
+		lastLoadedUserId = null;
 		clearUzgajivacniceStore();
 		ptice.set([]);
 		sezone.set([]);
