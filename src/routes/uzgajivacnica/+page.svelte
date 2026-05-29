@@ -13,11 +13,16 @@
 		createUzgajivacnica,
 		updateUzgajivacnica
 	} from '$lib/stores/uzgajivacnica';
+	import { isAdmin } from '$lib/stores/admin';
+	import { tierLimits, jeNaLimitUzgajivacnica } from '$lib/stores/userTier';
 	import SlikaUnos from '$lib/components/SlikaUnos.svelte';
 	import { t } from '$lib/i18n';
 
 	let editId: string | null = null; // ID uzgajivačnice koja se uređuje (null = nova)
 	let showForm = false;
+
+	$: limitDostignut = jeNaLimitUzgajivacnica($uzgajivacnice.length, $tierLimits);
+	$: jeAdminUser = isAdmin($user?.email);
 	let saving = false;
 	let input = { naziv: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
 	let slikaUrl: string | undefined;
@@ -93,9 +98,15 @@
 	<div class="flex items-center justify-between">
 		<h2 class="h3 font-bold">{t.uzgajivacnica.title}</h2>
 		{#if !showForm}
-			<button class="btn btn-sm variant-filled-primary" on:click={otvoriNova}>
-				+ Nova uzgajivačnica
-			</button>
+			{#if limitDostignut}
+				<span class="badge variant-filled-warning text-xs" title="Dostignut limit za vaš plan">
+					🔒 Limit: {$uzgajivacnice.length}/{$tierLimits.max_uzgajivacnice}
+				</span>
+			{:else}
+				<button class="btn btn-sm variant-filled-primary" on:click={otvoriNova}>
+					+ Nova uzgajivačnica
+				</button>
+			{/if}
 		{/if}
 	</div>
 
@@ -240,8 +251,9 @@
 					/>
 					<span class="text-xs text-surface-400">{t.ptice.prsten_prefiksOpis}</span>
 				</label>
+				{#if jeAdminUser}
 				<label class="label">
-					<span class="text-sm font-medium">{t.uzgajivac.appUrl}</span>
+					<span class="text-sm font-medium">{t.uzgajivac.appUrl} <span class="badge variant-filled-warning text-xs ml-1">Admin</span></span>
 					<input
 						class="input font-mono text-sm"
 						type="url"
@@ -251,6 +263,7 @@
 					/>
 					<span class="text-xs text-surface-400">{t.uzgajivac.appUrlOpis}</span>
 				</label>
+				{/if}
 			</div>
 
 			<div class="flex gap-3 pt-1">

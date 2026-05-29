@@ -3,6 +3,11 @@ import type { VrstaPtica, FazaCiklusa } from '$lib/db/schema';
 import { supabase } from '$lib/supabase/client';
 import { db } from '$lib/db/dexie';
 import { faze } from '$lib/stores/ciklus';
+import { loadAllUserTiers, setUserTier, allUserTiers } from '$lib/stores/userTier';
+import type { Tier } from '$lib/stores/userTier';
+
+export { loadAllUserTiers, setUserTier, allUserTiers };
+export type { Tier };
 
 export const vrstePtica = writable<VrstaPtica[]>([]);
 export const adminLoading = writable(false);
@@ -123,4 +128,36 @@ export async function deleteFaza(id: string) {
   if (error) throw new Error(error.message);
   await db.faze_ciklusa.delete(id);
   faze.update((f) => f.filter((fz) => fz.id !== id));
+}
+
+// ── Uzgajivačnice (admin — svi korisnici) ───────────────────
+
+export interface AdminUzgajivacnica {
+  id: string;
+  user_id: string;
+  naziv: string;
+  app_url?: string;
+  prsten_prefiks?: string;
+}
+
+export const adminUzgajivacnice = writable<AdminUzgajivacnica[]>([]);
+
+export async function loadAdminUzgajivacnice(): Promise<void> {
+  const { data, error } = await supabase
+    .from('uzgajivacnice')
+    .select('id, user_id, naziv, app_url, prsten_prefiks')
+    .order('naziv');
+  if (error) throw new Error(error.message);
+  adminUzgajivacnice.set((data ?? []) as AdminUzgajivacnica[]);
+}
+
+export async function adminUpdateAppUrl(uzgajivacnicaId: string, appUrl: string): Promise<void> {
+  const { error } = await supabase
+    .from('uzgajivacnice')
+    .update({ app_url: appUrl.trim(), updated_at: new Date().toISOString() })
+    .eq('id', uzgajivacnicaId);
+  if (error) throw new Error(error.message);
+  adminUzgajivacnice.update((list) =>
+    list.map((u) => (u.id === uzgajivacnicaId ? { ...u, app_url: appUrl.trim() } : u))
+  );
 }

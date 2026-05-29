@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { user } from '$lib/stores/auth';
-	import { isAdmin, vrstePtica, adminLoading, loadVrstePtica, createVrstaPtica, updateVrstaPtica, deleteVrstaPtica, loadFazeZaVrstu, createFaza, updateFaza, deleteFaza } from '$lib/stores/admin';
+	import {
+		isAdmin, vrstePtica, adminLoading,
+		loadVrstePtica, createVrstaPtica, updateVrstaPtica, deleteVrstaPtica,
+		loadFazeZaVrstu, createFaza, updateFaza, deleteFaza,
+		loadAllUserTiers, setUserTier, allUserTiers,
+		loadAdminUzgajivacnice, adminUpdateAppUrl, adminUzgajivacnice
+	} from '$lib/stores/admin';
+	import { TIER_LIMITS } from '$lib/stores/userTier';
+	import type { Tier } from '$lib/stores/userTier';
 	import { goto } from '$app/navigation';
 	import type { VrstaPtica, FazaCiklusa } from '$lib/db/schema';
 
@@ -38,9 +46,45 @@
 	let brisiVrstaId: string | null = null;
 	let brisiFazaId: string | null = null;
 
+	// ── Tier / Korisnici state ───────────────────────────────────
+	let tierLoading = false;
+	let tierError = '';
+	const TIER_OPTIONS: Tier[] = ['free', 'paid_1', 'paid_2', 'paid_3', 'admin'];
+
+	// App URL state
+	let appUrlEdit: Record<string, string> = {};
+	let appUrlSaving: Record<string, boolean> = {};
+
+	async function handleSetTier(userId: string, tier: Tier) {
+		tierLoading = true;
+		tierError = '';
+		try {
+			await setUserTier(userId, tier);
+		} catch (e) {
+			tierError = e instanceof Error ? e.message : 'Greška';
+		} finally {
+			tierLoading = false;
+		}
+	}
+
+	async function handleSaveAppUrl(uzId: string) {
+		appUrlSaving = { ...appUrlSaving, [uzId]: true };
+		try {
+			await adminUpdateAppUrl(uzId, appUrlEdit[uzId] ?? '');
+		} finally {
+			appUrlSaving = { ...appUrlSaving, [uzId]: false };
+		}
+	}
+
 	onMount(async () => {
 		if (!isAdmin($user?.email)) return;
-		await loadVrstePtica();
+		await Promise.all([
+			loadVrstePtica(),
+			loadAllUserTiers(),
+			loadAdminUzgajivacnice()
+		]);
+		// Popuni app_url edit stanja
+		$adminUzgajivacnice.forEach((u) => { appUrlEdit[u.id] = u.app_url ?? ''; });
 	});
 
 	// ── Helpers ─────────────────────────────────────────────────
@@ -211,10 +255,93 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h2 class="h3 font-bold">🔧 Administracija</h2>
-			<p class="text-sm text-surface-500">Upravljanje vrstama ptica i fazama uzgoja</p>
+			<p class="text-sm text-surface-500">Upravljanje korisnicima, vrstama ptica i fazama</p>
 		</div>
 		<a href="/kavezi" class="btn btn-sm variant-ghost-surface">← Nazad</a>
 	</div>
+
+	<!-- ── Korisnici / Tierovi ──────────────────────────────── -->
+	<section class="space-y-3">
+		<h3 class="h4 font-bold">👤 Korisnici</h3>
+
+		{#if tierError}
+			<aside class="alert variant-filled-error py-2 px-3 text-sm"><p>{tierError}</p></aside>
+		{/if}
+
+		<div class="card overflow-hidden">
+			<table class="table table-compact w-full text-sm">
+				<thead>
+					<tr>
+						<th>Email</th>
+						<th>Tier</th>
+						<th>Limiti</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each $allUserTiers as row (row.user_id)}
+						<tr>
+							<td class="font-mono text-xs">{row.email}</td>
+							<td>
+								<select
+									class="select select-sm text-xs py-0.5"
+									value={row.tier}
+									disabled={tierLoading}
+									on:change={(e) => handleSetTier(row.user_id, /** @type {Tier} */ (e.currentTarget.value))}
+								>
+									{#each TIER_OPTIONS as t}
+										<option value={t}>{TIER_LIMITS[t].label}</option>
+									{/each}
+								</select>
+							</td>
+							<td class="text-xs text-surface-500">
+								{#if TIER_LIMITS[row.tier].max_ptice !== null}
+									{TIER_LIMITS[row.tier].max_uzgajivacnice} uzg. / {TIER_LIMITS[row.tier].max_ptice} ptica
+								{:else}
+									Neograničeno
+								{/if}
+							</td>
+						</tr>
+					{/each}
+					{#if $allUserTiers.length === 0}
+						<tr><td colspan="3" class="text-center text-surface-400 py-4">Nema korisnika</td></tr>
+					{/if}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<!-- ── App URL (QR kodovi) ──────────────────────────────── -->
+	<section class="space-y-3">
+		<h3 class="h4 font-bold">🔗 App URL (za QR kodove)</h3>
+		<p class="text-sm text-surface-500">Ovo polje određuje URL koji se upisuje u QR kod na rodovnicima. Vidljivo samo adminu.</p>
+
+		<div class="space-y-2">
+			{#each $adminUzgajivacnice as uz (uz.id)}
+				<div class="card p-3 flex gap-3 items-center">
+					<div class="flex-1 min-w-0">
+						<p class="text-sm font-medium truncate">{uz.naziv}</p>
+						<p class="text-xs text-surface-400 font-mono truncate">{uz.user_id.slice(0, 8)}…</p>
+					</div>
+					<input
+						class="input input-sm font-mono text-xs flex-1"
+						type="url"
+						placeholder="https://..."
+						bind:value={appUrlEdit[uz.id]}
+					/>
+					<button
+						class="btn btn-sm variant-filled-primary shrink-0"
+						disabled={appUrlSaving[uz.id]}
+						on:click={() => handleSaveAppUrl(uz.id)}
+					>
+						{appUrlSaving[uz.id] ? '↻' : 'Spremi'}
+					</button>
+				</div>
+			{/each}
+			{#if $adminUzgajivacnice.length === 0}
+				<p class="text-sm text-surface-400 text-center py-4">Nema uzgajivačnica</p>
+			{/if}
+		</div>
+	</section>
 
 	<!-- ── Vrste ptica ──────────────────────────────────────── -->
 	<section class="space-y-3">

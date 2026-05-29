@@ -10,6 +10,7 @@
 	import { isAdmin } from '$lib/stores/admin';
 	import { t } from '$lib/i18n';
 	import { uzgajivacnice, aktivnaUzgajivacnica, loadUzgajivacnice, setAktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
+	import { loadUserTier } from '$lib/stores/userTier';
 
 	initializeStores();
 	const toastStore = getToastStore();
@@ -22,6 +23,7 @@
 		authLoading = false;
 		if (currentSession?.user?.id) {
 			loadUzgajivacnice(currentSession.user.id);
+			loadUserTier(currentSession.user.id, currentSession.user.email ?? '');
 		}
 
 		// Registracija Service Workera

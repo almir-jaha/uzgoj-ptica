@@ -6,6 +6,7 @@
 	import { ptice, filtriranePtice, pticeMuzjaci, pticeSenke, pticaLoading, loadPtice } from '$lib/stores/ptice';
 	import { aktivnaSezona } from '$lib/stores/sezona';
 	import { aktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
+	import { tierLimits, jeNaLimitPtica } from '$lib/stores/userTier';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
@@ -151,9 +152,15 @@
 	<div class="flex items-center justify-between">
 		<h2 class="h3 font-bold">{t.ptice.title}</h2>
 		{#if !loading}
-			<button class="btn variant-filled-primary btn-sm" on:click={otvoriNova}>
-				{t.ptice.novaPtica}
-			</button>
+			{#if jeNaLimitPtica($ptice.length, $tierLimits)}
+				<span class="badge variant-filled-warning text-xs" title="Dostignut limit za vaš plan">
+					🔒 {$ptice.length}/{$tierLimits.max_ptice} ptica
+				</span>
+			{:else}
+				<button class="btn variant-filled-primary btn-sm" on:click={otvoriNova}>
+					{t.ptice.novaPtica}
+				</button>
+			{/if}
 		{/if}
 	</div>
 
