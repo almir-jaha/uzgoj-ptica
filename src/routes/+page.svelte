@@ -13,6 +13,12 @@
 	let emailNijePotvrdjen = false;
 	let resendLoading = false;
 	let showPassword = false;
+	let passwordInput: HTMLInputElement;
+
+	function togglePassword() {
+		showPassword = !showPassword;
+		if (passwordInput) passwordInput.type = showPassword ? 'text' : 'password';
+	}
 
 	async function resendConfirmation() {
 		if (!email) return;
@@ -121,7 +127,8 @@
 					<div class="relative">
 						<input
 							class="input px-4 pr-11"
-							type={showPassword ? 'text' : 'password'}
+							type="password"
+							bind:this={passwordInput}
 							bind:value={password}
 							placeholder="••••••••"
 							autocomplete={isRegistering ? 'new-password' : 'current-password'}
@@ -133,7 +140,7 @@
 							type="button"
 							class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors"
 							tabindex="-1"
-							on:click={() => (showPassword = !showPassword)}
+							on:click={togglePassword}
 							aria-label={showPassword ? 'Sakrij lozinku' : 'Prikaži lozinku'}
 						>
 							{#if showPassword}
