@@ -22,11 +22,17 @@ export const aktivnaUzgajivacnica = derived(
   ([$lista, $id]) => $lista.find((u) => u.id === $id) ?? $lista[0] ?? null
 );
 
+export async function clearUzgajivacniceStore(): Promise<void> {
+  uzgajivacnice.set([]);
+  aktivnaUzgajivacnicaId.set(null);
+}
+
 export async function loadUzgajivacnice(userId: string): Promise<void> {
   uzgajivacniceLoading.set(true);
+  uzgajivacnice.set([]); // Uvijek resetuj — sprječava curenje podataka između usera
   try {
     const local = await db.uzgajivacnice.where('user_id').equals(userId).toArray();
-    if (local.length) uzgajivacnice.set(local);
+    uzgajivacnice.set(local);
 
     const { data, error } = await supabase
       .from('uzgajivacnice')

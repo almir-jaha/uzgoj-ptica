@@ -9,8 +9,10 @@
 	import { isOnline } from '$lib/stores/network';
 	import { isAdmin } from '$lib/stores/admin';
 	import { t } from '$lib/i18n';
-	import { uzgajivacnice, aktivnaUzgajivacnica, loadUzgajivacnice, setAktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
-	import { loadUserTier } from '$lib/stores/userTier';
+	import { uzgajivacnice, aktivnaUzgajivacnica, loadUzgajivacnice, setAktivnaUzgajivacnica, clearUzgajivacniceStore } from '$lib/stores/uzgajivacnica';
+	import { loadUserTier, userTier } from '$lib/stores/userTier';
+	import { ptice } from '$lib/stores/ptice';
+	import { sezone } from '$lib/stores/sezona';
 
 	initializeStores();
 	const toastStore = getToastStore();
@@ -57,6 +59,15 @@
 	}
 
 	$: if (!authLoading && !$isAuthenticated && $page.url.pathname !== '/' && !$page.url.pathname.startsWith('/ptica/')) {
+		// Očisti sve store-ove i localStorage pri logout-u
+		clearUzgajivacniceStore();
+		ptice.set([]);
+		sezone.set([]);
+		userTier.set('free');
+		if (typeof localStorage !== 'undefined') {
+			localStorage.removeItem('aktivna_uzgajivacnica_id');
+			localStorage.removeItem('pregled_sezona_id');
+		}
 		goto('/');
 	}
 

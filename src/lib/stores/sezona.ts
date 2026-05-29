@@ -50,6 +50,8 @@ export const prikazanaSezona = derived(
 export async function loadSezone(userId: string) {
   sezonaLoading.set(true);
   sezonaError.set(null);
+  sezone.set([]); // Uvijek resetuj — sprječava curenje podataka između usera
+  kavezi.set([]);
   try {
     const localSezone = await db.sezona.where('user_id').equals(userId).toArray();
     sezone.set(localSezone);

@@ -14,6 +14,7 @@ export const pticaError = writable<string | null>(null);
 export async function loadPtice(userId: string) {
   pticaLoading.set(true);
   pticaError.set(null);
+  ptice.set([]); // Uvijek resetuj — sprječava curenje podataka između usera
 
   try {
     // Prvo iz IndexedDB
