@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { isAuthenticated, session } from '$lib/stores/auth';
 	import { signIn, signUp } from '$lib/supabase/auth';
+	import { supabase } from '$lib/supabase/client';
 	import { t } from '$lib/i18n';
 
 	let email = '';
@@ -9,11 +10,30 @@
 	let loading = false;
 	let errorMsg = '';
 	let successMsg = '';
+	let emailNijePotvrdjen = false;
+	let resendLoading = false;
+
+	async function resendConfirmation() {
+		if (!email) return;
+		resendLoading = true;
+		errorMsg = '';
+		try {
+			const { error } = await supabase.auth.resend({ type: 'signup', email });
+			if (error) throw error;
+			successMsg = 'Novi mail je poslan. Provjerite inbox (i spam folder).';
+			emailNijePotvrdjen = false;
+		} catch (err) {
+			errorMsg = err instanceof Error ? err.message : 'Greška pri slanju maila';
+		} finally {
+			resendLoading = false;
+		}
+	}
 
 	async function handleSubmit() {
 		loading = true;
 		errorMsg = '';
 		successMsg = '';
+		emailNijePotvrdjen = false;
 
 		try {
 			if (isRegistering) {
@@ -36,6 +56,7 @@
 					errorMsg = t.auth.pogresanEmailLozinka;
 				} else if (err.message.includes('Email not confirmed')) {
 					errorMsg = t.auth.emailNijePotvrdjen;
+					emailNijePotvrdjen = true;
 				} else {
 					errorMsg = err.message;
 				}
@@ -115,7 +136,19 @@
 				{#if errorMsg}
 					<aside class="alert variant-filled-error py-2 px-3 text-sm">
 						<span>⚠</span>
-						<div class="alert-message">{errorMsg}</div>
+						<div class="alert-message">
+							{errorMsg}
+							{#if emailNijePotvrdjen}
+								<button
+									type="button"
+									class="block mt-2 underline text-white font-medium"
+									disabled={resendLoading || !email}
+									on:click={resendConfirmation}
+								>
+									{resendLoading ? '↻ Šalje se...' : '→ Pošalji novi mail za potvrdu'}
+								</button>
+							{/if}
+						</div>
 					</aside>
 				{/if}
 
