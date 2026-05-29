@@ -17,9 +17,6 @@
 	import { tierLimits, jeNaLimitUzgajivacnica } from '$lib/stores/userTier';
 	import SlikaUnos from '$lib/components/SlikaUnos.svelte';
 	import { t } from '$lib/i18n';
-	import { supabase } from '$lib/supabase/client';
-
-	let debugInfo = '';
 
 	let editId: string | null = null; // ID uzgajivačnice koja se uređuje (null = nova)
 	let showForm = false;
@@ -40,15 +37,6 @@
 			loadSezone(currentUser.id)
 		]);
 
-		// DEBUG — privremeno, briše se nakon dijagnostike
-		const { data, error } = await supabase.from('uzgajivacnice').select('id, naziv, user_id');
-		const session = await supabase.auth.getSession();
-		debugInfo = JSON.stringify({
-			userId: currentUser.id,
-			sessionUserId: session.data.session?.user?.id,
-			supabaseData: data,
-			supabaseError: error?.message
-		}, null, 2);
 	});
 
 	function otvoriNova() {
@@ -108,9 +96,6 @@
 
 <div class="container mx-auto p-4 space-y-5 max-w-lg">
 
-	{#if debugInfo}
-	<pre class="text-xs bg-surface-200-700-token p-3 rounded-lg overflow-auto max-h-48">{debugInfo}</pre>
-	{/if}
 
 	<div class="flex items-center justify-between">
 		<h2 class="h3 font-bold">{t.uzgajivacnica.title}</h2>
