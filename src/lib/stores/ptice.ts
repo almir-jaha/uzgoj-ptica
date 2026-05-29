@@ -17,11 +17,12 @@ export async function loadPtice(userId: string) {
   ptice.set([]); // Uvijek resetuj — sprječava curenje podataka između usera
 
   try {
-    // Prvo iz IndexedDB
-    const localPtice = await db.ptice.where('user_id').equals(userId).toArray();
-    ptice.set(localPtice);
+    // Dexie — odvojen try/catch da greška ne blokira Supabase
+    try {
+      const localPtice = await db.ptice.where('user_id').equals(userId).toArray();
+      if (localPtice.length) ptice.set(localPtice);
+    } catch { /* Dexie nije dostupan — nastavljamo sa Supabase */ }
 
-    // Zatim sinhronizuj sa Supabase
     const { data, error } = await supabase
       .from('ptice')
       .select('*')
@@ -29,10 +30,9 @@ export async function loadPtice(userId: string) {
 
     if (error) throw error;
 
-    // Ažuriraj IndexedDB
     if (data) {
-      await db.ptice.bulkPut(data);
       ptice.set(data);
+      try { if (data.length) await db.ptice.bulkPut(data); } catch { /* ignore */ }
     }
   } catch (err) {
     pticaError.set(err instanceof Error ? err.message : 'Greška pri učitavanju ptica');

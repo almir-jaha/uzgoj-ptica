@@ -31,8 +31,11 @@ export async function loadUzgajivacnice(userId: string): Promise<void> {
   uzgajivacniceLoading.set(true);
   uzgajivacnice.set([]); // Uvijek resetuj — sprječava curenje podataka između usera
   try {
-    const local = await db.uzgajivacnice.where('user_id').equals(userId).toArray();
-    uzgajivacnice.set(local);
+    // Dexie — odvojen try/catch da greška ne blokira Supabase
+    try {
+      const local = await db.uzgajivacnice.where('user_id').equals(userId).toArray();
+      if (local.length) uzgajivacnice.set(local);
+    } catch { /* Dexie nije dostupan — nastavljamo sa Supabase */ }
 
     const { data, error } = await supabase
       .from('uzgajivacnice')
@@ -41,16 +44,18 @@ export async function loadUzgajivacnice(userId: string): Promise<void> {
       .order('created_at', { ascending: true });
 
     if (error) throw error;
-    if (data && data.length > 0) {
-      await db.uzgajivacnice.bulkPut(data);
+    if (data) {
       uzgajivacnice.set(data);
+      try { if (data.length) await db.uzgajivacnice.bulkPut(data); } catch { /* ignore */ }
 
-      // Ako nema aktivne ili aktivna ne postoji više — postavi prvu
+      // Postavi aktivnu ako nije već postavljena ili ne postoji više
       const currentId = browser ? localStorage.getItem('aktivna_uzgajivacnica_id') : null;
-      if (!currentId || !data.find((u) => u.id === currentId)) {
+      if (data.length && (!currentId || !data.find((u) => u.id === currentId))) {
         aktivnaUzgajivacnicaId.set(data[0].id);
       }
     }
+  } catch (err) {
+    console.error('[loadUzgajivacnice] Greška:', err);
   } finally {
     uzgajivacniceLoading.set(false);
   }
