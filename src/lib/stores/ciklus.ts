@@ -208,6 +208,19 @@ export async function loadAktivnosti(ciklusId: string) {
   }
 }
 
+// Poništi obavljanje aktivnosti (uncheck)
+export async function clearAktivnostDatum(aktivnostId: string): Promise<void> {
+  try {
+    const updated = { datum: null, updated_at: new Date().toISOString() };
+    await db.aktivnosti_ciklusa.update(aktivnostId, updated);
+    aktivnosti.update((a) => a.map((ak) => ak.id === aktivnostId ? { ...ak, ...updated } : ak));
+    await supabase.from('aktivnosti_ciklusa').update(updated).eq('id', aktivnostId);
+  } catch (err) {
+    console.error('Greška pri poništavanju aktivnosti:', err);
+    throw err;
+  }
+}
+
 // Zapiši obavljenu aktivnost
 export async function updateAktivnost(
   aktivnostId: string,

@@ -5,7 +5,7 @@
 
 	import { user } from '$lib/stores/auth';
 	import { prikazanaSezona, kavezi, loadSezone, loadKavezi } from '$lib/stores/sezona';
-	import { ciklusi, faze, loadCiklusi, loadFaze } from '$lib/stores/ciklus';
+	import { ciklusi, faze, loadCiklusi, loadFaze, updateAktivnost, clearAktivnostDatum } from '$lib/stores/ciklus';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
@@ -19,21 +19,29 @@
 	} from '$lib/utils/notifications';
 
 	interface DnevnikStavka {
+		aktivnostId: string;
 		kavez: Kavez | undefined;
 		kavezOznaka: number;
 		faza: FazaCiklusa | undefined;
 		ciklus: Ciklus;
+		jeDone: boolean;
 	}
 
 	let loading = true;
 	let odabraniDatum = new Date().toISOString().split('T')[0];
 	let dnevnik: DnevnikStavka[] = [];
-	let checked = new Set<string>(); // lokalni check — resetuje se pri promjeni dana
+	let checked = new Set<string>(); // aktivnostId-ovi koji su označeni
 
-	function toggleCheck(id: string) {
-		if (checked.has(id)) checked.delete(id);
-		else checked.add(id);
-		checked = checked;
+	async function toggleCheck(aktivnostId: string) {
+		if (checked.has(aktivnostId)) {
+			checked.delete(aktivnostId);
+			checked = checked;
+			await clearAktivnostDatum(aktivnostId).catch(console.error);
+		} else {
+			checked.add(aktivnostId);
+			checked = checked;
+			await updateAktivnost(aktivnostId, odabraniDatum, '').catch(console.error);
+		}
 	}
 
 	// Notifikacije
@@ -97,15 +105,19 @@
 				const kavez = $kavezi.find((k) => k.id === ciklus.kavez_id);
 				const faza = $faze.find((f) => f.id === a.faza_id);
 				return {
+					aktivnostId: a.id,
 					kavez,
 					kavezOznaka: kavez?.oznaka ?? 0,
 					faza,
-					ciklus
+					ciklus,
+					jeDone: !!a.datum
 				};
 			})
 			.filter((s): s is DnevnikStavka => s !== null)
 			.sort((a, b) => a.kavezOznaka - b.kavezOznaka);
 
+		// Inicijalizuj checked iz baze (već označene aktivnosti)
+		checked = new Set(stavke.filter((s) => s.jeDone).map((s) => s.aktivnostId));
 		dnevnik = stavke;
 	}
 
@@ -259,8 +271,8 @@
 		<p class="text-xs text-surface-400 px-1">{dnevnik.length} {dnevnik.length === 1 ? 'kavez zahtijeva pažnju' : 'kaveza zahtijevaju pažnju'}</p>
 
 		<div class="space-y-2">
-			{#each dnevnik as s (s.ciklus.id)}
-				{@const jeChecked = checked.has(s.ciklus.id)}
+			{#each dnevnik as s (s.aktivnostId)}
+				{@const jeChecked = checked.has(s.aktivnostId)}
 				<div class="card p-4 flex items-center gap-4 transition-opacity {jeChecked ? 'opacity-40' : ''}">
 					<!-- Broj kaveza -->
 					<div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg
@@ -282,7 +294,7 @@
 					<button
 						class="no-print w-8 h-8 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors
 							{jeChecked ? 'bg-success-500 border-success-500 text-white' : 'border-surface-300-600-token text-transparent hover:border-success-400'}"
-						on:click={() => toggleCheck(s.ciklus.id)}
+						on:click={() => toggleCheck(s.aktivnostId)}
 						title={jeChecked ? 'Označeno kao završeno' : 'Označi kao završeno'}
 					>
 						✓
