@@ -115,9 +115,13 @@ export const filtriranePtice = derived(
 export const pticePo = (vrstaId: string) =>
   derived(filtriranePtice, ($ptice) => $ptice.filter((p) => p.vrsta_ptica_id === vrstaId));
 
-// Filter - mužjaci/ženke (iz aktivne uzgajivačnice)
-export const pticeMuzjaci = derived(filtriranePtice, ($ptice) => $ptice.filter((p) => p.spol === 'M'));
-export const pticeSenke = derived(filtriranePtice, ($ptice) => $ptice.filter((p) => p.spol === 'Ž'));
+// Filter - mužjaci/ženke (iz aktivne uzgajivačnice, samo dostupne)
+export const pticeMuzjaci = derived(filtriranePtice, ($ptice) =>
+  $ptice.filter((p) => p.spol === 'M' && (!p.status_evidencije || p.status_evidencije === 'aktivna'))
+);
+export const pticeSenke = derived(filtriranePtice, ($ptice) =>
+  $ptice.filter((p) => p.spol === 'Ž' && (!p.status_evidencije || p.status_evidencije === 'aktivna'))
+);
 
 // Pregled rodovnika
 export async function getRodovnik(pticaId: string) {

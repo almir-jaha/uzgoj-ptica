@@ -80,9 +80,9 @@
 	const navLinks = [
 		{ href: '/uzgajivacnica', icon: '🏡', label: 'Uzgajivač.' },
 		{ href: '/sezone',        icon: '📅', label: 'Sezone' },
+		{ href: '/parovi',        icon: '💑', label: 'Parovi' },
 		{ href: '/ptice',         icon: '🐦', label: 'Ptice' },
-		{ href: '/aktivnosti',    icon: '📋', label: 'Akt.' },
-		{ href: '/statistike',    icon: '📊', label: 'Stat.' }
+		{ href: '/aktivnosti',    icon: '📋', label: 'Akt.' }
 	];
 </script>
 
@@ -127,6 +127,7 @@
 					<nav class="hidden sm:flex items-center gap-1">
 						<a href="/uzgajivacnica" class="btn btn-sm {$page.url.pathname.startsWith('/uzgajivacnica') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.uzgajivacnica}</a>
 						<a href="/sezone"        class="btn btn-sm {$page.url.pathname.startsWith('/sezone') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.sezone}</a>
+						<a href="/parovi"        class="btn btn-sm {$page.url.pathname.startsWith('/parovi') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.parovi}</a>
 						<a href="/ptice"         class="btn btn-sm {$page.url.pathname.startsWith('/ptice') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.ptice}</a>
 						<a href="/aktivnosti"    class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.aktivnosti}</a>
 						<a href="/statistike"    class="btn btn-sm {$page.url.pathname.startsWith('/statistike') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.statistike}</a>

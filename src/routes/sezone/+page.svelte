@@ -250,6 +250,13 @@
 					</button>
 				{/if}
 				{#if !pregledArhive && $prikazanaSezona}
+					<a
+						href="/parovi"
+						class="btn btn-sm variant-ghost-tertiary"
+						title="Parovi ove sezone"
+					>
+						💑 Parovi
+					</a>
 					<button
 						class="btn btn-sm variant-ghost-surface"
 						on:click={() => (urediSezonuOpen = true)}

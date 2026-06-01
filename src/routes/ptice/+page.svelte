@@ -84,6 +84,43 @@
 		modalOtvoren = true;
 	}
 
+	// Status evidencije
+	const STATUS_OPCIJE = [
+		{ value: 'aktivna',    label: '✅ Aktivna' },
+		{ value: 'uginula',    label: '💀 Uginula' },
+		{ value: 'prodata',    label: '💰 Prodata' },
+		{ value: 'poklonjena', label: '🎁 Poklonjena' },
+		{ value: 'ostalo',     label: '📝 Ostalo' }
+	];
+
+	let statusPtica: Ptica | null = null;
+	let statusVrijednost = 'aktivna';
+	let statusDatum = new Date().toISOString().split('T')[0];
+	let statusNapomena = '';
+	let statusLoading = false;
+
+	function otvoriStatus(ptica: Ptica) {
+		statusPtica = ptica;
+		statusVrijednost = ptica.status_evidencije ?? 'aktivna';
+		statusDatum = new Date().toISOString().split('T')[0];
+		statusNapomena = '';
+	}
+
+	async function sacuvajStatus() {
+		if (!statusPtica) return;
+		statusLoading = true;
+		try {
+			await updatePtica(statusPtica.id, {
+				status_evidencije: statusVrijednost as Ptica['status_evidencije'],
+				datum_statusa: statusDatum || undefined,
+				napomena_statusa: statusNapomena.trim() || undefined
+			});
+			statusPtica = null;
+		} finally {
+			statusLoading = false;
+		}
+	}
+
 	// Godina aktivne sezone (ili tekuća godina ako nema sezone)
 	$: tekucaGodina = $aktivnaSezona?.godina ?? new Date().getFullYear();
 
@@ -261,19 +298,19 @@
 								<p class="font-semibold truncate">
 									{ptica.naziv || ptica.prstena_oznaka || ptica.id.slice(0, 8)}
 								</p>
-								<div class="flex gap-1 shrink-0">
+								<div class="flex gap-1 shrink-0 flex-wrap justify-end">
+									{#if ptica.status_evidencije && ptica.status_evidencije !== "aktivna"}
+										<span class="badge variant-filled-error text-xs self-center">
+											{STATUS_OPCIJE.find(o => o.value === ptica.status_evidencije)?.label ?? ptica.status_evidencije}
+										</span>
+									{/if}
+									<button class="btn btn-sm variant-ghost-surface" on:click={() => otvoriUredi(ptica)}>{t.ptice.uredi}</button>
+									<button class="btn btn-sm variant-ghost-tertiary" on:click={() => otvoriRodovnik(ptica)}>Pedigre</button>
 									<button
-										class="btn btn-sm variant-ghost-surface"
-										on:click={() => otvoriUredi(ptica)}
-									>
-										{t.ptice.uredi}
-									</button>
-									<button
-										class="btn btn-sm variant-ghost-tertiary"
-										on:click={() => otvoriRodovnik(ptica)}
-									>
-										Pedigre
-									</button>
+										class="btn btn-sm {ptica.status_evidencije && ptica.status_evidencije !== 'aktivna' ? 'variant-soft-error' : 'variant-ghost-surface'}"
+										on:click={() => otvoriStatus(ptica)}
+										title="Status ptice"
+									>📋</button>
 								</div>
 							</div>
 
@@ -332,4 +369,53 @@
 		ptica={rodovnikPtica}
 		onClose={() => { rodovnikModalOtvoren = false; rodovnikPtica = null; }}
 	/>
+{/if}
+
+<!-- Status evidencije modal -->
+{#if statusPtica}
+	<div
+		class="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-4"
+		role="presentation"
+		on:click|self={() => statusPtica = null}
+		on:keydown={(e) => e.key === "Escape" && (statusPtica = null)}
+	>
+		<div class="card w-full max-w-sm p-6 space-y-4">
+			<header class="flex items-center justify-between">
+				<h3 class="h4 font-bold">Status ptice</h3>
+				<button class="btn-icon btn-icon-sm variant-ghost" on:click={() => statusPtica = null}>✕</button>
+			</header>
+			<p class="text-sm text-surface-500 font-medium truncate">
+				{statusPtica.naziv || statusPtica.prstena_oznaka || statusPtica.id.slice(0, 8)}
+			</p>
+			<div class="space-y-3">
+				<label class="label">
+					<span class="text-sm font-medium">Status</span>
+					<select class="select" bind:value={statusVrijednost} disabled={statusLoading}>
+						{#each STATUS_OPCIJE as op}
+							<option value={op.value}>{op.label}</option>
+						{/each}
+					</select>
+				</label>
+				{#if statusVrijednost !== 'aktivna'}
+					<label class="label">
+						<span class="text-sm font-medium">Datum</span>
+						<input class="input" type="date" bind:value={statusDatum} disabled={statusLoading} />
+					</label>
+					<label class="label">
+						<span class="text-sm font-medium">Napomena</span>
+						<textarea class="textarea text-sm" rows="2" bind:value={statusNapomena}
+							placeholder="Npr. Prodana Ivanu Ivanoviću, Uginula zbog bolesti..."
+							disabled={statusLoading} />
+					</label>
+				{/if}
+			</div>
+			<div class="flex gap-3 pt-1">
+				<button class="btn variant-ghost flex-1" on:click={() => statusPtica = null} disabled={statusLoading}>Odustani</button>
+				<button class="btn variant-filled-primary flex-1" on:click={sacuvajStatus} disabled={statusLoading}>
+					{#if statusLoading}<span class="animate-spin mr-1">↻</span>{/if}
+					Spremi
+				</button>
+			</div>
+		</div>
+	</div>
 {/if}

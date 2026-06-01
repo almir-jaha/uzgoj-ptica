@@ -4,6 +4,7 @@
 	import { t } from '$lib/i18n';
 
 	export let sezonaId: string;
+	export let sezonaGodina: number = new Date().getFullYear();
 	export let onClose: () => void;
 	export let onSuccess: () => void;
 
@@ -16,9 +17,13 @@
 	let loading = false;
 	let errorMsg = '';
 
-	// Spriječi sparivanje iste ptice sa sobom
-	$: zenkeOsimOdabrane = $pticeSenke.filter((p) => p.id !== muzjakId);
-	$: muzjaciOsimOdabrane = $pticeMuzjaci.filter((p) => p.id !== zenkaId);
+	// Samo ptice iz ranijih sezona (ne iz tekuće sezone) + spriječi sparivanje sa sobom
+	function jeDostupnaZaPar(p: { id: string; godina?: number }): boolean {
+		return !p.godina || p.godina < sezonaGodina;
+	}
+
+	$: zenkeOsimOdabrane = $pticeSenke.filter((p) => p.id !== muzjakId && jeDostupnaZaPar(p));
+	$: muzjaciOsimOdabrane = $pticeMuzjaci.filter((p) => p.id !== zenkaId && jeDostupnaZaPar(p));
 
 	function pticaLabel(p: { naziv?: string; prstena_oznaka?: string; id: string }): string {
 		return p.naziv || p.prstena_oznaka || p.id.slice(0, 8);

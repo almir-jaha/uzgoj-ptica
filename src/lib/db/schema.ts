@@ -48,6 +48,10 @@ export interface Ptica {
   napomena_rodovnik?: string;
   slika_url?: string;
   napomena?: string;
+  // Status evidencije — dostupnost za parenje
+  status_evidencije?: 'aktivna' | 'uginula' | 'prodata' | 'poklonjena' | 'ostalo';
+  datum_statusa?: string;
+  napomena_statusa?: string;
   created_at: string;
   updated_at: string;
 }

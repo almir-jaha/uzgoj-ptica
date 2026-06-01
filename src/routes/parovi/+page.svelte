@@ -299,6 +299,7 @@
 {#if novParOpen && $prikazanaSezona}
 	<NovParModal
 		sezonaId={$prikazanaSezona.id}
+		sezonaGodina={$prikazanaSezona.godina}
 		onClose={() => (novParOpen = false)}
 		onSuccess={handleNovPar}
 	/>
