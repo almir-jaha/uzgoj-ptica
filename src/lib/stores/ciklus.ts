@@ -73,7 +73,53 @@ export async function loadCiklusi(sezonaId: string) {
   }
 }
 
-// Kreiraj novi ciklus (leglo)
+// Helper: izračunaj aktivnosti od datuma prvog jajeta
+function buildAktivnosti(ciklusId: string, vrstaFaze: FazaCiklusa[], datum: string): AktivnostCiklusa[] {
+  const startDate = new Date(datum);
+  let akumuliranoDana = 0;
+  return vrstaFaze.map((faza) => {
+    akumuliranoDana += faza.broj_dana;
+    const potrebanDatum = new Date(startDate);
+    potrebanDatum.setDate(potrebanDatum.getDate() + akumuliranoDana);
+    return {
+      id: crypto.randomUUID(),
+      ciklus_id: ciklusId,
+      faza_id: faza.id,
+      datum: null,
+      potreban_datum: potrebanDatum.toISOString().split('T')[0],
+      napomena: '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+  });
+}
+
+// Upiši datum prvog jajeta naknadno i kreiraj aktivnosti
+export async function setDatumPrvogJajeta(ciklusId: string, datum: string): Promise<void> {
+  try {
+    const updated = { datum_prvog_jajeta: datum, updated_at: new Date().toISOString() };
+    await db.ciklusi.update(ciklusId, updated);
+    ciklusi.update((c) => c.map((ck) => ck.id === ciklusId ? { ...ck, ...updated } : ck));
+
+    const ciklus = await db.ciklusi.get(ciklusId);
+    if (!ciklus) return;
+
+    const fazeZaVrstu = await getFazeZaVrstu(ciklus.vrsta_ptica_id);
+    const aktivnostiArray = buildAktivnosti(ciklusId, fazeZaVrstu, datum);
+
+    await db.aktivnosti_ciklusa.bulkAdd(aktivnostiArray);
+    aktivnosti.update((a) => [...a, ...aktivnostiArray]);
+
+    await supabase.from('ciklusi').update(updated).eq('id', ciklusId);
+    const { error } = await supabase.from('aktivnosti_ciklusa').insert(aktivnostiArray);
+    if (error && !isMreznaGreska(error)) throw new Error(error.message);
+  } catch (err) {
+    console.error('Greška pri unosu datuma prvog jajeta:', err);
+    throw err;
+  }
+}
+
+// Kreiraj novi ciklus (leglo) — datum_prvog_jajeta može biti null (unosi se naknadno)
 export async function createCiklus(ciklusData: Omit<Ciklus, 'id' | 'created_at' | 'updated_at'>) {
   try {
     const newCiklus: Ciklus = {
@@ -83,31 +129,12 @@ export async function createCiklus(ciklusData: Omit<Ciklus, 'id' | 'created_at' 
       updated_at: new Date().toISOString()
     };
 
-    // Dohvati faze sortirane po redoslijedu
-    const fazeZaVrstu = await getFazeZaVrstu(ciklusData.vrsta_ptica_id);
-    const startDate = new Date(ciklusData.datum_prvog_jajeta);
-
-    // FIX: Akumuliramo dane kroz faze umjesto da koristimo samo faza.broj_dana
-    // Primjer za Kanarinac: JAJA(0d) → INKUBACIJA(13d) → PRSTENOVANJE(7d) → ODVAJANJE(30d)
-    // D0=jaje, D13=inkubacija gotova, D20=prstenovanje, D50=odvajanje
-    let akumuliranoDana = 0;
-    const aktivnostiArray: AktivnostCiklusa[] = fazeZaVrstu.map((faza) => {
-      akumuliranoDana += faza.broj_dana;
-
-      const potrebanDatum = new Date(startDate);
-      potrebanDatum.setDate(potrebanDatum.getDate() + akumuliranoDana);
-
-      return {
-        id: crypto.randomUUID(),
-        ciklus_id: newCiklus.id,
-        faza_id: faza.id,
-        datum: null, // null dok korisnik ne unese datum obavljanja
-        potreban_datum: potrebanDatum.toISOString().split('T')[0],
-        napomena: '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-    });
+    // Aktivnosti se kreiraju samo ako je datum prvog jajeta poznat
+    const aktivnostiArray: AktivnostCiklusa[] = [];
+    if (ciklusData.datum_prvog_jajeta) {
+      const fazeZaVrstu = await getFazeZaVrstu(ciklusData.vrsta_ptica_id);
+      aktivnostiArray.push(...buildAktivnosti(newCiklus.id, fazeZaVrstu, ciklusData.datum_prvog_jajeta));
+    }
 
     // Sačuvaj lokalno
     await db.ciklusi.add(newCiklus);

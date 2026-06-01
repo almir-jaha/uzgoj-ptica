@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { ciklusi, createCiklus, getFazeZaVrstu, loadFaze } from '$lib/stores/ciklus';
+	import { ciklusi, createCiklus, loadFaze } from '$lib/stores/ciklus';
 	import { ptice, loadPtice } from '$lib/stores/ptice';
 	import { user } from '$lib/stores/auth';
 	import { get } from 'svelte/store';
@@ -74,7 +74,6 @@
 	}
 
 	let odabraniParId = '';
-	let datumPrvogJajeta = new Date().toISOString().split('T')[0];
 	let loading = false;
 	let errorMsg = '';
 
@@ -90,20 +89,17 @@
 			const ptica1 = $ptice.find((p) => p.id === par.ptica1_id);
 			if (!ptica1) throw new Error(t.modali.ciklus.pticaNijePronadjena);
 
-			const vrstaId = ptica1.vrsta_ptica_id;
-
 			await createCiklus({
 				par_id: odabraniParId,
 				kavez_id: kavezId,
 				sezona_id: sezonaId,
-				vrsta_ptica_id: vrstaId,
-				datum_prvog_jajeta: datumPrvogJajeta,
+				vrsta_ptica_id: ptica1.vrsta_ptica_id,
+				datum_prvog_jajeta: null, // unosi se naknadno na kavezu
 				status: 'aktivan'
 			});
 
-			const fazeZaVrstu = await getFazeZaVrstu(vrstaId);
-			const prvaFaza = fazeZaVrstu[0];
-			await updateKavezStatus(kavezId, 'aktivan', prvaFaza?.id);
+			// Kavez postaje aktivan bez faze — faza se postavlja kad se unese prvo jaje
+			await updateKavezStatus(kavezId, 'aktivan', undefined);
 			onSuccess();
 		} catch (err) {
 			errorMsg = err instanceof Error ? err.message : t.modali.ciklus.greska;
@@ -159,18 +155,8 @@
 					</select>
 				</label>
 
-				<label class="label">
-					<span class="text-sm font-medium">{t.modali.ciklus.datumPrvogJajeta}</span>
-					<input
-						class="input"
-						type="date"
-						bind:value={datumPrvogJajeta}
-						required
-						disabled={loading}
-					/>
-				</label>
 
-				{#if errorMsg}
+{#if errorMsg}
 					<aside class="alert variant-filled-error py-2 px-3 text-sm">
 						<p>{errorMsg}</p>
 					</aside>

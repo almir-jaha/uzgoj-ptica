@@ -126,7 +126,7 @@ export interface Ciklus {
   kavez_id: string;
   sezona_id: string;
   vrsta_ptica_id: string;
-  datum_prvog_jajeta: string;
+  datum_prvog_jajeta: string | null; // null dok uzgajivač ne unese datum prvog jajeta
   status: 'aktivan' | 'završen' | 'neuspješan';
   broj_jaja?: number;
   broj_izlijegljenih?: number;
