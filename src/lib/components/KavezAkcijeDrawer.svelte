@@ -188,75 +188,17 @@
 				</div>
 
 				{#if !details.aktivni_ciklus.datum_prvog_jajeta}
-					<!-- Par je spojen, čeka se prvo jaje -->
-					<div class="space-y-3">
-						<p class="text-sm text-surface-500 text-center py-2">
-							Par je smješten. Unesite datum kada se pojavi prvo jaje.
-						</p>
-						{#if !prvoJajeOtvoreno}
-							<button
-								class="btn variant-filled-primary w-full justify-start gap-3"
-								on:click={() => { prvoJajeOtvoreno = true; prvoJajeDatum = new Date().toISOString().split('T')[0]; }}
-							>
-								<span class="text-xl">🥚</span>
-								<span>Unesi datum prvog jajeta</span>
-							</button>
-						{:else}
-							<div class="card variant-soft-primary p-4 space-y-3">
-								<p class="text-sm font-medium">Datum prvog jajeta</p>
-								<input
-									class="input"
-									type="date"
-									bind:value={prvoJajeDatum}
-									disabled={prvoJajeLoading}
-								/>
-								{#if prvoJajeError}
-									<p class="text-xs text-error-500">{prvoJajeError}</p>
-								{/if}
-								<div class="flex gap-2">
-									<button
-										class="btn variant-ghost flex-1"
-										on:click={() => prvoJajeOtvoreno = false}
-										disabled={prvoJajeLoading}
-									>
-										{t.common.odustani}
-									</button>
-									<button
-										class="btn variant-filled-primary flex-1"
-										on:click={sacuvajPrvoJaje}
-										disabled={prvoJajeLoading || !prvoJajeDatum}
-									>
-										{#if prvoJajeLoading}<span class="animate-spin mr-1">↻</span>{/if}
-										Potvrdi
-									</button>
-								</div>
-							</div>
-						{/if}
-						<div class="pt-2 border-t border-surface-300-600-token">
-							<button
-								class="btn variant-soft-error w-full justify-start gap-3"
-								on:click={() => dispatch('zavrsiCiklus')}
-							>
-								<span class="text-xl">🏁</span>
-								<span>{t.kavezi.zavrsiCiklus}</span>
-							</button>
-						</div>
-					</div>
-
+					<p class="text-sm text-surface-500 text-center py-2 mb-2">
+						Par je smješten. Unesite datum kada se pojavi prvo jaje.
+					</p>
 				{:else}
-					<!-- Aktivan ciklus sa datumom — normalne akcije -->
-					<div class="space-y-2">
-						<button
-							class="btn variant-filled-primary w-full justify-start gap-3"
-							on:click={otvoriUnos}
-						>
+					<!-- Normalne akcije -->
+					<div class="space-y-2 mb-2">
+						<button class="btn variant-filled-primary w-full justify-start gap-3" on:click={otvoriUnos}>
 							<span class="text-xl">🐣</span>
 							<span>{t.kavezi.unosMladih}</span>
 						</button>
-						<button
-							class="btn variant-soft w-full justify-start gap-3"
-							on:click={() => (pogled = 'mladi')}
-						>
+						<button class="btn variant-soft w-full justify-start gap-3" on:click={() => (pogled = 'mladi')}>
 							<span class="text-xl">🐦</span>
 							<span>{t.kavezi.pregledMladih}
 								{#if mladi.length > 0}
@@ -264,17 +206,46 @@
 								{/if}
 							</span>
 						</button>
-						<div class="pt-2 border-t border-surface-300-600-token">
-							<button
-								class="btn variant-soft-error w-full justify-start gap-3"
-								on:click={() => dispatch('zavrsiCiklus')}
-							>
-								<span class="text-xl">🏁</span>
-								<span>{t.kavezi.zavrsiCiklus}</span>
-							</button>
-						</div>
 					</div>
 				{/if}
+
+				<!-- Prvo jaje — uvijek vidljivo (unos i ispravka datuma) -->
+				<div class="space-y-2 pt-2 border-t border-surface-300-600-token">
+					{#if !prvoJajeOtvoreno}
+						<button
+							class="btn {details.aktivni_ciklus.datum_prvog_jajeta ? 'variant-soft' : 'variant-filled-primary'} w-full justify-start gap-3"
+							on:click={() => {
+								prvoJajeDatum = details.aktivni_ciklus?.datum_prvog_jajeta ?? new Date().toISOString().split('T')[0];
+								prvoJajeOtvoreno = true;
+							}}
+						>
+							<span class="text-xl">🥚</span>
+							<span>{details.aktivni_ciklus.datum_prvog_jajeta ? 'Ispravi datum prvog jajeta' : 'Unesi datum prvog jajeta'}</span>
+						</button>
+					{:else}
+						<div class="card variant-soft-primary p-4 space-y-3">
+							<p class="text-sm font-medium">Datum prvog jajeta</p>
+							<input class="input" type="date" bind:value={prvoJajeDatum} disabled={prvoJajeLoading} />
+							{#if prvoJajeError}
+								<p class="text-xs text-error-500">{prvoJajeError}</p>
+							{/if}
+							<div class="flex gap-2">
+								<button class="btn variant-ghost flex-1" on:click={() => prvoJajeOtvoreno = false} disabled={prvoJajeLoading}>
+									{t.common.odustani}
+								</button>
+								<button class="btn variant-filled-primary flex-1" on:click={sacuvajPrvoJaje} disabled={prvoJajeLoading || !prvoJajeDatum}>
+									{#if prvoJajeLoading}<span class="animate-spin mr-1">↻</span>{/if}
+									Potvrdi
+								</button>
+							</div>
+						</div>
+					{/if}
+
+					<button class="btn variant-soft-error w-full justify-start gap-3" on:click={() => dispatch('zavrsiCiklus')}>
+						<span class="text-xl">🏁</span>
+						<span>{t.kavezi.zavrsiCiklus}</span>
+					</button>
+				</div>
 			{:else}
 				<!-- Prazan kavez -->
 				<div class="py-4 text-center text-surface-400 text-sm mb-4">

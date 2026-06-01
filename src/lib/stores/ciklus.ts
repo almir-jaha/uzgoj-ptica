@@ -94,23 +94,28 @@ function buildAktivnosti(ciklusId: string, vrstaFaze: FazaCiklusa[], datum: stri
   });
 }
 
-// Upiši datum prvog jajeta naknadno i kreiraj aktivnosti
+// Upiši ili ispravi datum prvog jajeta — briše stare aktivnosti i kreira nove
 export async function setDatumPrvogJajeta(ciklusId: string, datum: string): Promise<void> {
   try {
+    // Obriši postojeće aktivnosti (ispravka datuma)
+    await db.aktivnosti_ciklusa.where('ciklus_id').equals(ciklusId).delete();
+    aktivnosti.update((a) => a.filter((ak) => ak.ciklus_id !== ciklusId));
+    await supabase.from('aktivnosti_ciklusa').delete().eq('ciklus_id', ciklusId);
+
+    // Ažuriraj datum
     const updated = { datum_prvog_jajeta: datum, updated_at: new Date().toISOString() };
     await db.ciklusi.update(ciklusId, updated);
     ciklusi.update((c) => c.map((ck) => ck.id === ciklusId ? { ...ck, ...updated } : ck));
+    await supabase.from('ciklusi').update(updated).eq('id', ciklusId);
 
+    // Kreiraj nove aktivnosti
     const ciklus = await db.ciklusi.get(ciklusId);
     if (!ciklus) return;
-
     const fazeZaVrstu = await getFazeZaVrstu(ciklus.vrsta_ptica_id);
     const aktivnostiArray = buildAktivnosti(ciklusId, fazeZaVrstu, datum);
 
     await db.aktivnosti_ciklusa.bulkAdd(aktivnostiArray);
     aktivnosti.update((a) => [...a, ...aktivnostiArray]);
-
-    await supabase.from('ciklusi').update(updated).eq('id', ciklusId);
     const { error } = await supabase.from('aktivnosti_ciklusa').insert(aktivnostiArray);
     if (error && !isMreznaGreska(error)) throw new Error(error.message);
   } catch (err) {
