@@ -66,8 +66,8 @@ async function buildTree(pticaId: string | undefined, genLevel: number): Promise
 	return { ptica, vrstaLabel: vrsta?.naziv ?? '—', slika, otac, majka };
 }
 
-function spolSimbol(spol?: string): string {
-	return spol === 'M' ? '♂' : spol === 'Ž' ? '♀' : '';
+function spolBoja(spol?: string): string {
+	return spol === 'M' ? '#1565c0' : spol === 'Ž' ? '#c2185b' : '#444';
 }
 
 function prstenStr(p: Ptica): string {
@@ -111,8 +111,18 @@ function buildBirdStack(node: RodovnikNode, genLevel: number): object[] {
 
 	if (p.naziv && prsten) stack.push({ text: prsten, fontSize: fs, color: '#555' });
 
-	const simbol = spolSimbol(p.spol);
-	stack.push({ text: simbol ? `${simbol}  ${node.vrstaLabel}` : node.vrstaLabel, fontSize: fs, color: '#444' });
+	// Pol: plain tekst M/Ž u boji (Unicode simboli ♂/♀ nisu u Roboto fontu)
+	if (p.spol === 'M' || p.spol === 'Ž') {
+		stack.push({
+			columns: [
+				{ text: p.spol, fontSize: fs, bold: true, color: spolBoja(p.spol), width: 'auto' },
+				{ text: `  ${node.vrstaLabel}`, fontSize: fs, color: '#444' }
+			],
+			margin: [0, 0, 0, 0]
+		});
+	} else {
+		stack.push({ text: node.vrstaLabel, fontSize: fs, color: '#444' });
+	}
 
 	if (p.boja && genLevel <= 3) stack.push({ text: p.boja, fontSize: fs - 0.5, color: '#666' });
 	if (p.status_ptica && genLevel <= 2) stack.push({ text: `[${p.status_ptica}]`, fontSize: fs - 1, color: '#888', italics: true });

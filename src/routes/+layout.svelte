@@ -152,7 +152,7 @@
 						<button
 							class="btn btn-sm variant-ghost-surface"
 							title="Izlaz iz aplikacije"
-							on:click={() => window.close()}
+							on:click={() => history.go(-history.length)}
 						>
 							✕
 						</button>
