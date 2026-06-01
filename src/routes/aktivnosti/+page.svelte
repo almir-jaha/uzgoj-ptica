@@ -4,8 +4,8 @@
 	import type { AktivnostCiklusa, Ciklus, FazaCiklusa, Kavez } from '$lib/db/schema';
 
 	import { user } from '$lib/stores/auth';
-	import { aktivnaSezona, prikazanaSezona, kavezi, loadSezone, loadKavezi } from '$lib/stores/sezona';
-	import { ciklusi, faze, loadCiklusi, loadFaze, updateAktivnost } from '$lib/stores/ciklus';
+	import { prikazanaSezona, kavezi, loadSezone, loadKavezi } from '$lib/stores/sezona';
+	import { ciklusi, faze, loadCiklusi, loadFaze } from '$lib/stores/ciklus';
 	import { db } from '$lib/db/dexie';
 	import { supabase } from '$lib/supabase/client';
 	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
@@ -18,21 +18,16 @@
 		syncSubscription
 	} from '$lib/utils/notifications';
 
-	type Hitnost = 'zakasnila' | 'danas' | 'uskoro' | 'buducnost';
-
-	interface AktivnostPrikaz {
-		aktivnost: AktivnostCiklusa;
-		ciklus: Ciklus;
+	interface DnevnikStavka {
 		kavez: Kavez | undefined;
+		kavezOznaka: number;
 		faza: FazaCiklusa | undefined;
-		hitnost: Hitnost;
+		ciklus: Ciklus;
 	}
 
 	let loading = true;
-	let pending: AktivnostPrikaz[] = [];
-	let obavljene: AktivnostCiklusa[] = [];
-	let prikaziObavljene = false;
-	let today = '';
+	let odabraniDatum = new Date().toISOString().split('T')[0];
+	let dnevnik: DnevnikStavka[] = [];
 
 	// Notifikacije
 	let notifPermission: 'unsupported' | 'denied' | 'granted' | 'default' = 'unsupported';
@@ -57,14 +52,9 @@
 		notifError = '';
 		const { ok, error } = await subscribePush(currentUser.id);
 		notifLoading = false;
-		if (ok) {
-			notifSubscribed = true;
-			notifPermission = 'granted';
-		} else if (error === 'permission_denied') {
-			notifPermission = 'denied';
-		} else {
-			notifError = error ?? t.notifikacije.greska;
-		}
+		if (ok) { notifSubscribed = true; notifPermission = 'granted'; }
+		else if (error === 'permission_denied') { notifPermission = 'denied'; }
+		else { notifError = error ?? t.notifikacije.greska; }
 	}
 
 	async function iskljuciNotifikacije() {
@@ -77,89 +67,72 @@
 		notifLoading = false;
 	}
 
-	// Inline "obavi" state — samo jedna kartica je otvorena u isto vrijeme
-	let obavljaId: string | null = null;
-	let obavljaDatum = '';
-	let obavljaNapomena = '';
-	let obavljaLoading = false;
-	let obavljaError = '';
-
-	function izracunajHitnost(potrebanDatum: string): Hitnost {
-		if (potrebanDatum < today) return 'zakasnila';
-		if (potrebanDatum === today) return 'danas';
-		const d = new Date(today);
-		d.setDate(d.getDate() + 7);
-		return potrebanDatum <= d.toISOString().split('T')[0] ? 'uskoro' : 'buducnost';
-	}
-
-	function formatDatum(datum: string): string {
-		return new Date(datum).toLocaleDateString('hr-BA', {
-			day: '2-digit',
-			month: '2-digit',
-			year: 'numeric'
-		});
-	}
-
-	async function ucitajAktivnosti() {
+	async function ucitajDnevnik() {
 		const aktivniIds = $ciklusi.filter((c) => c.status === 'aktivan').map((c) => c.id);
+		if (aktivniIds.length === 0) { dnevnik = []; return; }
 
-		if (aktivniIds.length === 0) {
-			pending = [];
-			obavljene = [];
-			return;
-		}
-
-		// Refresh iz Supabase
+		// Povuci aktivnosti za odabrani dan iz Supabase
 		const { data } = await supabase
 			.from('aktivnosti_ciklusa')
 			.select('*')
 			.in('ciklus_id', aktivniIds)
-			.order('potreban_datum');
+			.eq('potreban_datum', odabraniDatum);
 
-		if (data?.length) {
-			await db.aktivnosti_ciklusa.bulkPut(data);
-		}
+		const aktivnostiZaDan: AktivnostCiklusa[] = data ?? await db.aktivnosti_ciklusa
+			.where('ciklus_id').anyOf(aktivniIds)
+			.filter((a) => a.potreban_datum === odabraniDatum)
+			.toArray();
 
-		// Sve iz Dexie jednim upitom
-		const sve = await db.aktivnosti_ciklusa
-			.where('ciklus_id')
-			.anyOf(aktivniIds)
-			.sortBy('potreban_datum');
+		const stavke: DnevnikStavka[] = aktivnostiZaDan
+			.map((a) => {
+				const ciklus = $ciklusi.find((c) => c.id === a.ciklus_id);
+				if (!ciklus) return null;
+				const kavez = $kavezi.find((k) => k.id === ciklus.kavez_id);
+				const faza = $faze.find((f) => f.id === a.faza_id);
+				return {
+					kavez,
+					kavezOznaka: kavez?.oznaka ?? 0,
+					faza,
+					ciklus
+				};
+			})
+			.filter((s): s is DnevnikStavka => s !== null)
+			.sort((a, b) => a.kavezOznaka - b.kavezOznaka);
 
-		const pArr: AktivnostPrikaz[] = [];
-		const oArr: AktivnostCiklusa[] = [];
-
-		for (const a of sve) {
-			const ciklus = $ciklusi.find((c) => c.id === a.ciklus_id);
-			if (!ciklus) continue;
-			const kavez = $kavezi.find((k) => k.id === ciklus.kavez_id);
-			const faza = $faze.find((f) => f.id === a.faza_id);
-
-			if (a.datum) {
-				oArr.push(a);
-			} else {
-				pArr.push({ aktivnost: a, ciklus, kavez, faza, hitnost: izracunajHitnost(a.potreban_datum) });
-			}
-		}
-
-		pending = pArr;
-		obavljene = oArr;
+		dnevnik = stavke;
 	}
 
-	onMount(async () => {
-		today = new Date().toISOString().split('T')[0];
-		obavljaDatum = today;
+	function pomjeriDan(delta: number) {
+		const d = new Date(odabraniDatum);
+		d.setDate(d.getDate() + delta);
+		odabraniDatum = d.toISOString().split('T')[0];
+	}
 
+	function formatDatumPrikaz(datum: string): string {
+		const d = new Date(datum + 'T12:00:00');
+		const today = new Date().toISOString().split('T')[0];
+		const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+		const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+		if (datum === today) return 'Danas';
+		if (datum === tomorrow) return 'Sutra';
+		if (datum === yesterday) return 'Juče';
+		return d.toLocaleDateString('hr-BA', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+	}
+
+	$: odabraniDatum, $ciklusi.length && $faze.length && $kavezi.length && ucitajDnevnik();
+
+	const today = new Date().toISOString().split('T')[0];
+	$: jeToday = odabraniDatum === today;
+
+	onMount(async () => {
 		await initNotifStatus();
 
 		const currentUser = get(user);
 		if (!currentUser) return;
 
-		// Brzo iz Dexie
 		await lokalnoSezone(currentUser.id);
 		let sezona = get(prikazanaSezona);
 
-		// Direktna navigacija: sezone još nisu učitane
 		if (!sezona) {
 			await loadSezone(currentUser.id);
 			sezona = get(prikazanaSezona);
@@ -168,64 +141,26 @@
 		if (!sezona) { loading = false; return; }
 
 		await lokalnoPodaci(sezona.id, currentUser.id);
-		await ucitajAktivnosti();
+		await ucitajDnevnik();
 		loading = false;
 
-		// Background: bez loadSezone — izaziva race condition na parovi/aktivnosti stranicama
 		Promise.all([
 			loadKavezi(sezona.id),
 			loadCiklusi(sezona.id),
 			loadFaze()
-		]).then(() => ucitajAktivnosti()).catch(console.error);
+		]).then(() => ucitajDnevnik()).catch(console.error);
 	});
-
-	function otvoriObavljanje(id: string) {
-		obavljaId = id;
-		obavljaDatum = today;
-		obavljaNapomena = '';
-		obavljaError = '';
-	}
-
-	async function potvrdiObavljanje() {
-		if (!obavljaId) return;
-		obavljaLoading = true;
-		obavljaError = '';
-		try {
-			await updateAktivnost(obavljaId, obavljaDatum, obavljaNapomena);
-			obavljaId = null;
-			await ucitajAktivnosti();
-		} catch (err) {
-			obavljaError = err instanceof Error ? err.message : t.aktivnosti.greska;
-		} finally {
-			obavljaLoading = false;
-		}
-	}
-
-	$: zakasnjele   = pending.filter((p) => p.hitnost === 'zakasnila');
-	$: danasLista   = pending.filter((p) => p.hitnost === 'danas');
-	$: uskoroLista  = pending.filter((p) => p.hitnost === 'uskoro');
-	$: buduceLista  = pending.filter((p) => p.hitnost === 'buducnost');
 </script>
 
 <svelte:head>
 	<title>{t.aktivnosti.pageTitle}</title>
 </svelte:head>
 
-<div class="container mx-auto p-4 space-y-5 max-w-2xl">
+<div class="container mx-auto p-4 space-y-4 max-w-2xl">
 
-	<div class="flex items-center justify-between">
-		<div>
-			<h2 class="h3 font-bold">{t.aktivnosti.title}</h2>
-			{#if $prikazanaSezona}
-				<p class="text-sm text-surface-500">{t.common.sezona} {$prikazanaSezona.godina}</p>
-			{/if}
-		</div>
-		{#if !loading && pending.length > 0}
-			<span class="badge variant-filled-warning">{pending.length} {t.aktivnosti.naCekanju}</span>
-		{/if}
-	</div>
+	<h2 class="h3 font-bold">Dnevnik uzgoja</h2>
 
-	<!-- Notifikacije — uvijek vidljiva kartica -->
+	<!-- Notifikacije -->
 	{#if notifPermission !== 'unsupported'}
 		<div class="card p-3 flex items-center justify-between gap-3
 			{notifSubscribed ? 'variant-soft-success' : 'variant-soft-surface'}">
@@ -241,23 +176,14 @@
 					<p class="text-xs text-surface-500">{t.notifikacije.bannerOpis}</p>
 				{/if}
 			</div>
-
 			{#if notifPermission !== 'denied'}
 				{#if notifSubscribed}
-					<button
-						class="btn btn-sm variant-ghost-error shrink-0"
-						on:click={iskljuciNotifikacije}
-						disabled={notifLoading}
-					>
+					<button class="btn btn-sm variant-ghost-error shrink-0" on:click={iskljuciNotifikacije} disabled={notifLoading}>
 						{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
 						{t.notifikacije.iskljuci}
 					</button>
 				{:else}
-					<button
-						class="btn btn-sm variant-filled-primary shrink-0"
-						on:click={ukljuciNotifikacije}
-						disabled={notifLoading}
-					>
+					<button class="btn btn-sm variant-filled-primary shrink-0" on:click={ukljuciNotifikacije} disabled={notifLoading}>
 						{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
 						{t.notifikacije.ukljuci}
 					</button>
@@ -266,10 +192,25 @@
 		</div>
 	{/if}
 
+	<!-- Navigator datuma -->
+	<div class="flex items-center gap-2">
+		<button class="btn btn-sm variant-ghost-surface px-3" on:click={() => pomjeriDan(-1)}>‹</button>
+		<div class="flex-1 text-center">
+			<p class="font-bold text-base capitalize">{formatDatumPrikaz(odabraniDatum)}</p>
+			<p class="text-xs text-surface-400">{odabraniDatum}</p>
+		</div>
+		<button class="btn btn-sm variant-ghost-surface px-3" on:click={() => pomjeriDan(1)}>›</button>
+		{#if !jeToday}
+			<button class="btn btn-sm variant-soft-primary" on:click={() => odabraniDatum = today}>
+				Danas
+			</button>
+		{/if}
+	</div>
+
 	{#if loading}
-		<div class="space-y-3">
-			{#each Array(5) as _}
-				<div class="card p-4 h-16 animate-pulse bg-surface-200-700-token"></div>
+		<div class="space-y-2">
+			{#each Array(4) as _}
+				<div class="card p-4 h-14 animate-pulse bg-surface-200-700-token"></div>
 			{/each}
 		</div>
 
@@ -277,152 +218,46 @@
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">📅</span>
 			<p class="h4 text-center">{t.aktivnosti.nemaSezone}</p>
-			<a class="btn variant-filled-primary" href="/kavezi">{t.aktivnosti.iditeNaKaveze}</a>
+			<a class="btn variant-filled-primary" href="/sezone">{t.aktivnosti.iditeNaKaveze}</a>
 		</div>
 
 	{:else if $ciklusi.filter((c) => c.status === 'aktivan').length === 0}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">🪺</span>
 			<p class="h4 text-center">{t.aktivnosti.nemaAktivnihCiklusa}</p>
-			<p class="text-surface-500 text-sm text-center">{t.aktivnosti.nemaAktivnihCiklusaOpis}</p>
-			<a class="btn variant-filled-primary" href="/kavezi">{t.aktivnosti.iditeNaKaveze}</a>
+			<a class="btn variant-filled-primary" href="/sezone">{t.aktivnosti.iditeNaKaveze}</a>
 		</div>
 
-	{:else if pending.length === 0 && obavljene.length > 0}
-		<div class="flex flex-col items-center justify-center py-12 space-y-3">
-			<span class="text-5xl">🎉</span>
-			<p class="h4 text-center">{t.aktivnosti.sveObavljene}</p>
+	{:else if dnevnik.length === 0}
+		<div class="flex flex-col items-center justify-center py-16 space-y-2">
+			<span class="text-5xl">✅</span>
+			<p class="font-semibold text-surface-500">Nema aktivnosti za ovaj dan</p>
 		</div>
 
 	{:else}
+		<p class="text-xs text-surface-400 px-1">{dnevnik.length} {dnevnik.length === 1 ? 'kavez zahtijeva pažnju' : 'kaveza zahtijevaju pažnju'}</p>
 
-		<!-- Sekcije aktivnosti -->
-		{#each [
-			{ lista: zakasnjele,  naslov: t.aktivnosti.grupe.zakasnjele, klasa: 'text-error-500'   },
-			{ lista: danasLista,  naslov: t.aktivnosti.grupe.danas,      klasa: 'text-warning-600' },
-			{ lista: uskoroLista, naslov: t.aktivnosti.grupe.uskoro,     klasa: 'text-primary-500' },
-			{ lista: buduceLista, naslov: t.aktivnosti.grupe.buduce,     klasa: 'text-surface-500' }
-		] as grupa}
-			{#if grupa.lista.length > 0}
-				<section class="space-y-2">
-					<h3 class="text-xs font-semibold uppercase tracking-wider px-1 {grupa.klasa}">
-						{grupa.naslov} ({grupa.lista.length})
-					</h3>
+		<div class="space-y-2">
+			{#each dnevnik as s (s.ciklus.id)}
+				<div class="card p-4 flex items-center gap-4">
+					<!-- Broj kaveza -->
+					<div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg
+						{s.faza?.boja ? '' : 'bg-surface-200-700-token'}"
+						style={s.faza?.boja ? `background-color: ${s.faza.boja}22; color: ${s.faza.boja}` : ''}
+					>
+						{s.kavezOznaka}
+					</div>
 
-					{#each grupa.lista as p (p.aktivnost.id)}
-						<div class="card p-4 space-y-3">
-
-							<!-- Redak info -->
-							<div class="flex items-center justify-between gap-2">
-								<div class="space-y-0.5">
-									<p class="font-semibold text-sm">
-										<span>K{p.kavez?.oznaka ?? '?'}</span>
-										<span class="text-surface-400 mx-1">·</span>
-										<span
-											style={p.faza ? `color: ${p.faza.boja}` : ''}
-										>{p.faza?.naziv ?? '—'}</span>
-									</p>
-									<p class="text-xs text-surface-500">
-										{t.aktivnosti.potrebnoDo} {formatDatum(p.aktivnost.potreban_datum)}
-									</p>
-								</div>
-
-								{#if obavljaId !== p.aktivnost.id}
-									<button
-										class="btn btn-sm variant-soft-success shrink-0"
-										on:click={() => otvoriObavljanje(p.aktivnost.id)}
-									>
-										{t.aktivnosti.obavi}
-									</button>
-								{/if}
-							</div>
-
-							<!-- Inline forma za obavljanje -->
-							{#if obavljaId === p.aktivnost.id}
-								<div class="space-y-3 pt-1 border-t border-surface-200-700-token">
-									<div class="grid grid-cols-2 gap-3">
-										<label class="label">
-											<span class="text-xs">{t.aktivnosti.datumObavljanja}</span>
-											<input
-												class="input input-sm"
-												type="date"
-												bind:value={obavljaDatum}
-												disabled={obavljaLoading}
-											/>
-										</label>
-										<label class="label">
-											<span class="text-xs">{t.aktivnosti.napomenaOpt}</span>
-											<input
-												class="input input-sm"
-												type="text"
-												bind:value={obavljaNapomena}
-												placeholder={t.aktivnosti.napomenaPlaceholder}
-												disabled={obavljaLoading}
-											/>
-										</label>
-									</div>
-
-									{#if obavljaError}
-										<p class="text-error-500 text-xs">{obavljaError}</p>
-									{/if}
-
-									<div class="flex gap-2">
-										<button
-											class="btn btn-sm variant-ghost flex-1"
-											on:click={() => { obavljaId = null; obavljaError = ''; }}
-											disabled={obavljaLoading}
-										>
-											{t.common.odustani}
-										</button>
-										<button
-											class="btn btn-sm variant-filled-success flex-1"
-											on:click={potvrdiObavljanje}
-											disabled={obavljaLoading || !obavljaDatum}
-										>
-											{#if obavljaLoading}<span class="animate-spin mr-1">↻</span>{/if}
-											{t.common.potvrdi}
-										</button>
-									</div>
-								</div>
-							{/if}
-						</div>
-					{/each}
-				</section>
-			{/if}
-		{/each}
-
-	{/if}
-
-	<!-- Obavljene (collapsible) — uvijek vidljiv ako postoje -->
-	{#if obavljene.length > 0}
-		<section class="space-y-2">
-			<button
-				class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-surface-400 px-1 w-full"
-				on:click={() => (prikaziObavljene = !prikaziObavljene)}
-			>
-				{t.aktivnosti.obavljene} ({obavljene.length})
-				<span class="ml-auto">{prikaziObavljene ? '▲' : '▼'}</span>
-			</button>
-
-			{#if prikaziObavljene}
-				<div class="space-y-1">
-					{#each obavljene as a (a.id)}
-						{@const faza = $faze.find((f) => f.id === a.faza_id)}
-						{@const ciklus = $ciklusi.find((c) => c.id === a.ciklus_id)}
-						{@const kavez = $kavezi.find((k) => k.id === ciklus?.kavez_id)}
-						<div class="card p-3 opacity-55 flex items-center justify-between gap-2">
-							<p class="text-sm">
-								<span class="font-medium">K{kavez?.oznaka ?? '?'}</span>
-								<span class="text-surface-400 mx-1">·</span>
-								<span>{faza?.naziv ?? '—'}</span>
-							</p>
-							<p class="text-xs text-surface-400 shrink-0">
-								✅ {a.datum ? formatDatum(a.datum) : ''}
-							</p>
-						</div>
-					{/each}
+					<!-- Info -->
+					<div class="flex-1 min-w-0">
+						<p class="font-semibold text-sm">Kavez {s.kavezOznaka}</p>
+						<p class="text-sm" style={s.faza?.boja ? `color: ${s.faza.boja}` : ''}>
+							{s.faza?.naziv ?? '—'}
+						</p>
+					</div>
 				</div>
-			{/if}
-		</section>
+			{/each}
+		</div>
 	{/if}
+
 </div>
