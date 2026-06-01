@@ -28,6 +28,13 @@
 	let loading = true;
 	let odabraniDatum = new Date().toISOString().split('T')[0];
 	let dnevnik: DnevnikStavka[] = [];
+	let checked = new Set<string>(); // lokalni check — resetuje se pri promjeni dana
+
+	function toggleCheck(id: string) {
+		if (checked.has(id)) checked.delete(id);
+		else checked.add(id);
+		checked = checked;
+	}
 
 	// Notifikacije
 	let notifPermission: 'unsupported' | 'denied' | 'granted' | 'default' = 'unsupported';
@@ -106,6 +113,7 @@
 		const d = new Date(odabraniDatum);
 		d.setDate(d.getDate() + delta);
 		odabraniDatum = d.toISOString().split('T')[0];
+		checked = new Set(); // reset checkboxova pri promjeni dana
 	}
 
 	function formatDatumPrikaz(datum: string): string {
@@ -158,7 +166,20 @@
 
 <div class="container mx-auto p-4 space-y-4 max-w-2xl">
 
-	<h2 class="h3 font-bold">Dnevnik uzgoja</h2>
+	<div class="flex items-center justify-between no-print">
+		<h2 class="h3 font-bold">Dnevnik uzgoja</h2>
+		{#if dnevnik.length > 0}
+			<button class="btn btn-sm variant-ghost-surface" on:click={() => window.print()} title="Printaj listu">
+				🖨️ Print
+			</button>
+		{/if}
+	</div>
+	<!-- Print header — vidljiv samo pri štampanju -->
+	<div class="print-only hidden">
+		<h1 class="text-xl font-bold">Dnevnik uzgoja</h1>
+		<p class="text-sm capitalize">{formatDatumPrikaz(odabraniDatum)} — {odabraniDatum}</p>
+		{#if $prikazanaSezona}<p class="text-sm text-gray-500">Sezona {$prikazanaSezona.godina}</p>{/if}
+	</div>
 
 	<!-- Notifikacije -->
 	{#if notifPermission !== 'unsupported'}
@@ -239,7 +260,8 @@
 
 		<div class="space-y-2">
 			{#each dnevnik as s (s.ciklus.id)}
-				<div class="card p-4 flex items-center gap-4">
+				{@const jeChecked = checked.has(s.ciklus.id)}
+				<div class="card p-4 flex items-center gap-4 transition-opacity {jeChecked ? 'opacity-40' : ''}">
 					<!-- Broj kaveza -->
 					<div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg
 						{s.faza?.boja ? '' : 'bg-surface-200-700-token'}"
@@ -250,14 +272,38 @@
 
 					<!-- Info -->
 					<div class="flex-1 min-w-0">
-						<p class="font-semibold text-sm">Kavez {s.kavezOznaka}</p>
-						<p class="text-sm" style={s.faza?.boja ? `color: ${s.faza.boja}` : ''}>
+						<p class="font-semibold text-sm {jeChecked ? 'line-through' : ''}">Kavez {s.kavezOznaka}</p>
+						<p class="text-sm {jeChecked ? 'line-through' : ''}" style={s.faza?.boja ? `color: ${s.faza.boja}` : ''}>
 							{s.faza?.naziv ?? '—'}
 						</p>
 					</div>
+
+					<!-- Checkbox — skriven pri printu -->
+					<button
+						class="no-print w-8 h-8 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors
+							{jeChecked ? 'bg-success-500 border-success-500 text-white' : 'border-surface-300-600-token text-transparent hover:border-success-400'}"
+						on:click={() => toggleCheck(s.ciklus.id)}
+						title={jeChecked ? 'Označeno kao završeno' : 'Označi kao završeno'}
+					>
+						✓
+					</button>
+
+					<!-- Print checkbox — vidljiv samo pri štampanju -->
+					<div class="print-only hidden w-5 h-5 border-2 border-gray-400 rounded shrink-0"></div>
 				</div>
 			{/each}
 		</div>
 	{/if}
 
 </div>
+
+<style>
+	@media print {
+		:global(nav), :global(header), :global(.no-print) { display: none !important; }
+		:global(.print-only) { display: block !important; }
+		:global(body), :global(.card) { background: white !important; color: black !important; box-shadow: none !important; }
+		:global(.card) { border: 1px solid #ddd !important; border-radius: 4px !important; break-inside: avoid; }
+		:global(.opacity-40) { opacity: 1 !important; }
+		:global(.line-through) { text-decoration: none !important; }
+	}
+</style>
