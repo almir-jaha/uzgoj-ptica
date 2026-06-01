@@ -87,6 +87,7 @@
 	// Status evidencije
 	const STATUS_OPCIJE = [
 		{ value: 'aktivna',    label: '✅ Aktivna' },
+		{ value: 'mlada',      label: '🐤 Mlada ptica' },
 		{ value: 'uginula',    label: '💀 Uginula' },
 		{ value: 'prodata',    label: '💰 Prodata' },
 		{ value: 'poklonjena', label: '🎁 Poklonjena' },

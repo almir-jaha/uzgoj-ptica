@@ -113,7 +113,8 @@
 				datum_rodjenja: unosDatum || undefined,
 				godina: unosGodina !== '' ? Number(unosGodina) : undefined,
 				otac_id: otac?.id,
-				majka_id: majka?.id
+				majka_id: majka?.id,
+				status_evidencije: 'mlada' // auto — mlada ptica nije za parove dok uzgajivač ne promijeni
 			});
 			dispatch('refresh');
 			pogled = 'mladi';
