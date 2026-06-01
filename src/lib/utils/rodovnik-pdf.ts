@@ -66,6 +66,9 @@ async function buildTree(pticaId: string | undefined, genLevel: number): Promise
 	return { ptica, vrstaLabel: vrsta?.naziv ?? '—', slika, otac, majka };
 }
 
+// Oznake pola — promijeniti ovdje za drugi jezik (npr. 'M'/'F' za engleski)
+const POL_OZNAKE: Record<string, string> = { 'M': 'M', 'Ž': 'Ž' };
+
 function spolBoja(spol?: string): string {
 	return spol === 'M' ? '#1565c0' : spol === 'Ž' ? '#c2185b' : '#444';
 }
@@ -107,22 +110,26 @@ function buildBirdStack(node: RodovnikNode, genLevel: number): object[] {
 		stack.push({ image: node.slika, width: imgW, alignment: 'center', margin: [0, 0, 0, 4] });
 	}
 
-	stack.push({ text: naam, fontSize: fs + 1, bold: true, margin: [0, 0, 0, 1] });
+	// Naziv + pol desno (kao landscape) — pol je POL_OZNAKE['M'|'Ž'], lako promijenjivo
+	const polOznaka = POL_OZNAKE[p.spol ?? ''] ?? '';
+	stack.push({
+		columns: [
+			{ text: naam, fontSize: fs + 1, bold: true, color: '#111' },
+			...(polOznaka ? [{
+				text: polOznaka,
+				fontSize: fs + 1,
+				bold: true,
+				color: spolBoja(p.spol),
+				alignment: 'right',
+				width: 'auto'
+			}] : [])
+		],
+		margin: [0, 0, 0, 1]
+	});
 
 	if (p.naziv && prsten) stack.push({ text: prsten, fontSize: fs, color: '#555' });
 
-	// Pol: plain tekst M/Ž u boji (Unicode simboli ♂/♀ nisu u Roboto fontu)
-	if (p.spol === 'M' || p.spol === 'Ž') {
-		stack.push({
-			columns: [
-				{ text: p.spol, fontSize: fs, bold: true, color: spolBoja(p.spol), width: 'auto' },
-				{ text: `  ${node.vrstaLabel}`, fontSize: fs, color: '#444' }
-			],
-			margin: [0, 0, 0, 0]
-		});
-	} else {
-		stack.push({ text: node.vrstaLabel, fontSize: fs, color: '#444' });
-	}
+	stack.push({ text: node.vrstaLabel, fontSize: fs, color: '#444' });
 
 	if (p.boja && genLevel <= 3) stack.push({ text: p.boja, fontSize: fs - 0.5, color: '#666' });
 	if (p.status_ptica && genLevel <= 2) stack.push({ text: `[${p.status_ptica}]`, fontSize: fs - 1, color: '#888', italics: true });

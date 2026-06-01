@@ -67,8 +67,11 @@ async function buildTree(pticaId: string | undefined, genLevel: number): Promise
 	return { ptica, vrstaLabel: vrsta?.naziv ?? '—', slika, otac, majka };
 }
 
+// Oznake pola — promijeniti ovdje za drugi jezik (npr. 'M'/'F' za engleski)
+const POL_OZNAKE: Record<string, string> = { 'M': 'M', 'Ž': 'Ž' };
+
 function spolTekst(spol?: string): string {
-	return spol === 'M' ? 'M' : spol === 'Ž' ? 'Ž' : '';
+	return POL_OZNAKE[spol ?? ''] ?? '';
 }
 
 function prstenStr(p: Ptica): string {

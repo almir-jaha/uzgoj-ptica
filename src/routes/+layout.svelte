@@ -151,8 +151,12 @@
 						{/if}
 						<button
 							class="btn btn-sm variant-ghost-surface"
-							title="Izlaz iz aplikacije"
-							on:click={() => history.go(-history.length)}
+							title="Pritisni Back za izlaz"
+							on:click={() => {
+								// Android PWA ne dozvoljava direktan izlaz via JS.
+								// Vraćamo se na prvu stranicu historije — jedan Back tada izlazi iz app.
+								if (history.length > 1) history.go(-(history.length - 1));
+							}}
 						>
 							✕
 						</button>
