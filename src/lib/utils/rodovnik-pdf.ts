@@ -67,7 +67,7 @@ async function buildTree(pticaId: string | undefined, genLevel: number): Promise
 }
 
 function spolSimbol(spol?: string): string {
-	return spol === 'M' ? '♂' : spol === 'Ž' ? '♀' : '?';
+	return spol === 'M' ? '♂' : spol === 'Ž' ? '♀' : '';
 }
 
 function prstenStr(p: Ptica): string {
@@ -111,7 +111,8 @@ function buildBirdStack(node: RodovnikNode, genLevel: number): object[] {
 
 	if (p.naziv && prsten) stack.push({ text: prsten, fontSize: fs, color: '#555' });
 
-	stack.push({ text: `${spolSimbol(p.spol)}  ${node.vrstaLabel}`, fontSize: fs, color: '#444' });
+	const simbol = spolSimbol(p.spol);
+	stack.push({ text: simbol ? `${simbol}  ${node.vrstaLabel}` : node.vrstaLabel, fontSize: fs, color: '#444' });
 
 	if (p.boja && genLevel <= 3) stack.push({ text: p.boja, fontSize: fs - 0.5, color: '#666' });
 	if (p.status_ptica && genLevel <= 2) stack.push({ text: `[${p.status_ptica}]`, fontSize: fs - 1, color: '#888', italics: true });

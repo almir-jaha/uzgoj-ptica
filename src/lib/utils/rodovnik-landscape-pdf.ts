@@ -68,7 +68,7 @@ async function buildTree(pticaId: string | undefined, genLevel: number): Promise
 }
 
 function spolSimbol(spol?: string): string {
-	return spol === 'M' ? '♂' : spol === 'Ž' ? '♀' : '?';
+	return spol === 'M' ? '♂' : spol === 'Ž' ? '♀' : '';
 }
 
 function prstenStr(p: Ptica): string {

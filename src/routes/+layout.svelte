@@ -136,7 +136,7 @@
 						<button class="btn btn-sm variant-ghost-surface ml-1" on:click={auth.signOut} title={t.nav.odjavaTitle}>⎋</button>
 					</nav>
 
-					<!-- Mobile: samo sign out i eventualno admin -->
+					<!-- Mobile: izlaz, admin, sign out -->
 					<div class="flex sm:hidden items-center gap-1">
 						{#if isAdmin($user?.email)}
 							<a
@@ -149,6 +149,13 @@
 								🔧
 							</a>
 						{/if}
+						<button
+							class="btn btn-sm variant-ghost-surface"
+							title="Izlaz iz aplikacije"
+							on:click={() => window.close()}
+						>
+							✕
+						</button>
 						<button
 							class="btn btn-sm variant-ghost-surface"
 							on:click={auth.signOut}
