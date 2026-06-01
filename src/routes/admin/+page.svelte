@@ -246,7 +246,7 @@
 </script>
 
 <svelte:head>
-	<title>Administracija – Uzgoj ptica</title>
+	<title>Administracija – HatchPlan</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-5 max-w-3xl">

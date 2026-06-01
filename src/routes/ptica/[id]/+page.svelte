@@ -72,7 +72,7 @@
 		return { known: oRes.known + mRes.known, total: 14 };
 	})() : null;
 
-	$: pageTitle = tree ? `${displayName(tree)} — Bird Show Pro` : 'Bird Show Pro';
+	$: pageTitle = tree ? `${displayName(tree)} — HatchPlan` : 'HatchPlan';
 	$: pageDesc = tree
 		? `${tree.vrsta_naziv || 'Ptica'} · ${isMale ? 'Mužjak' : isFemale ? 'Ženka' : '?'} · ${prstenStr(tree) || 'bez prstena'}`
 		: 'Profil ptice';
@@ -93,8 +93,8 @@
 	<!-- Header -->
 	<header class="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-indigo-100">
 		<div class="max-w-2xl mx-auto px-4 py-2.5 flex items-center gap-2.5">
-			<img src="/app-logo.png" alt="Bird Show Pro" class="w-7 h-7 rounded-md" />
-			<span class="font-bold text-indigo-900 text-sm tracking-tight">Bird Show Pro</span>
+			<img src="/app-logo.png" alt="HatchPlan" class="w-7 h-7 rounded-md" />
+			<span class="font-bold text-indigo-900 text-sm tracking-tight">HatchPlan</span>
 			<span class="ml-auto text-xs text-gray-400 hidden sm:block">Registar uzgojnih ptica</span>
 			<a href="/" class="ml-auto sm:ml-2 text-xs text-indigo-600 font-medium hover:text-indigo-800 transition-colors border border-indigo-200 rounded-full px-3 py-1 hover:bg-indigo-50">
 				Otvori app →
@@ -269,7 +269,7 @@
 				<div>
 					<p class="font-semibold text-gray-800 text-sm">Registrirana ptica</p>
 					<p class="text-xs text-gray-500 mt-0.5">
-						Ova ptica je registrirana u sistemu Bird Show Pro.
+						Ova ptica je registrirana u sistemu HatchPlan.
 						Datum registracije: {formatDate(tree.created_at)}.
 					</p>
 				</div>
@@ -280,7 +280,7 @@
 		<div class="text-center py-4 space-y-2">
 			<div class="flex items-center justify-center gap-2">
 				<img src="/app-logo.png" alt="" class="w-5 h-5 rounded opacity-50" />
-				<p class="text-xs text-gray-400 font-medium">Bird Show Pro</p>
+				<p class="text-xs text-gray-400 font-medium">HatchPlan</p>
 			</div>
 			<p class="text-xs text-gray-300">Aplikacija za upravljanje uzgojem ptica</p>
 		</div>

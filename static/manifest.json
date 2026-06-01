@@ -1,7 +1,7 @@
 {
-  "name": "Uzgoj ptica",
-  "short_name": "Uzgoj ptica",
-  "description": "Aplikacija za praćenje uzgoja ptica — kavezi, parovi, legla, aktivnosti",
+  "name": "HatchPlan",
+  "short_name": "HatchPlan",
+  "description": "Bird breeding management — cages, pairs, cycles, activities",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

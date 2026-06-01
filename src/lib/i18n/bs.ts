@@ -1,7 +1,7 @@
 export const bs = {
 	app: {
-		name: '🐦 Uzgoj ptica',
-		nameShort: 'Uzgoj ptica',
+		name: 'HatchPlan',
+		nameShort: 'HatchPlan',
 		loading: 'Učitavanje...',
 		offlineBadge: 'offline',
 		offlineTitle: 'Nema interneta — podaci se čuvaju lokalno',
@@ -19,7 +19,7 @@ export const bs = {
 	},
 
 	auth: {
-		pageTitle: 'Prijava – Uzgoj ptica',
+		pageTitle: 'Prijava – HatchPlan',
 		prijavljeni: 'Prijavljeni ste!',
 		preusmjeravanje: 'Preusmjeravanje...',
 		kreirajRacun: 'Kreirajte novi račun',
@@ -67,7 +67,7 @@ export const bs = {
 		novaSezona: 'Nova sezona',
 		urediSezonu: 'Uredi sezonu',
 		kreirajSezonu: 'Kreiraj sezonu',
-		pageTitle: 'Sezone – Uzgoj ptica',
+		pageTitle: 'Sezone – HatchPlan',
 		nemaSezone: 'Nema aktivne sezone',
 		nemaSezoneOpis: 'Kreirajte prvu sezonu kako biste počeli pratiti kaveze.',
 		godina: 'Godina',
@@ -99,7 +99,7 @@ export const bs = {
 
 	kavezi: {
 		title: 'Kavezi',
-		pageTitle: 'Kavezi – Uzgoj ptica',
+		pageTitle: 'Kavezi – HatchPlan',
 		kaveziLabel: 'kaveza',
 		aktivnih: 'aktivnih',
 		alarm: '⚠ {n} alarm',
@@ -122,7 +122,7 @@ export const bs = {
 
 	parovi: {
 		title: 'Parovi',
-		pageTitle: 'Parovi – Uzgoj ptica',
+		pageTitle: 'Parovi – HatchPlan',
 		noviPar: '+ Novi par',
 		aktivniParovi: 'Aktivni parovi',
 		arhiva: 'Arhiva',
@@ -157,7 +157,7 @@ export const bs = {
 
 	ptice: {
 		title: 'Ptice',
-		pageTitle: 'Ptice – Uzgoj ptica',
+		pageTitle: 'Ptice – HatchPlan',
 		novaPtica: '+ Nova ptica',
 		filtar: {
 			sve: 'Sve',
@@ -235,7 +235,7 @@ export const bs = {
 	},
 
 	uzgajivacnica: {
-		pageTitle: 'Uzgajivačnica – Uzgoj ptica',
+		pageTitle: 'Uzgajivačnica – HatchPlan',
 		title: 'Moja uzgajivačnica',
 		ukupnoPtica: 'ukupno ptica',
 		aktivnaSezona: 'aktivna sezona',
@@ -245,7 +245,7 @@ export const bs = {
 
 	aktivnosti: {
 		title: 'Aktivnosti',
-		pageTitle: 'Aktivnosti – Uzgoj ptica',
+		pageTitle: 'Aktivnosti – HatchPlan',
 		naCekanju: 'na čekanju',
 		nemaSezone: 'Nema aktivne sezone',
 		iditeNaKaveze: 'Idi na Kaveze',
@@ -269,7 +269,7 @@ export const bs = {
 
 	statistike: {
 		title: 'Statistike',
-		pageTitle: 'Statistike – Uzgoj ptica',
+		pageTitle: 'Statistike – HatchPlan',
 		nemaSezone: 'Nema aktivne sezone',
 		iditeNaKaveze: 'Idi na Kaveze',
 		kavezi: '🏠 Kavezi',

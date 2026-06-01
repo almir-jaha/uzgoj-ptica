@@ -44,7 +44,7 @@ registerRoute(
 self.addEventListener('push', (event: PushEvent) => {
 	const data = event.data?.json() ?? {};
 	event.waitUntil(
-		self.registration.showNotification(data.title ?? 'Uzgoj ptica', {
+		self.registration.showNotification(data.title ?? 'HatchPlan', {
 			body: data.body ?? '',
 			icon: '/icon.png',
 			badge: '/icon.png',
