@@ -49,7 +49,7 @@ export interface Ptica {
   slika_url?: string;
   napomena?: string;
   // Status evidencije — dostupnost za parenje
-  status_evidencije?: 'aktivna' | 'mlada' | 'uginula' | 'prodata' | 'poklonjena' | 'ostalo';
+  status_evidencije?: 'aktivna' | 'mlada' | 'vanjska' | 'uginula' | 'prodata' | 'poklonjena' | 'ostalo';
   datum_statusa?: string;
   napomena_statusa?: string;
   created_at: string;

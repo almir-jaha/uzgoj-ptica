@@ -219,6 +219,7 @@
 					<select class="select" bind:value={statusEvidencije} disabled={loading}>
 						<option value="aktivna">✅ Aktivna — može biti u parovima</option>
 						<option value="mlada">🐤 Mlada ptica — nije za parove još</option>
+						<option value="vanjska">🔗 Vanjska ptica — tuđa, samo za rodovnik</option>
 						<option value="uginula">💀 Uginula</option>
 						<option value="prodata">💰 Prodata</option>
 						<option value="poklonjena">🎁 Poklonjena</option>
