@@ -22,6 +22,8 @@
 	let godina: number | '' = editPtica?.godina ?? '';
 	let boja = editPtica?.boja ?? '';
 	let statusPtica = editPtica?.status_ptica ?? '';
+	let statusEvidencije: 'aktivna' | 'mlada' | 'uginula' | 'prodata' | 'poklonjena' | 'ostalo' =
+		editPtica?.status_evidencije ?? 'aktivna';
 	let otacId = editPtica?.otac_id ?? '';
 	let majkaId = editPtica?.majka_id ?? '';
 	let napomena = editPtica?.napomena ?? '';
@@ -65,6 +67,7 @@
 				godina: godina !== '' ? Number(godina) : undefined,
 				boja: boja.trim() || undefined,
 				status_ptica: statusPtica.trim() || undefined,
+				status_evidencije: statusEvidencije,
 				otac_id: otacId || undefined,
 				majka_id: majkaId || undefined,
 				napomena: napomena.trim() || undefined,
@@ -209,6 +212,19 @@
 						/>
 					</label>
 				</div>
+
+				<!-- Dostupnost za parove -->
+				<label class="label">
+					<span class="text-sm font-medium">Dostupnost za parove</span>
+					<select class="select" bind:value={statusEvidencije} disabled={loading}>
+						<option value="aktivna">✅ Aktivna — može biti u parovima</option>
+						<option value="mlada">🐤 Mlada ptica — nije za parove još</option>
+						<option value="uginula">💀 Uginula</option>
+						<option value="prodata">💰 Prodata</option>
+						<option value="poklonjena">🎁 Poklonjena</option>
+						<option value="ostalo">📝 Ostalo</option>
+					</select>
+				</label>
 
 				<!-- Rodovnik (collapsible) -->
 				<div class="space-y-2">
