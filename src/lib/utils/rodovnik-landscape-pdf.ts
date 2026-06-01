@@ -204,6 +204,7 @@ export async function generirajLandscapeRodovnikPDF(pticaId: string): Promise<vo
 		infoStack.push({ image: logoBase64, fit: [115, 115], margin: [0, 0, 0, 4] });
 	}
 	infoStack.push({ text: info?.naziv || 'Uzgajivacnica', fontSize: 10.5, bold: true, color: '#222', margin: [0, 0, 0, 1] });
+	if (info?.opis) infoStack.push({ text: info.opis, fontSize: 8, color: '#5c6bc0', italics: true, margin: [0, 0, 0, 1] });
 	if (info?.ime_prezime) infoStack.push({ text: info.ime_prezime, fontSize: 8.5, color: '#555' });
 	if (info?.adresa) infoStack.push({ text: info.adresa, fontSize: 8, color: '#777' });
 	if (info?.telefon) infoStack.push({ text: `Tel: ${info.telefon}`, fontSize: 8, color: '#777' });

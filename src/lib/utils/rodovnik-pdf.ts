@@ -281,6 +281,7 @@ export async function generirajRodovnikPDF(pticaId: string): Promise<void> {
 
 	const infoStack: object[] = [
 		{ text: info?.naziv || 'Uzgajivacnica', fontSize: 17, bold: true, color: '#222' },
+		...(info?.opis ? [{ text: info.opis, fontSize: 10, color: '#5c6bc0', italics: true, margin: [0, 1, 0, 0] }] : []),
 		...(info?.ime_prezime ? [{ text: info.ime_prezime, fontSize: 11, color: '#555', margin: [0, 2, 0, 0] }] : []),
 		...(info?.adresa ? [{ text: info.adresa, fontSize: 10, color: '#777' }] : []),
 		...(info?.telefon ? [{ text: `Tel: ${info.telefon}`, fontSize: 10, color: '#777' }] : [])

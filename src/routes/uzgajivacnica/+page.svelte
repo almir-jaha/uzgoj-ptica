@@ -24,7 +24,7 @@
 	$: limitDostignut = jeNaLimitUzgajivacnica($uzgajivacnice.length, $tierLimits);
 	$: jeAdminUser = isAdmin($user?.email);
 	let saving = false;
-	let input = { naziv: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
+	let input = { naziv: '', opis: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
 	let slikaUrl: string | undefined;
 	let slikaKomponenta: SlikaUnos;
 
@@ -50,6 +50,7 @@
 		editId = uz.id;
 		input = {
 			naziv: uz.naziv ?? '',
+			opis: uz.opis ?? '',
 			ime_prezime: uz.ime_prezime ?? '',
 			adresa: uz.adresa ?? '',
 			telefon: uz.telefon ?? '',
@@ -209,6 +210,16 @@
 						type="text"
 						bind:value={input.naziv}
 						placeholder="npr. Uzgajivačnica ptica, Golubnjak..."
+						disabled={saving}
+					/>
+				</label>
+				<label class="label">
+					<span class="text-sm font-medium">Opis</span>
+					<input
+						class="input"
+						type="text"
+						bind:value={input.opis}
+						placeholder="npr. Uzgajivačnica kanarinaca stasa, Golubovi pismonoše..."
 						disabled={saving}
 					/>
 				</label>

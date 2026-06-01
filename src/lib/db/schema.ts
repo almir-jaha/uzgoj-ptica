@@ -16,6 +16,7 @@ export interface Uzgajivacnica {
   id: string;
   user_id: string;
   naziv: string;
+  opis?: string;
   prsten_prefiks?: string;
   ime_prezime?: string;
   adresa?: string;

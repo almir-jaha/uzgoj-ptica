@@ -1,0 +1,1 @@
+ALTER TABLE uzgajivacnice ADD COLUMN IF NOT EXISTS opis TEXT;
