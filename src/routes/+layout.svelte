@@ -89,10 +89,10 @@
 <Toast position="br" />
 
 {#if authLoading}
-	<div class="flex min-h-screen items-center justify-center bg-surface-50-900-token">
-		<div class="text-center space-y-4">
-			<img src="/app-logo.png" alt="HatchPlan" class="w-40 h-40 mx-auto animate-pulse" />
-			<p class="text-surface-400 text-sm">{t.app.loading}</p>
+	<div class="flex min-h-screen items-center justify-center" style="background:#ffffff">
+		<div class="text-center space-y-5">
+			<img src="/app-logo.png" alt="HatchPlan" class="w-48 h-48 mx-auto" style="animation: pulse 1.5s ease-in-out infinite;" />
+			<p style="color:#64748b; font-size:0.9rem; letter-spacing:0.05em">{t.app.loading}</p>
 		</div>
 	</div>
 {:else if $isAuthenticated}
