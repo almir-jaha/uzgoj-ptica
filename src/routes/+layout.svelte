@@ -18,6 +18,8 @@
 	const toastStore = getToastStore();
 
 	let authLoading = true;
+	let showSplash = true;   // kontroliše splash — čeka i auth i minimalno trajanje
+	let splashFading = false;
 	let lastLoadedUserId: string | null = null;
 
 	// Reaktivno učitaj podatke svaki put kad se user promijeni (login, switch)
@@ -28,10 +30,24 @@
 	}
 
 	onMount(async () => {
+		const SPLASH_MIN_MS = 2500; // minimalno trajanje splash screena
+		const splashStart = Date.now();
+
 		const currentSession = await getCurrentUser();
 		session.set(currentSession);
 		authLoading = false;
 		// Učitavanje podataka se sada radi reaktivno ($: if !authLoading && $user...)
+
+		// Sačekaj ostatak minimalnog trajanja splash screena
+		const elapsed = Date.now() - splashStart;
+		const remaining = Math.max(0, SPLASH_MIN_MS - elapsed);
+		await new Promise(r => setTimeout(r, remaining));
+
+		// Fade out animacija pa sakrij
+		splashFading = true;
+		await new Promise(r => setTimeout(r, 400));
+		showSplash = false;
+		splashFading = false;
 
 		// Registracija Service Workera
 		if ('serviceWorker' in navigator) {
@@ -88,11 +104,14 @@
 
 <Toast position="br" />
 
-{#if authLoading}
-	<div class="flex min-h-screen items-center justify-center" style="background:#ffffff">
+{#if showSplash}
+	<div
+		class="flex min-h-screen items-center justify-center"
+		style="background:#ffffff; transition: opacity 0.4s ease; opacity: {splashFading ? 0 : 1};"
+	>
 		<div class="text-center space-y-5">
-			<img src="/app-logo.png" alt="HatchPlan" class="w-48 h-48 mx-auto" style="animation: pulse 1.5s ease-in-out infinite;" />
-			<p style="color:#64748b; font-size:0.9rem; letter-spacing:0.05em">{t.app.loading}</p>
+			<img src="/app-logo.png" alt="HatchPlan" class="w-52 h-52 mx-auto" style="animation: pulse 2s ease-in-out infinite;" />
+			<p style="color:#94a3b8; font-size:0.85rem; letter-spacing:0.08em; font-weight:500">HatchPlan</p>
 		</div>
 	</div>
 {:else if $isAuthenticated}
