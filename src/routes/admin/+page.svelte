@@ -223,19 +223,31 @@
 	async function obrisiFazu() {
 		if (!brisiFazaId) return;
 		fazaLoading = true;
+		fazaError = '';
 		try {
 			const faza = Object.values(fazePoVrsti).flat().find((f) => f.id === brisiFazaId);
 			await deleteFaza(brisiFazaId);
 			if (faza) {
-				fazePoVrsti[faza.vrsta_ptica_id] = fazePoVrsti[faza.vrsta_ptica_id].filter(
-					(f) => f.id !== brisiFazaId
-				);
+				// Eksplicitna reassignacija objekta da triggira Svelte reaktivnost
+				fazePoVrsti = {
+					...fazePoVrsti,
+					[faza.vrsta_ptica_id]: fazePoVrsti[faza.vrsta_ptica_id].filter(
+						(f) => f.id !== brisiFazaId
+					)
+				};
 			}
+			brisiFazaId = null;
 		} catch (err) {
-			fazaError = err instanceof Error ? err.message : 'Greška pri brisanju';
+			const msg = err instanceof Error ? err.message : 'Greška pri brisanju';
+			// FK constraint — faza je korištena u postojećim ciklusima
+			if (msg.includes('foreign key') || msg.includes('violates') || msg.includes('aktivnosti')) {
+				fazaError = 'Faza se ne može obrisati jer je korištena u postojećim ciklusima uzgoja.';
+			} else {
+				fazaError = msg;
+			}
+			// Ne zatvaraj dijalog — prikaži grešku uz dugme
 		} finally {
 			fazaLoading = false;
-			brisiFazaId = null;
 		}
 	}
 
@@ -500,10 +512,18 @@
 													<!-- Potvrda brisanja faze -->
 													{#if brisiFazaId === faza.id}
 														<div class="px-2 py-2 rounded bg-error-500/10 space-y-2">
-															<p class="text-xs text-error-500">Obrisati fazu "{faza.naziv}"?</p>
+															<p class="text-xs text-error-500 font-medium">Obrisati fazu "{faza.naziv}"?</p>
+															{#if fazaError}
+																<p class="text-xs text-error-600 bg-error-100 rounded px-2 py-1">{fazaError}</p>
+															{/if}
 															<div class="flex gap-2">
-																<button class="btn btn-sm variant-ghost flex-1" on:click={() => (brisiFazaId = null)}>Ne</button>
-																<button class="btn btn-sm variant-filled-error flex-1" on:click={obrisiFazu} disabled={fazaLoading}>Da, obriši</button>
+																<button class="btn btn-sm variant-ghost flex-1" on:click={() => { brisiFazaId = null; fazaError = ''; }}>Ne</button>
+																{#if !fazaError}
+																	<button class="btn btn-sm variant-filled-error flex-1" on:click={obrisiFazu} disabled={fazaLoading}>
+																		{#if fazaLoading}<span class="animate-spin mr-1">↻</span>{/if}
+																		Da, obriši
+																	</button>
+																{/if}
 															</div>
 														</div>
 													{/if}
