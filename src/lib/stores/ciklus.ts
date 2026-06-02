@@ -252,6 +252,19 @@ export async function updateAktivnost(
   }
 }
 
+// Postavi ili obriši napomenu pažnje na kavezu
+export async function setNapomenaPaznje(ciklusId: string, napomena: string | null): Promise<void> {
+  try {
+    const updated = { napomena_paznje: napomena, updated_at: new Date().toISOString() };
+    await db.ciklusi.update(ciklusId, updated);
+    ciklusi.update((c) => c.map((ck) => ck.id === ciklusId ? { ...ck, ...updated } : ck));
+    await supabase.from('ciklusi').update(updated).eq('id', ciklusId);
+  } catch (err) {
+    console.error('Greška pri postavljanju napomene pažnje:', err);
+    throw err;
+  }
+}
+
 // Završi ciklus
 export async function finishCiklus(ciklusId: string, status: 'završen' | 'neuspješan') {
   try {

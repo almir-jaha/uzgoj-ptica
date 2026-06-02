@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { createPtica } from '$lib/stores/ptice';
-	import { setDatumPrvogJajeta, getFazeZaVrstu } from '$lib/stores/ciklus';
+	import { setDatumPrvogJajeta, getFazeZaVrstu, setNapomenaPaznje } from '$lib/stores/ciklus';
 	import { updateKavezStatus } from '$lib/stores/sezona';
 	import type { KavezWithDetails, FazaCiklusa, Ptica } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
@@ -16,6 +16,23 @@
 
 	type Pogled = 'akcije' | 'mladi' | 'unos';
 	let pogled: Pogled = 'akcije';
+
+	// Napomena pažnje
+	let paznjaTekst = '';
+	let paznjaOtvorena = false;
+	let paznjaLoading = false;
+
+	async function sacuvajPaznju() {
+		if (!details.aktivni_ciklus) return;
+		paznjaLoading = true;
+		try {
+			await setNapomenaPaznje(details.aktivni_ciklus.id, paznjaTekst.trim() || null);
+			paznjaOtvorena = false;
+			dispatch('refresh');
+		} finally {
+			paznjaLoading = false;
+		}
+	}
 
 	// Prvo jaje — inline forma
 	let prvoJajeOtvoreno = false;
@@ -188,6 +205,14 @@
 					{/if}
 				</div>
 
+				<!-- Napomena paznje -->
+				{#if details.aktivni_ciklus.napomena_paznje && !paznjaOtvorena}
+					<div class="rounded-lg p-2 mb-2 text-sm font-medium" style="background:#fff7ed;border:1px solid #f97316;color:#ea580c">
+						{details.aktivni_ciklus.napomena_paznje}
+						<button class="ml-2 underline text-xs" on:click={() => { paznjaTekst = details.aktivni_ciklus?.napomena_paznje ?? ''; paznjaOtvorena = true; }}>uredi</button>
+					</div>
+				{/if}
+
 				{#if !details.aktivni_ciklus.datum_prvog_jajeta}
 					<p class="text-sm text-surface-500 text-center py-2 mb-2">
 						Par je smješten. Unesite datum kada se pojavi prvo jaje.
@@ -237,6 +262,42 @@
 								<button class="btn variant-filled-primary flex-1" on:click={sacuvajPrvoJaje} disabled={prvoJajeLoading || !prvoJajeDatum}>
 									{#if prvoJajeLoading}<span class="animate-spin mr-1">↻</span>{/if}
 									Potvrdi
+								</button>
+							</div>
+						</div>
+					{/if}
+
+					<!-- Pažnja dugme -->
+					{#if !paznjaOtvorena}
+						<button
+							class="btn w-full justify-start gap-3 {details.aktivni_ciklus?.napomena_paznje ? 'variant-soft-warning' : 'variant-ghost-surface'}"
+							on:click={() => { paznjaTekst = details.aktivni_ciklus?.napomena_paznje ?? ''; paznjaOtvorena = true; }}
+						>
+							<span class="text-xl">⚠️</span>
+							<span>{details.aktivni_ciklus?.napomena_paznje ? 'Uredi upozorenje' : 'Postavi upozorenje'}</span>
+						</button>
+					{:else}
+						<div class="card p-3 space-y-2" style="border:1px solid #f97316">
+							<p class="text-sm font-medium" style="color:#ea580c">⚠️ Upozorenje / Pažnja</p>
+							<textarea
+								class="textarea text-sm"
+								rows="2"
+								bind:value={paznjaTekst}
+								placeholder="Npr. Bolest — dati antibiotik 3 dana, Preventivna kap..."
+								disabled={paznjaLoading}
+							/>
+							<div class="flex gap-2">
+								<button class="btn variant-ghost flex-1 btn-sm" on:click={() => paznjaOtvorena = false} disabled={paznjaLoading}>
+									{t.common.odustani}
+								</button>
+								{#if details.aktivni_ciklus?.napomena_paznje}
+									<button class="btn variant-soft-error btn-sm" on:click={() => { paznjaTekst = ''; sacuvajPaznju(); }} disabled={paznjaLoading}>
+										Obriši
+									</button>
+								{/if}
+								<button class="btn variant-filled-primary flex-1 btn-sm" on:click={sacuvajPaznju} disabled={paznjaLoading}>
+									{#if paznjaLoading}<span class="animate-spin mr-1">↻</span>{/if}
+									Spremi
 								</button>
 							</div>
 						</div>

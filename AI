@@ -1,4 +1,12 @@
-VITE_SUPABASE_URL=https://dmkmrljlkzbenpzttmte.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRta21ybGpsa3piZW5wenR0bXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NTMwMjksImV4cCI6MjA5NDMyOTAyOX0.9zfhxEoSObBmIRJ2wCy545hzqtTtmCeLpPflsVwhwpQ
-VITE_ADMIN_EMAIL=almir.jaha@gmail.com
-VITE_VAPID_PUBLIC_KEY=BPplcFheZlAbVwQSRx8sBuiwqDCX2qiJ-0NAf1wCXdyb3Pr41w_0941wrLOv-SzEZls1PVB80k1hxB2awJVRss8
+
+
+Kao petu fazu uzgoja imam Pažnje - Napomena to zapravo i nije faza nego posebno stanje napomene. 
+Mislio sam da to izbacim kao fazu jer se ne uklapa u ostale redovne faze koje su datumski definisane i imaju vremenski tok.
+Umjesto toga treba dodati jedno posebo dodatno stanje Pažnje - Napomene to je zapravo neka vanredna okolnost koja se dešava u tom kavezu.
+npr ako je bolest zahvatila taj kavez treba uraditi liječenje i davati medikamente. To bi se posebno naglasilo kao neka extra pažnja. 
+Ne znam, nemam ideju da li je potrebno posebno ovo evidentirati kroz posebnu tabelu ili ovo samo da bude neki status kaveza.
+Imajući u vidu da se nekada provode određene preventivne kapanje protiv nametnika i slično te da u golubarskom svijetu imamo i vakcinaciju kao alativnost možda
+je ipak bolje imati dodatnu evidenciju koja je naslonjena na ovu već postojeću. Kao neki plan tretmana koji se dešavaju van sezone uzgoja ili unutar nje.
+U tu evidenciju bi se mogle bilježiti i neka dodatna zapažanja neovisno o bolestima. Mislim da je to tabela koja treba biti vezana za ptice a ne za parove ili kaveze.
+Imaš li ideju šta bi mogli napraviti a ovu temu?
+

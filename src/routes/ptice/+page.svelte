@@ -14,6 +14,8 @@
 	import NovaPticaModal from '$lib/components/NovaPticaModal.svelte';
 	import RodovnikModal from '$lib/components/RodovnikModal.svelte';
 	import { t } from '$lib/i18n';
+	import { loadZdravlje as loadZdravlje_, createZdravlje, deleteZdravlje, TIP_OPCIJE } from '$lib/stores/zdravlje';
+	import type { Zdravlje, ZdravljeTip } from '$lib/db/schema';
 
 	type Filter = 'sve' | 'muzjaci' | 'zenke' | 'ovaSezone' | 'ostale';
 
@@ -106,6 +108,66 @@
 		statusVrijednost = ptica.status_evidencije ?? 'aktivna';
 		statusDatum = new Date().toISOString().split('T')[0];
 		statusNapomena = '';
+	}
+
+	// Zdravstveni dnevnik
+	let zdravljePtica: Ptica | null = null;
+	let zdravljeRekordList: Zdravlje[] = [];
+	let zdravljeLoading = false;
+	let zdravljeForm = false;
+	let zTip: ZdravljeTip = 'bolest';
+	let zNaziv = '';
+	let zDatum = new Date().toISOString().split('T')[0];
+	let zOpis = '';
+	let zLijek = '';
+	let zTrajanje: number | '' = '';
+	let zSaving = false;
+
+	async function otvoriZdravlje(ptica: Ptica) {
+		zdravljePtica = ptica;
+		zdravljeForm = false;
+		zdravljeLoading = true;
+		const currentUser = get(user);
+		if (!currentUser) return;
+		const { data } = await supabase
+			.from('zdravlje')
+			.select('*')
+			.eq('user_id', currentUser.id)
+			.or(`ptica_id.eq.${ptica.id},and(ptica_id.is.null,uzgajivacnica_id.eq.${ptica.uzgajivacnica_id ?? ''})`)
+			.order('datum', { ascending: false });
+		zdravljeRekordList = (data ?? []) as Zdravlje[];
+		zdravljeLoading = false;
+	}
+
+	async function sacuvajZdravlje() {
+		if (!zdravljePtica || !zNaziv.trim()) return;
+		zSaving = true;
+		const currentUser = get(user);
+		if (!currentUser) return;
+		try {
+			await createZdravlje({
+				user_id: currentUser.id,
+				uzgajivacnica_id: zdravljePtica.uzgajivacnica_id ?? undefined,
+				ptica_id: zdravljePtica.id,
+				datum: zDatum,
+				tip: zTip,
+				naziv: zNaziv.trim(),
+				opis: zOpis.trim() || undefined,
+				lijek: zLijek.trim() || undefined,
+				trajanje_dana: zTrajanje !== '' ? Number(zTrajanje) : undefined
+			});
+			// Refresh liste
+			await otvoriZdravlje(zdravljePtica);
+			zdravljeForm = false;
+			zNaziv = ''; zOpis = ''; zLijek = ''; zTrajanje = '';
+		} finally {
+			zSaving = false;
+		}
+	}
+
+	async function obrisiZdravlje(id: string) {
+		await deleteZdravlje(id);
+		zdravljeRekordList = zdravljeRekordList.filter(z => z.id !== id);
 	}
 
 	async function sacuvajStatus() {
@@ -313,6 +375,11 @@
 										on:click={() => otvoriStatus(ptica)}
 										title="Status ptice"
 									>📋</button>
+									<button
+										class="btn btn-sm variant-ghost-surface"
+										on:click={() => otvoriZdravlje(ptica)}
+										title="Zdravstveni dnevnik"
+									>💊</button>
 								</div>
 							</div>
 
@@ -417,6 +484,102 @@
 					{#if statusLoading}<span class="animate-spin mr-1">↻</span>{/if}
 					Spremi
 				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Zdravstveni dnevnik modal -->
+{#if zdravljePtica}
+	<div
+		class="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-4"
+		role="presentation"
+		on:click|self={() => zdravljePtica = null}
+		on:keydown={(e) => e.key === 'Escape' && (zdravljePtica = null)}
+	>
+		<div class="card w-full max-w-lg p-5 space-y-4 max-h-[85vh] flex flex-col">
+			<header class="flex items-center justify-between shrink-0">
+				<div>
+					<h3 class="h4 font-bold">💊 Zdravstveni dnevnik</h3>
+					<p class="text-sm text-surface-500 truncate">{zdravljePtica.naziv || zdravljePtica.prstena_oznaka || zdravljePtica.id.slice(0,8)}</p>
+				</div>
+				<button class="btn-icon btn-icon-sm variant-ghost" on:click={() => zdravljePtica = null}>✕</button>
+			</header>
+
+			<!-- Forma za novi unos -->
+			{#if !zdravljeForm}
+				<button class="btn variant-filled-primary w-full shrink-0" on:click={() => { zdravljeForm = true; zNaziv = ''; zOpis = ''; zLijek = ''; zTrajanje = ''; zTip = 'bolest'; zDatum = new Date().toISOString().split('T')[0]; }}>
+					+ Novi unos
+				</button>
+			{:else}
+				<div class="card variant-soft p-4 space-y-3 shrink-0">
+					<div class="grid grid-cols-2 gap-3">
+						<label class="label">
+							<span class="text-sm font-medium">Vrsta</span>
+							<select class="select" bind:value={zTip} disabled={zSaving}>
+								{#each TIP_OPCIJE as op}
+									<option value={op.value}>{op.ikona} {op.label}</option>
+								{/each}
+							</select>
+						</label>
+						<label class="label">
+							<span class="text-sm font-medium">Datum</span>
+							<input class="input" type="date" bind:value={zDatum} disabled={zSaving} />
+						</label>
+					</div>
+					<label class="label">
+						<span class="text-sm font-medium">Naziv / dijagnoza *</span>
+						<input class="input" type="text" bind:value={zNaziv} placeholder="Npr. Salmoneloze, Preventivna kap, Vakcinacija..." disabled={zSaving} />
+					</label>
+					<div class="grid grid-cols-2 gap-3">
+						<label class="label">
+							<span class="text-sm font-medium">Lijek/preparat</span>
+							<input class="input" type="text" bind:value={zLijek} placeholder="Npr. Baytril 10%" disabled={zSaving} />
+						</label>
+						<label class="label">
+							<span class="text-sm font-medium">Trajanje (dana)</span>
+							<input class="input" type="number" min="1" bind:value={zTrajanje} placeholder="7" disabled={zSaving} />
+						</label>
+					</div>
+					<label class="label">
+						<span class="text-sm font-medium">Napomena</span>
+						<textarea class="textarea text-sm" rows="2" bind:value={zOpis} placeholder="Doza, zapažanja, tok liječenja..." disabled={zSaving} />
+					</label>
+					<div class="flex gap-2">
+						<button class="btn variant-ghost flex-1" on:click={() => zdravljeForm = false} disabled={zSaving}>Odustani</button>
+						<button class="btn variant-filled-primary flex-1" on:click={sacuvajZdravlje} disabled={zSaving || !zNaziv.trim()}>
+							{#if zSaving}<span class="animate-spin mr-1">↻</span>{/if}
+							Spremi
+						</button>
+					</div>
+				</div>
+			{/if}
+
+			<!-- Lista zapisa -->
+			<div class="overflow-y-auto flex-1 space-y-2">
+				{#if zdravljeLoading}
+					<p class="text-center text-surface-400 py-4">↻ Učitavanje...</p>
+				{:else if zdravljeRekordList.length === 0}
+					<p class="text-center text-surface-400 py-8 text-sm">Nema zdravstvenih zapisa</p>
+				{:else}
+					{#each zdravljeRekordList as z (z.id)}
+						{@const tip = TIP_OPCIJE.find(o => o.value === z.tip)}
+						{@const jeMasovni = !z.ptica_id}
+						<div class="card p-3 space-y-1">
+							<div class="flex items-start justify-between gap-2">
+								<div class="flex-1 min-w-0">
+									<p class="text-sm font-semibold">{tip?.ikona} {z.naziv} {#if jeMasovni}<span class="badge variant-soft-primary text-xs ml-1">masovni</span>{/if}</p>
+									<p class="text-xs text-surface-400">{z.datum} · {tip?.label}</p>
+									{#if z.lijek}<p class="text-xs text-surface-500">💊 {z.lijek}{z.trajanje_dana ? ` · ${z.trajanje_dana} dana` : ''}</p>{/if}
+									{#if z.opis}<p class="text-xs text-surface-500 mt-0.5">{z.opis}</p>{/if}
+								</div>
+								{#if !jeMasovni}
+								<button class="btn-icon btn-icon-sm variant-ghost-error shrink-0" on:click={() => obrisiZdravlje(z.id)} title="Obriši">✕</button>
+								{/if}
+							</div>
+						</div>
+					{/each}
+				{/if}
 			</div>
 		</div>
 	</div>

@@ -130,8 +130,9 @@ export interface Ciklus {
   kavez_id: string;
   sezona_id: string;
   vrsta_ptica_id: string;
-  datum_prvog_jajeta: string | null; // null dok uzgajivač ne unese datum prvog jajeta
+  datum_prvog_jajeta: string | null;
   status: 'aktivan' | 'završen' | 'neuspješan';
+  napomena_paznje?: string; // vanredna pažnja na kavezu (bolest, liječenje...)
   broj_jaja?: number;
   broj_izlijegljenih?: number;
   napomena?: string;
@@ -190,4 +191,22 @@ export interface PticaWithRodovnik extends Ptica {
   otac?: Ptica;
   majka?: Ptica;
   vrsta?: VrstaPtica;
+}
+
+// Zdravstveni dnevnik ptica
+export type ZdravljeTip = 'bolest' | 'preventiva' | 'vakcinacija' | 'zapazanje' | 'ostalo';
+
+export interface Zdravlje {
+  id: string;
+  user_id: string;
+  uzgajivacnica_id?: string;
+  ptica_id?: string;          // null = masovni tretman za uzgajivačnicu
+  datum: string;
+  tip: ZdravljeTip;
+  naziv: string;
+  opis?: string;
+  lijek?: string;
+  trajanje_dana?: number;
+  created_at: string;
+  updated_at: string;
 }

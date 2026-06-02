@@ -48,10 +48,14 @@
 				(p.otac_id === ptica2Id && !ptica1Id))
 	).length;
 
-	// Boja bordera: alarm > boja faze > siva (prazan)
+	$: imaPaznju = !!(details.aktivni_ciklus?.napomena_paznje);
+
+	// Boja bordera: alarm > pažnja > boja faze > siva (prazan)
 	$: borderColor = isAlarm
 		? '#ef4444'
-		: trenutnaFaza?.boja ?? (details.status === 'aktivan' ? '#22c55e' : '#64748b');
+		: imaPaznju
+			? '#f97316'
+			: trenutnaFaza?.boja ?? (details.status === 'aktivan' ? '#22c55e' : '#64748b');
 
 	function formatDatum(datum: string): string {
 		return new Date(datum).toLocaleDateString('hr-BA', { day: '2-digit', month: '2-digit' });
@@ -75,13 +79,18 @@
 	on:click={() => !readonly && dispatch('kliknut')}
 >
 	<!-- Header -->
-	<div class="flex items-start justify-between">
+	<div class="flex items-start justify-between gap-1">
 		<span class="font-bold text-lg leading-none">K{details.oznaka}</span>
-		{#if isAlarm && details.status !== 'prazan'}
-			<span class="badge variant-filled-error text-xs px-1 py-0.5 leading-none">!</span>
-		{:else if details.status === 'aktivan'}
-			<span class="badge variant-filled-success text-xs px-1 py-0.5 leading-none">✓</span>
-		{/if}
+		<div class="flex gap-1 items-center">
+			{#if imaPaznju}
+				<span class="badge text-xs px-1 py-0.5 leading-none" style="background:#f97316;color:#fff" title={details.aktivni_ciklus?.napomena_paznje}>⚠</span>
+			{/if}
+			{#if isAlarm && details.status !== 'prazan'}
+				<span class="badge variant-filled-error text-xs px-1 py-0.5 leading-none">!</span>
+			{:else if details.status === 'aktivan'}
+				<span class="badge variant-filled-success text-xs px-1 py-0.5 leading-none">✓</span>
+			{/if}
+		</div>
 	</div>
 
 	{#if details.status === 'prazan'}
@@ -101,6 +110,13 @@
 				<span class="text-xs shrink-0 font-semibold text-surface-500">🐣{mladiCount}</span>
 			{/if}
 		</div>
+
+		<!-- Napomena pažnje -->
+		{#if imaPaznju}
+			<p class="text-xs font-medium truncate" style="color:#f97316">
+				⚠ {details.aktivni_ciklus?.napomena_paznje}
+			</p>
+		{/if}
 
 		<!-- Traka faza -->
 		{#if fazeZaVrstu.length > 0}
