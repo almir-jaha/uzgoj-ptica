@@ -30,7 +30,7 @@
 	}
 
 	onMount(async () => {
-		const SPLASH_MIN_MS = 2500; // minimalno trajanje splash screena
+		const SPLASH_MIN_MS = 2000; // minimalno trajanje splash screena
 		const splashStart = Date.now();
 
 		const currentSession = await getCurrentUser();
