@@ -11,6 +11,7 @@ export const bs = {
 	nav: {
 		uzgajivacnica: '🏡 Uzgajivačnica',
 		sezone: '📅 Sezone',
+		parovi: '💑 Parovi',
 		ptice: '🐦 Ptice',
 		aktivnosti: '📋 Aktivnosti',
 		statistike: '📊 Statistike',
