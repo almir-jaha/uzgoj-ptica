@@ -100,7 +100,7 @@
 		<svelte:fragment slot="header">
 			<AppBar padding="px-4 py-2" background="bg-surface-100-800-token">
 				<svelte:fragment slot="lead">
-					<img src="/app-logo.png" alt="HatchPlan" class="h-8 w-auto" />
+					<img src="/app-logo.png" alt="HatchPlan" class="h-10 w-auto" />
 					{#if !$isOnline}
 						<span class="badge variant-filled-warning text-xs ml-2" title={t.app.offlineTitle}>
 							{t.app.offlineBadge}
