@@ -30,7 +30,7 @@
 	}
 
 	onMount(async () => {
-		const SPLASH_MIN_MS = 2000; // minimalno trajanje splash screena
+		const SPLASH_MIN_MS = 1500; // minimalno trajanje splash screena
 		const splashStart = Date.now();
 
 		const currentSession = await getCurrentUser();
@@ -54,7 +54,10 @@
 			let reloadPending = false;
 			navigator.serviceWorker.addEventListener('controllerchange', () => {
 				if (reloadPending) return;
+				// Spriječi dupli reload — sessionStorage se briše kada korisnik zatvori tab
+				if (sessionStorage.getItem('sw-reloaded')) return;
 				reloadPending = true;
+				sessionStorage.setItem('sw-reloaded', '1');
 				window.location.reload();
 			});
 
