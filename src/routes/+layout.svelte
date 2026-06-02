@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import '../app.css';
 	import { initializeStores, AppShell, AppBar, Toast, getToastStore } from '@skeletonlabs/skeleton';
 	import { session, isAuthenticated, auth, user } from '$lib/stores/auth';
@@ -18,7 +19,8 @@
 	const toastStore = getToastStore();
 
 	let authLoading = true;
-	let showSplash = true;   // kontroliše splash — čeka i auth i minimalno trajanje
+	// Preskoči splash ako je ovo SW-triggered reload (sessionStorage pamti da smo već reloadali)
+	let showSplash = browser ? !sessionStorage.getItem('sw-reloaded') : true;
 	let splashFading = false;
 	let lastLoadedUserId: string | null = null;
 
