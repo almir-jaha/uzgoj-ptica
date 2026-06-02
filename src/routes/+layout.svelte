@@ -90,9 +90,9 @@
 
 {#if authLoading}
 	<div class="flex min-h-screen items-center justify-center bg-surface-50-900-token">
-		<div class="text-center space-y-3">
-			<span class="text-6xl">🐦</span>
-			<p class="text-surface-500 animate-pulse">{t.app.loading}</p>
+		<div class="text-center space-y-4">
+			<img src="/app-logo.png" alt="HatchPlan" class="w-40 h-40 mx-auto animate-pulse" />
+			<p class="text-surface-400 text-sm">{t.app.loading}</p>
 		</div>
 	</div>
 {:else if $isAuthenticated}
