@@ -100,31 +100,31 @@
 		<svelte:fragment slot="header">
 			<AppBar padding="px-4 py-2" background="bg-surface-100-800-token">
 				<svelte:fragment slot="lead">
-					<span class="text-lg font-bold tracking-tight">{t.app.nameShort}</span>
+					<img src="/app-logo.png" alt="HatchPlan" class="h-8 w-auto" />
 					{#if !$isOnline}
 						<span class="badge variant-filled-warning text-xs ml-2" title={t.app.offlineTitle}>
 							{t.app.offlineBadge}
-						</span>
-					{/if}
-					{#if $uzgajivacnice.length > 1}
-						<select
-							class="select text-xs py-0.5 px-2 h-7 ml-2 max-w-[130px] truncate"
-							value={$aktivnaUzgajivacnica?.id ?? ''}
-							on:change={(e) => setAktivnaUzgajivacnica(e.currentTarget.value)}
-						>
-							{#each $uzgajivacnice as uz}
-								<option value={uz.id}>{uz.naziv}</option>
-							{/each}
-						</select>
-					{:else if $aktivnaUzgajivacnica}
-						<span class="text-xs text-surface-400 ml-2 hidden sm:inline truncate max-w-[120px]">
-							{$aktivnaUzgajivacnica.naziv}
 						</span>
 					{/if}
 				</svelte:fragment>
 				<svelte:fragment slot="trail">
 					<!-- Desktop nav -->
 					<nav class="hidden sm:flex items-center gap-1">
+						{#if $uzgajivacnice.length > 1}
+							<select
+								class="select text-xs py-0.5 px-2 h-7 max-w-[140px] truncate mr-1"
+								value={$aktivnaUzgajivacnica?.id ?? ''}
+								on:change={(e) => setAktivnaUzgajivacnica(e.currentTarget.value)}
+							>
+								{#each $uzgajivacnice as uz}
+									<option value={uz.id}>{uz.naziv}</option>
+								{/each}
+							</select>
+						{:else if $aktivnaUzgajivacnica}
+							<span class="text-xs text-surface-400 mr-1 truncate max-w-[120px]">
+								{$aktivnaUzgajivacnica.naziv}
+							</span>
+						{/if}
 						<a href="/uzgajivacnica" class="btn btn-sm {$page.url.pathname.startsWith('/uzgajivacnica') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.uzgajivacnica}</a>
 						<a href="/sezone"        class="btn btn-sm {$page.url.pathname.startsWith('/sezone') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.sezone}</a>
 						<a href="/parovi"        class="btn btn-sm {$page.url.pathname.startsWith('/parovi') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.parovi}</a>
@@ -137,8 +137,19 @@
 						<button class="btn btn-sm variant-ghost-surface ml-1" on:click={auth.signOut} title={t.nav.odjavaTitle}>⎋</button>
 					</nav>
 
-					<!-- Mobile: izlaz, admin, sign out -->
+					<!-- Mobile: uzgajivačnica switcher + izlaz, admin, sign out -->
 					<div class="flex sm:hidden items-center gap-1">
+						{#if $uzgajivacnice.length > 1}
+							<select
+								class="select text-xs py-0.5 px-1.5 h-7 max-w-[110px] truncate"
+								value={$aktivnaUzgajivacnica?.id ?? ''}
+								on:change={(e) => setAktivnaUzgajivacnica(e.currentTarget.value)}
+							>
+								{#each $uzgajivacnice as uz}
+									<option value={uz.id}>{uz.naziv}</option>
+								{/each}
+							</select>
+						{/if}
 						{#if isAdmin($user?.email)}
 							<a
 								href="/admin"
