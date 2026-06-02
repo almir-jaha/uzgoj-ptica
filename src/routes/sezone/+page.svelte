@@ -90,6 +90,21 @@
 			.catch(console.error);
 	}
 
+	let mountComplete = false;
+	let prevSezonaId: string | null = null;
+
+	// Reaktivni reload kad se promijeni sezona (npr. switch uzgajivačnice)
+	// Aktivira se SAMO nakon što je mount završen da ne duplira inicijalni load
+	$: if (mountComplete) {
+		if ($prikazanaSezona && $prikazanaSezona.id !== prevSezonaId) {
+			prevSezonaId = $prikazanaSezona.id;
+			const u = get(user);
+			if (u) ucitajZaSezonu($prikazanaSezona.id, u.id, false);
+		} else if (!$prikazanaSezona) {
+			prevSezonaId = null; // reset da sljedeći switch triggeruje reload
+		}
+	}
+
 	onMount(async () => {
 		const currentUser = get(user);
 		if (!currentUser) return;
@@ -105,6 +120,7 @@
 		if (!sezona) {
 			pageLoading = false;
 			novaSezonaOpen = true;
+			mountComplete = true;
 			return;
 		}
 
@@ -128,6 +144,10 @@
 		ucitajZaSezonu(sezona.id, currentUser.id, jeAktivna);
 
 		loadSezone(currentUser.id).catch(console.error);
+
+		// Postavi prevSezonaId i tek onda aktiviraj reaktivni watcher
+		prevSezonaId = sezona.id;
+		mountComplete = true;
 	});
 
 	onDestroy(() => {
