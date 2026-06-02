@@ -110,7 +110,7 @@
 		style="background:#ffffff; transition: opacity 0.4s ease; opacity: {splashFading ? 0 : 1};"
 	>
 		<div class="text-center space-y-5">
-			<img src="/app-logo.png" alt="HatchPlan" class="w-52 h-52 mx-auto" style="animation: pulse 2s ease-in-out infinite;" />
+			<img src="/app-logo.png" alt="HatchPlan" class="w-52 h-52 mx-auto" />
 			<p style="color:#94a3b8; font-size:0.85rem; letter-spacing:0.08em; font-weight:500">HatchPlan</p>
 		</div>
 	</div>
