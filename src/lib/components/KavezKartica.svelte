@@ -38,10 +38,13 @@
 
 	$: ptica1Id = details.aktivni_ciklus?.par?.ptica1?.id;
 	$: ptica2Id = details.aktivni_ciklus?.par?.ptica2?.id;
+	// Mladi samo iz TEKUĆEG ciklusa — filter po created_at ciklusa
+	$: ciklusKreiranAt = details.aktivni_ciklus?.created_at ?? '';
 	$: mladiCount = svePtice.filter(
 		(p) =>
 			p.id !== ptica1Id &&
 			p.id !== ptica2Id &&
+			(!ciklusKreiranAt || p.created_at >= ciklusKreiranAt) &&
 			((p.otac_id === ptica1Id && p.majka_id === ptica2Id) ||
 				(p.otac_id === ptica2Id && p.majka_id === ptica1Id) ||
 				(p.otac_id === ptica1Id && !ptica2Id) ||
@@ -131,7 +134,9 @@
 		{/if}
 
 		<!-- Trenutna faza + dani -->
-		{#if trenutnaFaza}
+		{#if !details.aktivni_ciklus?.datum_prvog_jajeta}
+			<p class="text-xs font-medium" style="color:#6366f1">🥚 Čeka datum prvog jajeta</p>
+		{:else if trenutnaFaza}
 			<div class="flex items-center justify-between gap-1">
 				<span
 					class="text-xs font-semibold px-1.5 py-0.5 rounded truncate leading-tight"
