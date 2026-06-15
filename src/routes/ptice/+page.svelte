@@ -347,71 +347,79 @@
 	{:else}
 		<div class="space-y-2">
 			{#each pticaSearch as ptica (ptica.id)}
-				<div class="card p-4 border-l-4"
+				<div class="card p-3 border-l-4"
 					style="border-left-color: {ptica.godina === tekucaGodina ? '#22c55e' : 'transparent'}"
 				>
-					<div class="flex items-start gap-3">
-						<!-- Spol badge -->
-						<span class="badge {spolBoja(ptica.spol)} text-lg w-9 h-9 flex items-center justify-center shrink-0 rounded-full">
+					<!-- Red 1: Spol + Naziv + Prsten broj -->
+					<div class="flex items-center gap-2">
+						<span class="badge {spolBoja(ptica.spol)} text-base w-8 h-8 flex items-center justify-center shrink-0 rounded-full">
 							{spolSimbol(ptica.spol)}
 						</span>
-
-						<!-- Podaci -->
-						<div class="flex-1 min-w-0 space-y-1">
-							<div class="flex items-center justify-between gap-2">
-								<p class="font-semibold truncate">
-									{ptica.naziv || ptica.prstena_oznaka || ptica.id.slice(0, 8)}
-								</p>
-								<div class="flex gap-1 shrink-0 flex-wrap justify-end">
-									{#if ptica.status_evidencije && ptica.status_evidencije !== "aktivna"}
-										<span class="badge variant-filled-error text-xs self-center">
-											{STATUS_OPCIJE.find(o => o.value === ptica.status_evidencije)?.label ?? ptica.status_evidencije}
-										</span>
-									{/if}
-									<button class="btn btn-sm variant-ghost-surface" on:click={() => otvoriUredi(ptica)}>{t.ptice.uredi}</button>
-									<button class="btn btn-sm variant-ghost-tertiary" on:click={() => otvoriRodovnik(ptica)}>Pedigre</button>
-									<button
-										class="btn btn-sm {ptica.status_evidencije && ptica.status_evidencije !== 'aktivna' ? 'variant-soft-error' : 'variant-ghost-surface'}"
-										on:click={() => otvoriStatus(ptica)}
-										title="Status ptice"
-									>📋</button>
-									<button
-										class="btn btn-sm variant-ghost-surface"
-										on:click={() => otvoriZdravlje(ptica)}
-										title="Zdravstveni dnevnik"
-									>💊</button>
-								</div>
-							</div>
-
-							<p class="text-sm text-surface-500">{vrstaLabel(ptica.vrsta_ptica_id)}</p>
-
-							<!-- Prsten + redni broj + datum -->
-							<div class="flex items-center gap-3 text-xs text-surface-500 flex-wrap">
+						<div class="flex-1 min-w-0">
+							<p class="font-bold text-base leading-tight truncate">
+								{ptica.naziv || ptica.prstena_oznaka || ptica.id.slice(0, 8)}
+							</p>
+							<!-- Prsten odmah ispod naziva, prominentno -->
+							<p class="text-sm font-medium text-primary-600-300-token leading-tight">
 								{#if ptica.prstena_oznaka}
-									<span>📍 {ptica.prstena_oznaka}{ptica.prsten_redni_broj != null ? `-${ptica.prsten_redni_broj}` : ''}</span>
+									📍 {ptica.prstena_oznaka}{ptica.prsten_redni_broj != null ? `-${ptica.prsten_redni_broj}` : ''}
 								{:else if ptica.prsten_redni_broj != null}
-									<span>📍 #{ptica.prsten_redni_broj}</span>
+									📍 #{ptica.prsten_redni_broj}
+								{:else}
+									<span class="text-surface-400">—</span>
 								{/if}
-								{#if ptica.datum_rodjenja}
-									<span>🎂 {formatDatum(ptica.datum_rodjenja)}</span>
-								{:else if ptica.godina}
-									<span>📅 {ptica.godina}</span>
-								{/if}
-							</div>
+							</p>
+						</div>
+						{#if ptica.status_evidencije && ptica.status_evidencije !== 'aktivna'}
+							<span class="badge variant-filled-error text-xs shrink-0">
+								{STATUS_OPCIJE.find(o => o.value === ptica.status_evidencije)?.label ?? ptica.status_evidencije}
+							</span>
+						{/if}
+					</div>
 
-							<!-- Rodovnik (ako postoji) -->
-							{#if ptica.otac_id || ptica.majka_id}
-								<p class="text-xs text-surface-400">
-									{#if ptica.otac_id}♂ {roditeljLabel(ptica.otac_id)}{/if}
-									{#if ptica.otac_id && ptica.majka_id}<span class="mx-1">·</span>{/if}
-									{#if ptica.majka_id}♀ {roditeljLabel(ptica.majka_id)}{/if}
-								</p>
+					<!-- Red 2: Vrsta + datum/godina + roditelji -->
+					<div class="mt-1.5 pl-10 space-y-0.5">
+						<div class="flex items-center gap-3 text-xs text-surface-500 flex-wrap">
+							<span>{vrstaLabel(ptica.vrsta_ptica_id)}</span>
+							{#if ptica.datum_rodjenja}
+								<span>· 🎂 {formatDatum(ptica.datum_rodjenja)}</span>
+							{:else if ptica.godina}
+								<span>· 📅 {ptica.godina}</span>
 							{/if}
-
-							{#if ptica.napomena}
-								<p class="text-xs text-surface-400 italic truncate">{ptica.napomena}</p>
+							{#if ptica.boja}
+								<span>· {ptica.boja}</span>
 							{/if}
 						</div>
+						{#if ptica.otac_id || ptica.majka_id}
+							<p class="text-xs text-surface-400">
+								{#if ptica.otac_id}♂ {roditeljLabel(ptica.otac_id)}{/if}
+								{#if ptica.otac_id && ptica.majka_id}<span class="mx-1">·</span>{/if}
+								{#if ptica.majka_id}♀ {roditeljLabel(ptica.majka_id)}{/if}
+							</p>
+						{/if}
+						{#if ptica.napomena}
+							<p class="text-xs text-surface-400 italic truncate">{ptica.napomena}</p>
+						{/if}
+					</div>
+
+					<!-- Red 3: Akcije -->
+					<div class="flex gap-1 mt-2 pt-2 border-t border-surface-300-600-token">
+						<button class="btn btn-sm variant-ghost-surface flex-1" on:click={() => otvoriUredi(ptica)}>
+							✏️ {t.ptice.uredi}
+						</button>
+						<button class="btn btn-sm variant-ghost-tertiary flex-1" on:click={() => otvoriRodovnik(ptica)}>
+							🌳 Pedigre
+						</button>
+						<button
+							class="btn btn-sm {ptica.status_evidencije && ptica.status_evidencije !== 'aktivna' ? 'variant-soft-error' : 'variant-ghost-surface'}"
+							on:click={() => otvoriStatus(ptica)}
+							title="Status ptice"
+						>📋</button>
+						<button
+							class="btn btn-sm variant-ghost-surface"
+							on:click={() => otvoriZdravlje(ptica)}
+							title="Zdravstveni dnevnik"
+						>💊</button>
 					</div>
 				</div>
 			{/each}

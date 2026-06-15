@@ -19,8 +19,10 @@
 	const toastStore = getToastStore();
 
 	let authLoading = true;
-	// Preskoči splash ako je ovo SW-triggered reload (sessionStorage pamti da smo već reloadali)
-	let showSplash = browser ? !sessionStorage.getItem('sw-reloaded') : true;
+	// Preskoči splash ako je već prikazan u ovoj sesiji (refresh) ili je ovo SW-triggered reload
+	let showSplash = browser
+		? !sessionStorage.getItem('splash-shown') && !sessionStorage.getItem('sw-reloaded')
+		: true;
 	let splashFading = false;
 	let lastLoadedUserId: string | null = null;
 
@@ -50,6 +52,8 @@
 		await new Promise(r => setTimeout(r, 400));
 		showSplash = false;
 		splashFading = false;
+		// Zapamti da je splash već prikazan — refresh neće ponovo pokazati splash
+		sessionStorage.setItem('splash-shown', '1');
 
 		// Registracija Service Workera
 		if ('serviceWorker' in navigator) {
