@@ -11,7 +11,6 @@ import {
 
 // Show format boje
 const NAVY = '#1a237e';
-const GOLD = '#f9a825';
 const ROW_H = 72;
 const GEN1_TOTAL_H = 8 * ROW_H;
 const QR_ROW_H = 72;
@@ -198,9 +197,6 @@ export async function generirajShowRodovnikPDF(pticaId: string, lang: RodovnikLa
 	const datumStr = buildDatumStr();
 	const fileName = `Rodovnik_Show_${safeName(tree.ptica)}_${new Date().getFullYear()}.pdf`;
 
-	// Zlatna horizontalna linija (puna širina unutrašnjosti)
-	const goldLine = { canvas: [{ type: 'rect', x: 0, y: 0, w: INNER_W, h: 3, r: 0, color: GOLD }], margin: [0, 6, 0, 6] };
-
 	const innerContent: object[] = [
 		// Header: logo | info | app logo
 		{
@@ -210,12 +206,12 @@ export async function generirajShowRodovnikPDF(pticaId: string, lang: RodovnikLa
 				...(appLogoBase64 ? [{ image: appLogoBase64, width: 56, height: 56 }] : [])
 			],
 			columnGap: 20,
-			margin: [0, 0, 0, 4]
+			margin: [0, 0, 0, 6]
 		},
-		goldLine,
+		{ canvas: [{ type: 'line', x1: 0, y1: 0, x2: INNER_W, y2: 0, lineWidth: 1, lineColor: NAVY }], margin: [0, 0, 0, 6] },
 		// Naslov
-		{ text: labels.rodovnikNaslov, fontSize: 20, bold: true, color: NAVY, alignment: 'center', letterSpacing: 4, margin: [0, 0, 0, 0] },
-		goldLine,
+		{ text: labels.rodovnikNaslov, fontSize: 20, bold: true, color: NAVY, alignment: 'center', letterSpacing: 4, margin: [0, 0, 0, 6] },
+		{ canvas: [{ type: 'line', x1: 0, y1: 0, x2: INNER_W, y2: 0, lineWidth: 1, lineColor: NAVY }], margin: [0, 0, 0, 6] },
 		// Rodovnik tablica
 		{
 			table: {

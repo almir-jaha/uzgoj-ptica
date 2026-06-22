@@ -1,5 +1,12 @@
 export type RodovnikLang = 'bs' | 'hr' | 'en';
 
+// Mapiranje app jezika (langStore) na podržane rodovnik jezike
+export function appLangToRodovnikLang(lang: string): RodovnikLang {
+	if (lang === 'bs' || lang === 'hr') return 'bs';
+	if (lang === 'en') return 'en';
+	return 'en';
+}
+
 export interface RodovnikLabels {
 	otac: string;
 	majka: string;

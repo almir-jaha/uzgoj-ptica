@@ -4,7 +4,9 @@
 	import { generirajA5RodovnikPDF } from '$lib/utils/rodovnik-a5-pdf';
 	import { generirajShowRodovnikPDF } from '$lib/utils/rodovnik-show-pdf';
 	import { generirajBwRodovnikPDF } from '$lib/utils/rodovnik-bw-pdf';
-	import { RODOVNIK_LANGS, type RodovnikLang } from '$lib/utils/rodovnik-i18n';
+	import { appLangToRodovnikLang, type RodovnikLang } from '$lib/utils/rodovnik-i18n';
+	import { currentLang } from '$lib/langStore.js';
+	import { get } from 'svelte/store';
 	import type { Ptica } from '$lib/db/schema';
 
 	export let ptica: Ptica;
@@ -13,7 +15,6 @@
 	let loading = false;
 	let error = '';
 	let selectedId: string = 'portrait';
-	let lang: RodovnikLang = 'bs';
 
 	interface Template {
 		id: string;
@@ -96,13 +97,12 @@
 		return '';
 	}
 
-	function setLang(l: string) { lang = l as RodovnikLang; }
-
 	async function generiraj() {
 		const tpl = templates.find(t => t.id === selectedId);
 		if (!tpl) return;
 		loading = true;
 		error = '';
+		const lang: RodovnikLang = appLangToRodovnikLang(get(currentLang));
 		try {
 			await tpl.fn(ptica.id, lang);
 		} catch (e) {
@@ -137,22 +137,6 @@
 			{#if ptica.godina}
 				<p class="text-xs text-surface-500">{ptica.godina}</p>
 			{/if}
-		</div>
-
-		<!-- Odabir jezika -->
-		<div class="space-y-1.5">
-			<p class="text-xs font-semibold text-surface-500 uppercase tracking-wide">Jezik dokumenta</p>
-			<div class="flex gap-2">
-				{#each Object.entries(RODOVNIK_LANGS) as [key, val]}
-					<button
-						class="flex-1 btn btn-sm {lang === key ? 'variant-filled-primary' : 'variant-soft'}"
-						on:click={() => setLang(key)}
-						disabled={loading}
-					>
-						<span class="mr-1">{val.flag}</span>{val.label}
-					</button>
-				{/each}
-			</div>
 		</div>
 
 		<!-- Odabir templata -->
