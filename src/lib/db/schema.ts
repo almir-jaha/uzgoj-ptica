@@ -7,6 +7,7 @@ export interface VrstaPtica {
   podatci_inkubacija?: Record<string, any>;
   napomena?: string;
   custom_fields?: Record<string, any>;
+  grupa?: string; // 'kanarinac_finke' | 'golubovi' | 'papagaji' | 'ostalo'
   created_at: string;
   updated_at: string;
 }
@@ -52,6 +53,7 @@ export interface Ptica {
   status_evidencije?: 'aktivna' | 'mlada' | 'vanjska' | 'uginula' | 'prodata' | 'poklonjena' | 'ostalo';
   datum_statusa?: string;
   napomena_statusa?: string;
+  genetika?: Record<string, unknown>; // dinamički atributi po vrsti (mutacije, ocjene, performanse)
   created_at: string;
   updated_at: string;
 }

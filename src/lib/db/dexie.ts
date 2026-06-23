@@ -54,6 +54,8 @@ export class UzgojPticaDB extends Dexie {
       sezona: 'id, user_id, godina, uzgajivacnica_id',
       uzgajivacnice: 'id, user_id'
     });
+    // v5: genetika JSONB na ptice, grupa na vrsta_ptica (nema novih indeksa — JSONB nije indeksirano u Dexie)
+    this.version(5).stores({});
   }
 }
 

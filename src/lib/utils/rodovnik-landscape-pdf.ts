@@ -8,6 +8,7 @@ import {
 	prstenStr, safeName, spolBoja, genLabel, fillColorForGen,
 	loadPdfMake, buildQrUrl, buildDatumStr
 } from './rodovnik-shared';
+import { buildScoreStr } from './genetika-schema';
 
 const ROW_H = 63;
 const LINE_W = 2;
@@ -44,12 +45,30 @@ function buildBirdCard(node: RodovnikNode, genLevel: number, labels: RodovnikLab
 	if (genLevel <= 3) {
 		stack.push({ text: node.vrstaLabel, fontSize: fs - 1.5, color: '#888', margin: [0, 0, 0, 1] });
 	}
-	if (p.boja && genLevel <= 3) {
-		stack.push({ text: p.boja, fontSize: fs - 0.5, bold: true, color: '#444', margin: [0, 0, 0, 1] });
+
+	// Mutacija: preferira genetika.vizuelna_mutacija, fallback na boja
+	const mutacija = (p.genetika?.vizuelna_mutacija as string) || p.boja;
+	if (mutacija && genLevel <= 3) {
+		stack.push({ text: mutacija, fontSize: fs - 0.5, color: '#5c6bc0', margin: [0, 0, 0, 1] });
 	}
+
+	// Skrivena mutacija (split)
+	const skrivena = p.genetika?.skrivena_mutacija;
+	if (skrivena && genLevel <= 2) {
+		const str = Array.isArray(skrivena) ? skrivena.join(' / ') : String(skrivena);
+		if (str) stack.push({ text: `/ ${str}`, fontSize: fs - 1.5, color: '#888', italics: true, margin: [0, 0, 0, 1] });
+	}
+
 	if (p.rezultati && genLevel <= 2) {
 		stack.push({ text: p.rezultati, fontSize: fs - 1, color: '#555', italics: true, margin: [0, 0, 0, 1] });
 	}
+
+	// Ocjene kvaliteta
+	const scoreStr = buildScoreStr(p.genetika);
+	if (scoreStr && genLevel <= 3) {
+		stack.push({ text: scoreStr, fontSize: 6.5, color: '#888', margin: [0, 1, 0, 0] });
+	}
+
 	if (p.napomena_rodovnik && genLevel === 1) {
 		stack.push({ text: p.napomena_rodovnik, fontSize: 7.5, color: '#777', italics: true, margin: [0, 2, 0, 0] });
 	}
