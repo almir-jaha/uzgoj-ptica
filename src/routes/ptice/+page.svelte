@@ -36,11 +36,6 @@
 	}
 
 	async function loadVrstePtica() {
-		const local = await db.vrsta_ptica.toArray();
-		if (local.length > 0) {
-			vrstePtica = local.sort((a, b) => a.naziv.localeCompare(b.naziv));
-			return;
-		}
 		const { data } = await supabase.from('vrsta_ptica').select('*').order('naziv');
 		if (data && data.length > 0) {
 			await db.vrsta_ptica.bulkPut(data);
