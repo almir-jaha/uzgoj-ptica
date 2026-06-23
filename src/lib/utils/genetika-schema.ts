@@ -174,6 +174,15 @@ export function getGrupaShema(grupa: string | undefined): GenetikaPolje[] {
 	return GENETIKA_SHEME[(grupa as VrstaGrupa) ?? 'ostalo'] ?? [];
 }
 
+// Per-species schema: čita iz custom_fields.genetika_polja, fallback na hardkodirani shemu po grupi
+export function getSchemaForVrsta(vrsta: { grupa?: string; custom_fields?: Record<string, unknown> } | undefined): GenetikaPolje[] {
+	const customPolja = vrsta?.custom_fields?.genetika_polja;
+	if (Array.isArray(customPolja) && customPolja.length > 0) {
+		return customPolja as GenetikaPolje[];
+	}
+	return getGrupaShema(vrsta?.grupa);
+}
+
 // Vraća string ocjena za prikaz u PDF-u (npr. "Stav: ★★★★☆  Perje: ★★★★★")
 export function buildScoreStr(genetika: Record<string, unknown> | undefined): string {
 	if (!genetika) return '';

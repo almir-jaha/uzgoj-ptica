@@ -5,6 +5,7 @@ import { db } from '$lib/db/dexie';
 import { faze } from '$lib/stores/ciklus';
 import { loadAllUserTiers, setUserTier, allUserTiers } from '$lib/stores/userTier';
 import type { Tier } from '$lib/stores/userTier';
+import type { GenetikaPolje } from '$lib/utils/genetika-schema';
 
 export { loadAllUserTiers, setUserTier, allUserTiers };
 export type { Tier };
@@ -76,6 +77,21 @@ export async function deleteVrstaPtica(id: string) {
   if (error) throw new Error(error.message);
   await db.vrsta_ptica.delete(id);
   vrstePtica.update((v) => v.filter((vp) => vp.id !== id));
+}
+
+export async function updateVrstaGenetikaPolja(
+  vrstaId: string,
+  polja: GenetikaPolje[]
+): Promise<void> {
+  const existing = await db.vrsta_ptica.get(vrstaId);
+  const customFields = { ...(existing?.custom_fields ?? {}), genetika_polja: polja };
+  const updated = { custom_fields: customFields, updated_at: new Date().toISOString() };
+  const { error } = await supabase.from('vrsta_ptica').update(updated).eq('id', vrstaId);
+  if (error) throw new Error(error.message);
+  await db.vrsta_ptica.update(vrstaId, updated);
+  vrstePtica.update((v) =>
+    v.map((vp) => (vp.id === vrstaId ? { ...vp, ...updated } : vp))
+  );
 }
 
 // ── Faze ciklusa ─────────────────────────────────────────────

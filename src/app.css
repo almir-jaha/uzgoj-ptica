@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .input, .select, .textarea {
+    padding-left: 0.625rem;
+  }
+}

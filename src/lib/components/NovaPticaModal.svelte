@@ -4,7 +4,7 @@
 	import { t } from '$lib/i18n';
 	import SlikaUnos from './SlikaUnos.svelte';
 	import GenetikaPolja from './GenetikaPolja.svelte';
-	import { getGrupaShema } from '$lib/utils/genetika-schema';
+	import { getSchemaForVrsta } from '$lib/utils/genetika-schema';
 
 	export let userId: string;
 	export let uzgajivacnicaId: string = '';
@@ -49,8 +49,7 @@
 	$: dostupneMajke = $pticeSenke.filter((p) => p.id !== editPtica?.id);
 
 	$: odabranaVrsta = vrstePtica.find(v => v.id === vrstaId);
-	$: vrstaGrupa = odabranaVrsta?.grupa ?? 'ostalo';
-	$: genetikaShema = getGrupaShema(vrstaGrupa);
+	$: genetikaShema = getSchemaForVrsta(odabranaVrsta);
 	$: imaGenetikaPolja = genetikaShema.length > 0;
 
 	$: otacObj = otacId ? $pticeMuzjaci.find(p => p.id === otacId) : null;

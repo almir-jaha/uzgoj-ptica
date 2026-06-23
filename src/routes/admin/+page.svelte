@@ -6,12 +6,17 @@
 		loadVrstePtica, createVrstaPtica, updateVrstaPtica, deleteVrstaPtica,
 		loadFazeZaVrstu, createFaza, updateFaza, deleteFaza,
 		loadAllUserTiers, setUserTier, allUserTiers,
-		loadAdminUzgajivacnice, adminUpdateAppUrl, adminUzgajivacnice
+		loadAdminUzgajivacnice, adminUpdateAppUrl, adminUzgajivacnice,
+		updateVrstaGenetikaPolja
 	} from '$lib/stores/admin';
 	import { TIER_LIMITS } from '$lib/stores/userTier';
 	import type { Tier } from '$lib/stores/userTier';
 	import { goto } from '$app/navigation';
 	import type { VrstaPtica, FazaCiklusa } from '$lib/db/schema';
+	import {
+		getSchemaForVrsta, type GenetikaPolje, type PoljeTip,
+		GENETIKA_SHEME, type VrstaGrupa
+	} from '$lib/utils/genetika-schema';
 
 	// Redirect if not admin
 	$: if ($user !== undefined && !isAdmin($user?.email)) goto('/kavezi');
@@ -254,6 +259,139 @@
 	// Ukupno dana (suma) za prikaz u headeru vrste
 	function ukupnoDana(faze: FazaCiklusa[]): number {
 		return faze.reduce((s, f) => s + f.broj_dana, 0);
+	}
+
+	// ── Genetička polja ──────────────────────────────────────────
+	let aktivnaPoljaVrstaId: string | null = null;
+	let editPoljeData: GenetikaPolje | null = null;
+	let formaPoljeNaziv = '';
+	let formaPoljeKljuc = '';
+	let formaPoljeTip: PoljeTip = 'text';
+	let formaPoljeSekcija: 'genetika' | 'ocjena' = 'genetika';
+	let formaPoljeOpcije = '';
+	let poljeLoading = false;
+	let poljeError = '';
+	let brisiPoljeKljuc: string | null = null;
+	let brisiPoljeVrstaId: string | null = null;
+
+	const TIP_OPCIJE: { value: PoljeTip; label: string }[] = [
+		{ value: 'text', label: 'Tekst (sa prijedlozima)' },
+		{ value: 'select', label: 'Padajući meni' },
+		{ value: 'tags', label: 'Tagovi (više vrijednosti)' },
+		{ value: 'stars', label: 'Zvjezdice (ocjena 1–5)' },
+		{ value: 'number', label: 'Broj' }
+	];
+
+	function tipLabel(tip: string): string {
+		return TIP_OPCIJE.find(o => o.value === tip)?.label.split(' ')[0] ?? tip;
+	}
+
+	function genKljuc(naziv: string): string {
+		return naziv.toLowerCase()
+			.replace(/[šŠ]/g, 's').replace(/[čČ]/g, 'c').replace(/[ćĆ]/g, 'c')
+			.replace(/[žŽ]/g, 'z').replace(/[đĐ]/g, 'd')
+			.replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+	}
+
+	function getPoljaZaVrstu(vrsta: VrstaPtica): GenetikaPolje[] {
+		return getSchemaForVrsta(vrsta);
+	}
+
+	function imaCustomPolja(vrsta: VrstaPtica): boolean {
+		const c = vrsta.custom_fields?.genetika_polja;
+		return Array.isArray(c) && (c as unknown[]).length > 0;
+	}
+
+	function otvoriNovoPolje(vrstaId: string) {
+		aktivnaPoljaVrstaId = vrstaId;
+		editPoljeData = null;
+		formaPoljeNaziv = '';
+		formaPoljeKljuc = '';
+		formaPoljeTip = 'text';
+		formaPoljeSekcija = 'genetika';
+		formaPoljeOpcije = '';
+		poljeError = '';
+	}
+
+	function otvoriUrediPolje(vrstaId: string, polje: GenetikaPolje) {
+		aktivnaPoljaVrstaId = vrstaId;
+		editPoljeData = polje;
+		formaPoljeNaziv = polje.naziv;
+		formaPoljeKljuc = polje.kljuc;
+		formaPoljeTip = polje.tip;
+		formaPoljeSekcija = polje.sekcija;
+		formaPoljeOpcije = (polje.opcije ?? []).join(', ');
+		poljeError = '';
+	}
+
+	function otkaziPolje() {
+		aktivnaPoljaVrstaId = null;
+		editPoljeData = null;
+		poljeError = '';
+	}
+
+	async function sacuvajPolje(vrsta: VrstaPtica) {
+		if (!formaPoljeNaziv.trim() || !formaPoljeKljuc.trim()) return;
+		poljeLoading = true;
+		poljeError = '';
+		try {
+			const novoPolje: GenetikaPolje = {
+				kljuc: formaPoljeKljuc.trim(),
+				naziv: formaPoljeNaziv.trim(),
+				tip: formaPoljeTip,
+				sekcija: formaPoljeSekcija,
+				opcije: ['select', 'tags'].includes(formaPoljeTip) && formaPoljeOpcije.trim()
+					? formaPoljeOpcije.split(',').map(s => s.trim()).filter(Boolean)
+					: undefined
+			};
+			const postojecaPolja = getPoljaZaVrstu(vrsta);
+			let novaPolja: GenetikaPolje[];
+			if (editPoljeData) {
+				novaPolja = postojecaPolja.map(p => p.kljuc === editPoljeData!.kljuc ? novoPolje : p);
+			} else {
+				if (postojecaPolja.some(p => p.kljuc === novoPolje.kljuc)) {
+					poljeError = `Ključ "${novoPolje.kljuc}" već postoji za ovu vrstu.`;
+					return;
+				}
+				novaPolja = [...postojecaPolja, novoPolje];
+			}
+			await updateVrstaGenetikaPolja(vrsta.id, novaPolja);
+			otkaziPolje();
+		} catch (err) {
+			poljeError = err instanceof Error ? err.message : 'Greška';
+		} finally {
+			poljeLoading = false;
+		}
+	}
+
+	async function obrisiPolje() {
+		if (!brisiPoljeKljuc || !brisiPoljeVrstaId) return;
+		poljeLoading = true;
+		try {
+			const vrsta = $vrstePtica.find(v => v.id === brisiPoljeVrstaId);
+			if (!vrsta) return;
+			const novaPolja = getPoljaZaVrstu(vrsta).filter(p => p.kljuc !== brisiPoljeKljuc);
+			await updateVrstaGenetikaPolja(vrsta.id, novaPolja);
+		} catch (err) {
+			poljeError = err instanceof Error ? err.message : 'Greška';
+		} finally {
+			poljeLoading = false;
+			brisiPoljeKljuc = null;
+			brisiPoljeVrstaId = null;
+		}
+	}
+
+	async function ucitajZadaneVrijednosti(vrsta: VrstaPtica) {
+		const zadane = GENETIKA_SHEME[(vrsta.grupa as VrstaGrupa) ?? 'ostalo'] ?? [];
+		if (!zadane.length) return;
+		poljeLoading = true;
+		try {
+			await updateVrstaGenetikaPolja(vrsta.id, zadane);
+		} catch (err) {
+			poljeError = err instanceof Error ? err.message : 'Greška';
+		} finally {
+			poljeLoading = false;
+		}
 	}
 </script>
 
@@ -583,6 +721,173 @@
 
 								{/if}
 							</div>
+
+							<!-- ── Genetička polja ─────────────────────── -->
+							<div class="border-t border-surface-200-700-token pt-3 mt-1 space-y-2">
+								<div class="flex items-center justify-between">
+									<p class="text-xs font-semibold text-surface-500 uppercase tracking-wide">🧬 Genetička polja</p>
+									<div class="flex gap-1">
+										{#if !imaCustomPolja(vrsta) && (GENETIKA_SHEME[(vrsta.grupa || 'ostalo')] ?? []).length > 0}
+											<button
+												class="btn btn-xs variant-ghost-secondary text-xs"
+												on:click={() => ucitajZadaneVrijednosti(vrsta)}
+												disabled={poljeLoading}
+											>
+												Učitaj zadane →
+											</button>
+										{/if}
+										{#if aktivnaPoljaVrstaId !== vrsta.id}
+											<button
+												class="btn btn-xs variant-ghost-primary text-xs"
+												on:click={() => otvoriNovoPolje(vrsta.id)}
+											>
+												+ Dodaj polje
+											</button>
+										{/if}
+									</div>
+								</div>
+
+								{#if !imaCustomPolja(vrsta)}
+									<p class="text-xs text-surface-400 italic">
+										Koriste se zadane vrijednosti po grupi "{vrsta.grupa ?? 'ostalo'}".
+										Klikni "Učitaj zadane →" da ih prebaciš ovdje i urediš.
+									</p>
+								{:else}
+									<!-- Lista polja grupiranih po sekciji -->
+									{@const polja = getPoljaZaVrstu(vrsta)}
+									{@const genetikaPolja = polja.filter(p => p.sekcija === 'genetika')}
+									{@const ocjenaPolja = polja.filter(p => p.sekcija === 'ocjena')}
+
+									{#if genetikaPolja.length > 0}
+										<p class="text-xs text-surface-500 font-medium">Genetika i izgled</p>
+										<div class="space-y-1">
+											{#each genetikaPolja as polje}
+												{#if brisiPoljeKljuc === polje.kljuc && brisiPoljeVrstaId === vrsta.id}
+													<div class="px-2 py-2 rounded bg-error-500/10 space-y-2">
+														<p class="text-xs text-error-500">Obrisati polje "{polje.naziv}"?</p>
+														<div class="flex gap-2">
+															<button class="btn btn-xs variant-ghost flex-1" on:click={() => { brisiPoljeKljuc = null; brisiPoljeVrstaId = null; }}>Ne</button>
+															<button class="btn btn-xs variant-filled-error flex-1" on:click={obrisiPolje} disabled={poljeLoading}>Da</button>
+														</div>
+													</div>
+												{:else}
+													<div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-100-800-token group text-xs">
+														<span class="font-mono text-surface-400 shrink-0">{polje.kljuc}</span>
+														<span class="flex-1 truncate font-medium">{polje.naziv}</span>
+														<span class="badge variant-soft text-xs shrink-0">{tipLabel(polje.tip)}</span>
+														{#if polje.opcije?.length}
+															<span class="text-surface-400 truncate max-w-[100px]">{polje.opcije.slice(0,3).join(', ')}{polje.opcije.length > 3 ? '…' : ''}</span>
+														{/if}
+														<div class="flex gap-1 opacity-0 group-hover:opacity-100 shrink-0">
+															<button class="btn btn-xs variant-ghost px-1" on:click={() => otvoriUrediPolje(vrsta.id, polje)}>✏</button>
+															<button class="btn btn-xs variant-ghost-error px-1" on:click={() => { brisiPoljeKljuc = polje.kljuc; brisiPoljeVrstaId = vrsta.id; }}>🗑</button>
+														</div>
+													</div>
+												{/if}
+											{/each}
+										</div>
+									{/if}
+
+									{#if ocjenaPolja.length > 0}
+										<p class="text-xs text-surface-500 font-medium mt-2">Ocjena kvaliteta</p>
+										<div class="space-y-1">
+											{#each ocjenaPolja as polje}
+												{#if brisiPoljeKljuc === polje.kljuc && brisiPoljeVrstaId === vrsta.id}
+													<div class="px-2 py-2 rounded bg-error-500/10 space-y-2">
+														<p class="text-xs text-error-500">Obrisati polje "{polje.naziv}"?</p>
+														<div class="flex gap-2">
+															<button class="btn btn-xs variant-ghost flex-1" on:click={() => { brisiPoljeKljuc = null; brisiPoljeVrstaId = null; }}>Ne</button>
+															<button class="btn btn-xs variant-filled-error flex-1" on:click={obrisiPolje} disabled={poljeLoading}>Da</button>
+														</div>
+													</div>
+												{:else}
+													<div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-100-800-token group text-xs">
+														<span class="font-mono text-surface-400 shrink-0">{polje.kljuc}</span>
+														<span class="flex-1 truncate font-medium">{polje.naziv}</span>
+														<span class="badge variant-soft-warning text-xs shrink-0">{tipLabel(polje.tip)}</span>
+														<div class="flex gap-1 opacity-0 group-hover:opacity-100 shrink-0">
+															<button class="btn btn-xs variant-ghost px-1" on:click={() => otvoriUrediPolje(vrsta.id, polje)}>✏</button>
+															<button class="btn btn-xs variant-ghost-error px-1" on:click={() => { brisiPoljeKljuc = polje.kljuc; brisiPoljeVrstaId = vrsta.id; }}>🗑</button>
+														</div>
+													</div>
+												{/if}
+											{/each}
+										</div>
+									{/if}
+								{/if}
+
+								<!-- Forma za novo/uredi polje -->
+								{#if aktivnaPoljaVrstaId === vrsta.id}
+									<div class="card p-3 space-y-2 border border-secondary-500/30 mt-2">
+										<p class="text-xs font-medium">{editPoljeData ? 'Uredi polje' : 'Novo polje'}</p>
+										<div class="grid grid-cols-2 gap-2">
+											<label class="label col-span-2">
+												<span class="text-xs font-medium">Naziv *</span>
+												<input
+													class="input input-sm"
+													type="text"
+													bind:value={formaPoljeNaziv}
+													placeholder="npr. Vizuelna mutacija"
+													on:input={() => { if (!editPoljeData) formaPoljeKljuc = genKljuc(formaPoljeNaziv); }}
+													disabled={poljeLoading}
+												/>
+											</label>
+											<label class="label col-span-2">
+												<span class="text-xs font-medium">Ključ (ID) *</span>
+												<input
+													class="input input-sm font-mono text-xs"
+													type="text"
+													bind:value={formaPoljeKljuc}
+													placeholder="vizuelna_mutacija"
+													disabled={poljeLoading || !!editPoljeData}
+												/>
+											</label>
+											<label class="label">
+												<span class="text-xs font-medium">Tip</span>
+												<select class="select select-sm" bind:value={formaPoljeTip} disabled={poljeLoading}>
+													{#each TIP_OPCIJE as opt}
+														<option value={opt.value}>{opt.label}</option>
+													{/each}
+												</select>
+											</label>
+											<label class="label">
+												<span class="text-xs font-medium">Sekcija</span>
+												<select class="select select-sm" bind:value={formaPoljeSekcija} disabled={poljeLoading}>
+													<option value="genetika">Genetika i izgled</option>
+													<option value="ocjena">Ocjena kvaliteta</option>
+												</select>
+											</label>
+											{#if formaPoljeTip === 'select' || formaPoljeTip === 'tags'}
+												<label class="label col-span-2">
+													<span class="text-xs font-medium">Opcije (odvojene zarezom)</span>
+													<input
+														class="input input-sm"
+														type="text"
+														bind:value={formaPoljeOpcije}
+														placeholder="Opcija 1, Opcija 2, Opcija 3"
+														disabled={poljeLoading}
+													/>
+												</label>
+											{/if}
+										</div>
+										{#if poljeError}
+											<p class="text-error-500 text-xs">{poljeError}</p>
+										{/if}
+										<div class="flex gap-2">
+											<button class="btn btn-sm variant-ghost flex-1" on:click={otkaziPolje} disabled={poljeLoading}>Odustani</button>
+											<button
+												class="btn btn-sm variant-filled-secondary flex-1"
+												on:click={() => sacuvajPolje(vrsta)}
+												disabled={poljeLoading || !formaPoljeNaziv.trim() || !formaPoljeKljuc.trim()}
+											>
+												{#if poljeLoading}<span class="animate-spin mr-1">↻</span>{/if}
+												{editPoljeData ? 'Sačuvaj' : 'Dodaj'}
+											</button>
+										</div>
+									</div>
+								{/if}
+							</div>
+
 						{/if}
 					</div>
 				{/each}
