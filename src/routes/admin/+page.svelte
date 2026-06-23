@@ -34,8 +34,16 @@
 	let editVrsta: VrstaPtica | null = null;
 	let formaVrstaNaziv = '';
 	let formaVrstaNapomena = '';
+	let formaVrstaGrupa = 'ostalo';
 	let vrstaLoading = false;
 	let vrstaError = '';
+
+	const GRUPA_OPCIJE = [
+		{ value: 'ostalo',          label: '— Ostalo (nema posebnih polja)' },
+		{ value: 'kanarinac_finke', label: '🐦 Kanarinac / Finke' },
+		{ value: 'golubovi',        label: '🕊️ Golubovi' },
+		{ value: 'papagaji',        label: '🦜 Papagaji' }
+	];
 
 	// Nova/uredi faza forma (inline, per species)
 	let novaFazaZaVrstu: string | null = null;
@@ -111,6 +119,7 @@
 		editVrsta = null;
 		formaVrstaNaziv = '';
 		formaVrstaNapomena = '';
+		formaVrstaGrupa = 'ostalo';
 		vrstaError = '';
 		novaVrstaOpen = true;
 	}
@@ -119,6 +128,7 @@
 		editVrsta = vrsta;
 		formaVrstaNaziv = vrsta.naziv;
 		formaVrstaNapomena = vrsta.napomena ?? '';
+		formaVrstaGrupa = vrsta.grupa ?? 'ostalo';
 		vrstaError = '';
 		novaVrstaOpen = true;
 	}
@@ -129,9 +139,9 @@
 		vrstaError = '';
 		try {
 			if (editVrsta) {
-				await updateVrstaPtica(editVrsta.id, formaVrstaNaziv, formaVrstaNapomena || undefined);
+				await updateVrstaPtica(editVrsta.id, formaVrstaNaziv, formaVrstaNapomena || undefined, formaVrstaGrupa);
 			} else {
-				await createVrstaPtica(formaVrstaNaziv, formaVrstaNapomena || undefined);
+				await createVrstaPtica(formaVrstaNaziv, formaVrstaNapomena || undefined, formaVrstaGrupa);
 			}
 			novaVrstaOpen = false;
 			editVrsta = null;
@@ -511,6 +521,14 @@
 					<input class="input input-sm" type="text" bind:value={formaVrstaNaziv} placeholder="npr. Kanarinac boja" disabled={vrstaLoading} />
 				</label>
 				<label class="label">
+					<span class="text-xs font-medium">Kategorija (grupa polja)</span>
+					<select class="select select-sm" bind:value={formaVrstaGrupa} disabled={vrstaLoading}>
+						{#each GRUPA_OPCIJE as opt}
+							<option value={opt.value}>{opt.label}</option>
+						{/each}
+					</select>
+				</label>
+				<label class="label">
 					<span class="text-xs font-medium">Napomena</span>
 					<textarea class="textarea text-sm" rows="2" bind:value={formaVrstaNapomena} placeholder="Opcionalna bilješka..." disabled={vrstaLoading}></textarea>
 				</label>
@@ -548,6 +566,9 @@
 						>
 							<div class="flex items-center gap-2 min-w-0">
 								<span class="text-sm font-semibold truncate">{vrsta.naziv}</span>
+								{#if vrsta.grupa && vrsta.grupa !== 'ostalo'}
+									<span class="badge variant-filled-secondary text-xs shrink-0">{vrsta.grupa}</span>
+								{/if}
 								{#if fazePoVrsti[vrsta.id]}
 									<span class="badge variant-soft text-xs shrink-0">
 										{fazePoVrsti[vrsta.id].length} faza · {ukupnoDana(fazePoVrsti[vrsta.id])} dana

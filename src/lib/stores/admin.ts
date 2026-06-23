@@ -41,12 +41,14 @@ export async function loadVrstePtica() {
 
 export async function createVrstaPtica(
   naziv: string,
-  napomena?: string
+  napomena?: string,
+  grupa = 'ostalo'
 ): Promise<VrstaPtica> {
   const newVrsta: VrstaPtica = {
     id: crypto.randomUUID(),
     naziv: naziv.trim(),
     napomena,
+    grupa,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   };
@@ -60,9 +62,10 @@ export async function createVrstaPtica(
 export async function updateVrstaPtica(
   id: string,
   naziv: string,
-  napomena?: string
+  napomena?: string,
+  grupa?: string
 ) {
-  const updated = { naziv: naziv.trim(), napomena, updated_at: new Date().toISOString() };
+  const updated = { naziv: naziv.trim(), napomena, grupa: grupa ?? 'ostalo', updated_at: new Date().toISOString() };
   const { error } = await supabase.from('vrsta_ptica').update(updated).eq('id', id);
   if (error) throw new Error(error.message);
   await db.vrsta_ptica.update(id, updated);
