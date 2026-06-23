@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { createPtica, updatePtica, pticeMuzjaci, pticeSenke } from '$lib/stores/ptice';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
@@ -9,13 +9,13 @@
 	export let userId: string;
 	export let uzgajivacnicaId: string = '';
 	export let vrstePtica: VrstaPtica[] = [];
-	export let editPtica: Ptica | null = null; // null = kreiranje, Ptica = uređivanje
+	export let editPtica: Ptica | null = null; // null = kreiranje, Ptica = ureÄ‘ivanje
 	export let onClose: () => void;
 	export let onSuccess: () => void;
 	export let prstenPrefiks: string = '';
 
-	// Popuni polja ako je mod uređivanje
-	let spol: 'M' | 'Ž' | '?' = editPtica?.spol ?? 'M';
+	// Popuni polja ako je mod ureÄ‘ivanje
+	let spol: 'M' | 'Å½' | '?' = editPtica?.spol ?? 'M';
 	let vrstaId = editPtica?.vrsta_ptica_id ?? '';
 	let naziv = editPtica?.naziv ?? '';
 	let prstenaOznaka = editPtica?.prstena_oznaka ?? (editPtica ? '' : prstenPrefiks);
@@ -42,13 +42,13 @@
 	let genetikaOtvorena = !!(editPtica?.genetika && Object.keys(editPtica.genetika).length > 0);
 	let prijedlogPrimjenjen = false;
 
-	// Auto-popuni godinu iz datuma rodjenja (samo ako godina još nije unesena)
+	// Auto-popuni godinu iz datuma rodjenja (samo ako godina joÅ¡ nije unesena)
 	$: if (datumRodjenja && godina === '') {
 		const y = new Date(datumRodjenja).getFullYear();
 		if (y > 2000) godina = y;
 	}
 
-	// Isključi samu pticu iz dropdown roditelja (edit mod)
+	// IskljuÄi samu pticu iz dropdown roditelja (edit mod)
 	$: dostupniOcevi = $pticeMuzjaci.filter((p) => p.id !== editPtica?.id);
 	$: dostupneMajke = $pticeSenke.filter((p) => p.id !== editPtica?.id);
 
@@ -81,11 +81,11 @@
 		}
 		if (mutacije.size > 0) prijedlog.skrivena_mutacija = [...mutacije];
 
-		// Specijalizacija (golubovi) — preuzmi od roditelja ako postoji
+		// Specijalizacija (golubovi) â€” preuzmi od roditelja ako postoji
 		const spec = otacObj?.genetika?.specijalizacija || majkaObj?.genetika?.specijalizacija;
 		if (spec) prijedlog.specijalizacija = spec;
 
-		// Ocjene — prosječna vrijednost od dostupnih roditelja
+		// Ocjene â€” prosjeÄna vrijednost od dostupnih roditelja
 		for (const kljuc of ['ocjena_stav', 'ocjena_perje', 'ocjena_orijentacija', 'ocjena_konstitucija']) {
 			const vals = [otacObj?.genetika?.[kljuc], majkaObj?.genetika?.[kljuc]]
 				.filter(v => typeof v === 'number' && (v as number) > 0) as number[];
@@ -178,7 +178,7 @@
 				<fieldset>
 					<legend class="text-sm font-medium mb-2">{t.ptice.spol}</legend>
 					<div class="flex gap-2">
-						{#each [['M', t.ptice.spolMuzjak], ['Ž', t.ptice.spolZenka], ['?', t.ptice.spolNepoznat]] as [val, label]}
+						{#each [['M', t.ptice.spolMuzjak], ['Å½', t.ptice.spolZenka], ['?', t.ptice.spolNepoznat]] as [val, label]}
 							<label
 								class="flex-1 btn btn-sm cursor-pointer {spol === val
 									? 'variant-filled-primary'
@@ -245,7 +245,7 @@
 					</label>
 				</div>
 
-				<!-- Datum rođenja + godina uzgoja -->
+				<!-- Datum roÄ‘enja + godina uzgoja -->
 				<div class="grid grid-cols-2 gap-3">
 					<label class="label">
 						<span class="text-sm font-medium">{t.ptice.datumRodjenja}</span>
@@ -269,13 +269,13 @@
 				<label class="label">
 					<span class="text-sm font-medium">Dostupnost za parove</span>
 					<select class="select" bind:value={statusEvidencije} disabled={loading}>
-						<option value="aktivna">✅ Aktivna — može biti u parovima</option>
-						<option value="mlada">🐤 Mlada ptica — nije za parove još</option>
-						<option value="vanjska">🔗 Vanjska ptica — tuđa, samo za rodovnik</option>
-						<option value="uginula">💀 Uginula</option>
-						<option value="prodata">💰 Prodata</option>
-						<option value="poklonjena">🎁 Poklonjena</option>
-						<option value="ostalo">📝 Ostalo</option>
+						<option value="aktivna">âœ… Aktivna â€” moÅ¾e biti u parovima</option>
+						<option value="mlada">ðŸ¤ Mlada ptica â€” nije za parove joÅ¡</option>
+						<option value="vanjska">ðŸ”— Vanjska ptica â€” tuÄ‘a, samo za rodovnik</option>
+						<option value="uginula">ðŸ’€ Uginula</option>
+						<option value="prodata">ðŸ’° Prodata</option>
+						<option value="poklonjena">ðŸŽ Poklonjena</option>
+						<option value="ostalo">ðŸ“ Ostalo</option>
 					</select>
 				</label>
 
@@ -288,7 +288,7 @@
 						disabled={loading}
 					>
 						<span class="text-sm">{t.ptice.rodovnik}</span>
-						<span>{rodovnikOtvoren ? '▲' : '▼'}</span>
+						<span>{rodovnikOtvoren ? 'â–²' : 'â–¼'}</span>
 					</button>
 
 					{#if rodovnikOtvoren}
@@ -340,7 +340,7 @@
 						disabled={loading}
 					>
 						<span class="text-sm">{t.ptice.rodovnikSekcija}</span>
-						<span>{rodovnikPodaciOtvoreni ? '▲' : '▼'}</span>
+						<span>{rodovnikPodaciOtvoreni ? 'â–²' : 'â–¼'}</span>
 					</button>
 					{#if rodovnikPodaciOtvoreni}
 						<div class="card variant-soft p-3 space-y-3">
@@ -359,7 +359,7 @@
 										class="input"
 										type="text"
 										bind:value={boja}
-										placeholder="npr. bijela, šarena..."
+										placeholder="npr. bijela, Å¡arena..."
 										disabled={loading}
 									/>
 								</label>
@@ -398,17 +398,17 @@
 					{/if}
 				</div>
 
-				<!-- Genetika i ocjene (dinamički po vrsti) -->
+				<!-- Genetika i ocjene (dinamiÄki po vrsti) -->
 				{#if imaGenetikaPolja}
 					<div class="space-y-2">
 						<button
 							type="button"
 							class="btn btn-sm variant-ghost w-full justify-between"
 							on:click={() => (genetikaOtvorena = !genetikaOtvorena)}
-							{disabled}
+							disabled={loading}
 						>
-							<span class="text-sm">🧬 Genetika i ocjene</span>
-							<span>{genetikaOtvorena ? '▲' : '▼'}</span>
+							<span class="text-sm">ðŸ§¬ Genetika i ocjene</span>
+							<span>{genetikaOtvorena ? 'â–²' : 'â–¼'}</span>
 						</button>
 
 						{#if genetikaOtvorena}
@@ -416,25 +416,25 @@
 								<!-- Auto-fill prijedlog iz roditelja -->
 								{#if imaRoditeljskuGenetiku && !prijedlogPrimjenjen}
 									<div class="flex items-center justify-between p-2 rounded-lg variant-soft-secondary">
-										<span class="text-xs">🌳 Roditelji imaju genetičke podatke</span>
+										<span class="text-xs">ðŸŒ³ Roditelji imaju genetiÄke podatke</span>
 										<button
 											type="button"
 											class="btn btn-sm variant-filled-secondary"
 											on:click={predloziGenetiku}
-											{disabled}
+											disabled={loading}
 										>
-											Preuzmi prijedlog →
+											Preuzmi prijedlog â†’
 										</button>
 									</div>
 								{/if}
 								{#if prijedlogPrimjenjen}
-									<p class="text-xs text-success-600">✓ Prijedlog iz roditelja primijenjen — provjeri i po potrebi izmijeni.</p>
+									<p class="text-xs text-success-600">âœ“ Prijedlog iz roditelja primijenjen â€” provjeri i po potrebi izmijeni.</p>
 								{/if}
 
 								<GenetikaPolja
 									polja={genetikaShema}
 									bind:genetika
-									{disabled}
+									disabled={loading}
 								/>
 							</div>
 						{/if}
@@ -461,7 +461,7 @@
 						type="submit"
 						disabled={loading || !vrstaId}
 					>
-						{#if loading}<span class="animate-spin mr-2">↻</span>{/if}
+						{#if loading}<span class="animate-spin mr-2">â†»</span>{/if}
 						{editPtica ? t.common.sacuvajIzmjene : t.ptice.dodajPticu}
 					</button>
 				</div>
@@ -469,3 +469,4 @@
 		{/if}
 	</div>
 </div>
+
