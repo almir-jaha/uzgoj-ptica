@@ -5,27 +5,10 @@
 	export let genetika: Record<string, unknown> = {};
 	export let disabled = false;
 
-	// Sekcije
 	$: genetikaPolja = polja.filter(p => p.sekcija === 'genetika');
 	$: ocjenaPolja = polja.filter(p => p.sekcija === 'ocjena');
 
-	// Tags input state
 	let tagInputi: Record<string, string> = {};
-
-	function getStr(kljuc: string): string {
-		return (genetika[kljuc] as string) ?? '';
-	}
-
-	function getNum(kljuc: string): number {
-		return (genetika[kljuc] as number) ?? 0;
-	}
-
-	function getTags(kljuc: string): string[] {
-		const v = genetika[kljuc];
-		if (Array.isArray(v)) return v as string[];
-		if (typeof v === 'string' && v) return [v];
-		return [];
-	}
 
 	function setVal(kljuc: string, val: unknown) {
 		genetika = { ...genetika, [kljuc]: val };
@@ -47,10 +30,16 @@
 		if (e.key === 'Enter') { e.preventDefault(); addTag(kljuc); }
 	}
 
-	function setStars(kljuc: string, val: number) {
-		// Klik na istu zvjezdicu = briše ocjenu
-		if (getNum(kljuc) === val) setVal(kljuc, 0);
-		else setVal(kljuc, val);
+	function getTags(kljuc: string): string[] {
+		const v = genetika[kljuc];
+		if (Array.isArray(v)) return v as string[];
+		if (typeof v === 'string' && v) return [v];
+		return [];
+	}
+
+	function setStars(kljuc: string, n: number) {
+		const current = (genetika[kljuc] as number) ?? 0;
+		setVal(kljuc, current === n ? 0 : n);
 	}
 </script>
 
@@ -64,7 +53,7 @@
 					<span class="text-sm">{polje.naziv}</span>
 					<select
 						class="select select-sm"
-						value={getStr(polje.kljuc)}
+						value={String(genetika[polje.kljuc] ?? '')}
 						on:change={(e) => setVal(polje.kljuc, e.currentTarget.value)}
 						{disabled}
 					>
@@ -81,7 +70,7 @@
 						class="input input-sm"
 						type="text"
 						list="dl-{polje.kljuc}"
-						value={getStr(polje.kljuc)}
+						value={String(genetika[polje.kljuc] ?? '')}
 						on:input={(e) => setVal(polje.kljuc, e.currentTarget.value)}
 						placeholder={polje.placeholder ?? ''}
 						{disabled}
@@ -98,7 +87,6 @@
 			{:else if polje.tip === 'tags'}
 				<div class="space-y-1.5">
 					<span class="text-sm">{polje.naziv}</span>
-					<!-- Prikaz tagova -->
 					{#if getTags(polje.kljuc).length > 0}
 						<div class="flex flex-wrap gap-1">
 							{#each getTags(polje.kljuc) as tag}
@@ -115,7 +103,6 @@
 							{/each}
 						</div>
 					{/if}
-					<!-- Unos novog taga -->
 					{#if !disabled}
 						<div class="flex gap-1">
 							<input
@@ -123,7 +110,7 @@
 								type="text"
 								list="dl-tags-{polje.kljuc}"
 								bind:value={tagInputi[polje.kljuc]}
-								placeholder="Dodaj mutaciju..."
+								placeholder="Dodaj..."
 								on:keydown={(e) => handleTagKeydown(e, polje.kljuc)}
 							/>
 							{#if polje.opcije?.length}
@@ -150,7 +137,7 @@
 						type="number"
 						min={polje.min ?? 0}
 						max={polje.max ?? 999}
-						value={getNum(polje.kljuc) || ''}
+						value={genetika[polje.kljuc] || ''}
 						on:input={(e) => setVal(polje.kljuc, e.currentTarget.valueAsNumber || undefined)}
 						placeholder={polje.placeholder ?? ''}
 						{disabled}
@@ -168,17 +155,19 @@
 		{#each ocjenaPolja as polje (polje.kljuc)}
 			<div class="space-y-1">
 				<span class="text-sm">{polje.naziv}</span>
-				<div class="flex gap-1">
+				<div class="flex gap-1 items-center">
 					{#each [1, 2, 3, 4, 5] as n}
 						<button
 							type="button"
-							class="text-xl leading-none transition-all {n <= getNum(polje.kljuc) ? 'text-warning-500' : 'text-surface-300'} {disabled ? 'cursor-default' : 'hover:text-warning-400 cursor-pointer'}"
+							class="text-xl leading-none transition-colors
+								{n <= (genetika[polje.kljuc] || 0) ? 'text-warning-500' : 'text-surface-300'}
+								{disabled ? 'cursor-default' : 'hover:text-warning-400 cursor-pointer'}"
 							on:click={() => !disabled && setStars(polje.kljuc, n)}
 							title="{n}/5"
 						>★</button>
 					{/each}
-					{#if getNum(polje.kljuc) > 0}
-						<span class="text-xs text-surface-500 self-center ml-1">{getNum(polje.kljuc)}/5</span>
+					{#if (genetika[polje.kljuc] || 0) > 0}
+						<span class="text-xs text-surface-500 ml-1">{genetika[polje.kljuc]}/5</span>
 					{/if}
 				</div>
 			</div>

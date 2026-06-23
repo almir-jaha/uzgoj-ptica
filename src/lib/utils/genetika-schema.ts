@@ -16,7 +16,7 @@ export const GENETIKA_SHEME: Record<VrstaGrupa, GenetikaPolje[]> = {
 	kanarinac_finke: [
 		{
 			kljuc: 'vizuelna_mutacija',
-			naziv: 'Vizuelna mutacija (Fenotip)',
+			naziv: 'Mutacija',
 			tip: 'text',
 			opcije: ['Lutino', 'Albino', 'Opal', 'Izabela', 'Crveni mozaik', 'Bijeli mozaik', 'Agat', 'Satinet', 'Divlji tip', 'Bijeli recsivni'],
 			placeholder: 'npr. Lutino, Opal...',
@@ -120,7 +120,7 @@ export const GENETIKA_SHEME: Record<VrstaGrupa, GenetikaPolje[]> = {
 	papagaji: [
 		{
 			kljuc: 'vizuelna_mutacija',
-			naziv: 'Vizuelna mutacija (Fenotip)',
+			naziv: 'Mutacija',
 			tip: 'text',
 			opcije: ['Lutino', 'Albino', 'Opal', 'Izabela', 'Plava', 'Bijela', 'Siva', 'Zelena', 'Žuta', 'Violet'],
 			placeholder: 'npr. Lutino, Plavi...',
