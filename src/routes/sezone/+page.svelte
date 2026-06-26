@@ -30,6 +30,8 @@
 	import PokreniCiklusModal from '$lib/components/PokreniCiklusModal.svelte';
 	import ZavrsiCiklusModal from '$lib/components/ZavrsiCiklusModal.svelte';
 	import { aktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
+	import { aktivneSekcije, loadSekcije } from '$lib/stores/sekcija';
+	import { updateKavezSekcija } from '$lib/stores/sezona';
 
 	let kaveziDetails: KavezWithDetails[] = [];
 	let kavezChannel: RealtimeChannel | null = null;
@@ -183,8 +185,14 @@
 		await ucitajZaSezonu(sezona.id, currentUser.id, true);
 	}
 
-	async function handleSezonaUredjena() {
+	async function handleSezonaUredjena(deleted?: boolean) {
 		urediSezonuOpen = false;
+		if (deleted) {
+			// Sezona obrisana — resetuj prikaz na aktivnu
+			sezonaZaPregled.set(null);
+			const currentUser = get(user);
+			if (currentUser) await loadSezone(currentUser.id);
+		}
 	}
 
 	async function handleCiklusPokrenut() {
@@ -215,6 +223,26 @@
 
 	$: pregledArhive = $prikazanaSezona && $aktivnaSezona && $prikazanaSezona.id !== $aktivnaSezona.id;
 	$: sortiraneSeezone = [...$filtriraneSezone].sort((a, b) => b.godina - a.godina || b.created_at.localeCompare(a.created_at));
+
+	// Grupiranje kaveza po sekciji
+	$: imaSekcija = $aktivneSekcije.length > 0;
+	$: kaveziPoSekciji = imaSekcija
+		? [
+				...$aktivneSekcije.map((s) => ({
+					sekcija: s,
+					kavezi: kaveziDetails.filter((k) => k.sekcija_id === s.id)
+				})),
+				{
+					sekcija: null,
+					kavezi: kaveziDetails.filter((k) => !k.sekcija_id)
+				}
+		  ].filter((g) => g.kavezi.length > 0)
+		: [];
+
+	// Učitaj sekcije kad se promijeni uzgajivačnica
+	$: if ($aktivnaUzgajivacnica) {
+		loadSekcije($aktivnaUzgajivacnica.id);
+	}
 </script>
 
 <svelte:head>
@@ -347,17 +375,49 @@
 		</div>
 
 	{:else if kaveziDetails.length > 0}
-		<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-			{#each kaveziDetails as details (details.id)}
-				<KavezKartica
-					{details}
-					faze={$faze}
-					svePtice={$ptice}
-					readonly={!!pregledArhive}
-					on:kliknut={() => !pregledArhive && (aktivniKavezDetails = details)}
-				/>
-			{/each}
-		</div>
+		{#if imaSekcija && kaveziPoSekciji.length > 0}
+			<!-- Grupirani view po sekcijama -->
+			<div class="space-y-5">
+				{#each kaveziPoSekciji as grupa (grupa.sekcija?.id ?? '__bez_sekcije__')}
+					<div class="space-y-2">
+						<div class="flex items-center gap-2">
+							<span class="text-sm font-semibold text-surface-600 dark:text-surface-300">
+								{#if grupa.sekcija}
+									🏠 {grupa.sekcija.naziv}
+								{:else}
+									📦 Bez sekcije
+								{/if}
+							</span>
+							<span class="badge variant-soft text-xs">{grupa.kavezi.length}</span>
+						</div>
+						<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+							{#each grupa.kavezi as details (details.id)}
+								<KavezKartica
+									{details}
+									faze={$faze}
+									svePtice={$ptice}
+									readonly={!!pregledArhive}
+									on:kliknut={() => !pregledArhive && (aktivniKavezDetails = details)}
+								/>
+							{/each}
+						</div>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<!-- Flat view (nema sekcija) -->
+			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+				{#each kaveziDetails as details (details.id)}
+					<KavezKartica
+						{details}
+						faze={$faze}
+						svePtice={$ptice}
+						readonly={!!pregledArhive}
+						on:kliknut={() => !pregledArhive && (aktivniKavezDetails = details)}
+					/>
+				{/each}
+			</div>
+		{/if}
 
 	{:else}
 		<div class="flex flex-col items-center justify-center py-12 space-y-3">
@@ -380,6 +440,7 @@
 {#if urediSezonuOpen && $prikazanaSezona}
 	<UrediSezonuModal
 		sezona={$prikazanaSezona}
+		sekcije={$aktivneSekcije}
 		onClose={() => (urediSezonuOpen = false)}
 		onSuccess={handleSezonaUredjena}
 	/>
@@ -410,6 +471,7 @@
 		prstenPrefiks={$aktivnaUzgajivacnica?.prsten_prefiks ?? ''}
 		sezonaGodina={$prikazanaSezona?.godina ?? new Date().getFullYear()}
 		userId={$user.id}
+		sekcije={$aktivneSekcije}
 		on:zatvori={() => (aktivniKavezDetails = null)}
 		on:pokreniCiklus={() => {
 			const kavez = aktivniKavezDetails;

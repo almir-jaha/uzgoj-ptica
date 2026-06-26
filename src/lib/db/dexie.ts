@@ -11,7 +11,8 @@ import type {
   Istorija,
   OfflineAction,
   UserSettings,
-  Uzgajivacnica
+  Uzgajivacnica,
+  Sekcija
 } from './schema';
 
 export class UzgojPticaDB extends Dexie {
@@ -27,6 +28,7 @@ export class UzgojPticaDB extends Dexie {
   offlineQueue!: Table<OfflineAction & { id?: number }>;
   user_settings!: Table<UserSettings>;
   uzgajivacnice!: Table<Uzgajivacnica>;
+  sekcije!: Table<Sekcija>;
 
   constructor() {
     super('UzgojPticaDB');
@@ -56,6 +58,11 @@ export class UzgojPticaDB extends Dexie {
     });
     // v5: genetika JSONB na ptice, grupa na vrsta_ptica (nema novih indeksa — JSONB nije indeksirano u Dexie)
     this.version(5).stores({});
+    // v6: sekcije tabela + sekcija_id index na kavezi
+    this.version(6).stores({
+      kavezi: 'id, sezona_id, [sezona_id+oznaka], status, user_id, sekcija_id',
+      sekcije: 'id, uzgajivacnica_id, user_id'
+    });
   }
 }
 

@@ -12,6 +12,19 @@ export interface VrstaPtica {
   updated_at: string;
 }
 
+// Sekcija: prostorna podjela unutar uzgajivačnice (boks, prostorija, soba)
+export interface Sekcija {
+  id: string;
+  uzgajivacnica_id: string;
+  user_id: string;
+  naziv: string;
+  opis?: string;
+  kapacitet_kaveza?: number;
+  redoslijed: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // Uzgajivačnica (korisnik može imati više: ptice, golubovi, itd.)
 export interface Uzgajivacnica {
   id: string;
@@ -103,6 +116,7 @@ export interface Kavez {
   id: string;
   sezona_id: string;
   user_id: string;
+  sekcija_id?: string;
   oznaka: number;
   trenutna_faza_id?: string;
   status: 'prazan' | 'aktivan' | 'alarm';

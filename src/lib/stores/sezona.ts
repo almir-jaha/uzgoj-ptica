@@ -118,14 +118,22 @@ export async function createSezona(
   zavrsiTrenutnuId?: string
 ) {
   try {
-    // Provjera: postoji li aktivna sezona za istu godinu unutar iste uzgajivačnice?
-    const postojece = get(filtriraneSezone);
-    const duplikat = postojece.find(
-      (s) => s.godina === data.godina && s.status === 'aktiva'
-    );
-    if (duplikat) {
+    // Provjera direktno u Supabase — query builder je immutable, mora se reassignati
+    let checkQuery = supabase
+      .from('sezona')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('godina', data.godina)
+      .eq('status', 'aktiva');
+    if (data.uzgajivacnica_id) {
+      checkQuery = checkQuery.eq('uzgajivacnica_id', data.uzgajivacnica_id);
+    } else {
+      checkQuery = checkQuery.is('uzgajivacnica_id', null);
+    }
+    const { data: existing } = await checkQuery;
+    if (existing && existing.length > 0) {
       throw new Error(
-        `Sezona za godinu ${data.godina} već postoji i aktivna je. Završite je prije kreiranja nove.`
+        `Sezona za godinu ${data.godina} već postoji i aktivna je u ovoj uzgajivačnici. Završite je prije kreiranja nove.`
       );
     }
 
@@ -144,12 +152,14 @@ export async function createSezona(
       updated_at: new Date().toISOString()
     };
 
+    // Supabase insert PRVO — ako padne, ne pišemo u lokalni store/Dexie
+    const { error } = await supabase.from('sezona').insert([newSezona]);
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
+
+    // Lokalno tek nakon potvrde Supabase
     await db.sezona.add(newSezona);
     sezone.update((s) => [newSezona, ...s]);
     await addOfflineAction('create', 'sezona', newSezona);
-
-    const { error } = await supabase.from('sezona').insert([newSezona]);
-    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
 
     return newSezona;
   } catch (err) {
@@ -187,13 +197,15 @@ export async function createKavez(
   sezonaId: string,
   userId: string,
   oznaka: number,
-  napomena?: string
+  napomena?: string,
+  sekcijaId?: string
 ) {
   try {
     const newKavez: Kavez = {
       id: crypto.randomUUID(),
       sezona_id: sezonaId,
       user_id: userId,
+      sekcija_id: sekcijaId,
       oznaka,
       status: 'prazan',
       napomena,
@@ -202,12 +214,13 @@ export async function createKavez(
       updated_at: new Date().toISOString()
     };
 
+    // Supabase PRVO — ako padne, lokalni state ostaje čist
+    const { error } = await supabase.from('kavezi').insert([newKavez]);
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
+
     await db.kavezi.add(newKavez);
     kavezi.update((k) => [...k, newKavez]);
     await addOfflineAction('create', 'kavezi', newKavez);
-
-    const { error } = await supabase.from('kavezi').insert([newKavez]);
-    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
 
     return newKavez;
   } catch (err) {
@@ -242,6 +255,63 @@ export async function updateKavezStatus(
     if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
   } catch (err) {
     console.error('Greška pri ažuriranju kaveza:', err);
+    throw err;
+  }
+}
+
+export async function updateKavezSekcija(kavezId: string, sekcijaId: string | null): Promise<void> {
+  try {
+    const now = new Date().toISOString();
+    // Dexie: undefined briše optional polje, ne null
+    const dexieUpdate = {
+      sekcija_id: sekcijaId ?? undefined,
+      updated_from: Date.now(),
+      updated_at: now
+    };
+    // Supabase: null eksplicitno briše FK
+    const supabaseUpdate = {
+      sekcija_id: sekcijaId,
+      updated_from: Date.now(),
+      updated_at: now
+    };
+    await db.kavezi.update(kavezId, dexieUpdate);
+    kavezi.update((k) => k.map((kv) => (kv.id === kavezId ? { ...kv, sekcija_id: sekcijaId ?? undefined, updated_from: dexieUpdate.updated_from, updated_at: now } : kv)));
+    await addOfflineAction('update', 'kavezi', { id: kavezId, ...supabaseUpdate });
+    const { error } = await supabase.from('kavezi').update(supabaseUpdate).eq('id', kavezId);
+    if (error && error.code !== 'PGRST116' && !isMreznaGreska(error)) throw error;
+  } catch (err) {
+    console.error('Greška pri dodjeljivanju sekcije kavezu:', err);
+    throw err;
+  }
+}
+
+export async function deleteKavez(kavezId: string): Promise<void> {
+  try {
+    await db.kavezi.delete(kavezId);
+    kavezi.update((k) => k.filter((kv) => kv.id !== kavezId));
+    await addOfflineAction('delete', 'kavezi', { id: kavezId });
+    const { error } = await supabase.from('kavezi').delete().eq('id', kavezId);
+    if (error && !isMreznaGreska(error)) throw error;
+  } catch (err) {
+    console.error('Greška pri brisanju kaveza:', err);
+    throw err;
+  }
+}
+
+export async function deleteSezona(sezonaId: string): Promise<void> {
+  try {
+    // Supabase PRVO — cascade briše kaveze automatski (ON DELETE CASCADE)
+    const { error } = await supabase.from('sezona').delete().eq('id', sezonaId);
+    if (error && !isMreznaGreska(error)) throw error;
+
+    // Tek nakon potvrde Supabase — lokalni cleanup
+    const kavezIds = (await db.kavezi.where('sezona_id').equals(sezonaId).toArray()).map((k) => k.id);
+    await db.kavezi.bulkDelete(kavezIds);
+    kavezi.update((k) => k.filter((kv) => kv.sezona_id !== sezonaId));
+    await db.sezona.delete(sezonaId);
+    sezone.update((s) => s.filter((sz) => sz.id !== sezonaId));
+  } catch (err) {
+    console.error('Greška pri brisanju sezone:', err);
     throw err;
   }
 }

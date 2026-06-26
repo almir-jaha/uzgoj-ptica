@@ -13,12 +13,19 @@
 		createUzgajivacnica,
 		updateUzgajivacnica
 	} from '$lib/stores/uzgajivacnica';
+	import {
+		aktivneSekcije,
+		loadSekcije,
+		createSekcija,
+		updateSekcija,
+		deleteSekcija
+	} from '$lib/stores/sekcija';
 	import { isAdmin } from '$lib/stores/admin';
 	import { tierLimits, jeNaLimitUzgajivacnica } from '$lib/stores/userTier';
 	import SlikaUnos from '$lib/components/SlikaUnos.svelte';
 	import { t } from '$lib/i18n';
 
-	let editId: string | null = null; // ID uzgajivačnice koja se uređuje (null = nova)
+	let editId: string | null = null;
 	let showForm = false;
 
 	$: limitDostignut = jeNaLimitUzgajivacnica($uzgajivacnice.length, $tierLimits);
@@ -28,6 +35,73 @@
 	let slikaUrl: string | undefined;
 	let slikaKomponenta: SlikaUnos;
 
+	// Sekcije
+	let showSekcijePanel = false;
+	let sekcijaEditId: string | null = null;
+	let sekcijaInput = { naziv: '', opis: '', kapacitet_kaveza: '' };
+	let sekcijaShowForm = false;
+	let sekcijaSaving = false;
+	let sekcijaError = '';
+
+	$: if ($aktivnaUzgajivacnica && showSekcijePanel) {
+		loadSekcije($aktivnaUzgajivacnica.id);
+	}
+
+	function otvoriNovaSekcija() {
+		sekcijaEditId = null;
+		sekcijaInput = { naziv: '', opis: '', kapacitet_kaveza: '' };
+		sekcijaError = '';
+		sekcijaShowForm = true;
+	}
+
+	function otvoriEditSekcija(s: typeof $aktivneSekcije[0]) {
+		sekcijaEditId = s.id;
+		sekcijaInput = {
+			naziv: s.naziv,
+			opis: s.opis ?? '',
+			kapacitet_kaveza: s.kapacitet_kaveza ? String(s.kapacitet_kaveza) : ''
+		};
+		sekcijaError = '';
+		sekcijaShowForm = true;
+	}
+
+	async function sacuvajSekciju() {
+		const currentUser = get(user);
+		const uz = $aktivnaUzgajivacnica;
+		if (!currentUser || !uz || !sekcijaInput.naziv.trim()) return;
+		sekcijaSaving = true;
+		sekcijaError = '';
+		try {
+			const podaci = {
+				naziv: sekcijaInput.naziv.trim(),
+				opis: sekcijaInput.opis.trim() || undefined,
+				kapacitet_kaveza: sekcijaInput.kapacitet_kaveza ? parseInt(sekcijaInput.kapacitet_kaveza) : undefined,
+				redoslijed: sekcijaEditId
+					? ($aktivneSekcije.find(s => s.id === sekcijaEditId)?.redoslijed ?? 0)
+					: $aktivneSekcije.length
+			};
+			if (sekcijaEditId) {
+				await updateSekcija(sekcijaEditId, podaci);
+			} else {
+				await createSekcija(uz.id, currentUser.id, podaci);
+			}
+			sekcijaShowForm = false;
+		} catch (err) {
+			sekcijaError = err instanceof Error ? err.message : 'Greška';
+		} finally {
+			sekcijaSaving = false;
+		}
+	}
+
+	async function obrisiSekciju(id: string) {
+		if (!confirm('Obrisati sekciju? Kavezi u ovoj sekciji će biti bez sekcije.')) return;
+		try {
+			await deleteSekcija(id);
+		} catch (err) {
+			alert(err instanceof Error ? err.message : 'Greška pri brisanju');
+		}
+	}
+
 	onMount(async () => {
 		const currentUser = get(user);
 		if (!currentUser) return;
@@ -36,12 +110,11 @@
 			loadPtice(currentUser.id),
 			loadSezone(currentUser.id)
 		]);
-
 	});
 
 	function otvoriNova() {
 		editId = null;
-		input = { naziv: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
+		input = { naziv: '', opis: '', ime_prezime: '', adresa: '', telefon: '', prsten_prefiks: '', app_url: '' };
 		slikaUrl = undefined;
 		showForm = true;
 	}
@@ -185,6 +258,85 @@
 					<p class="text-3xl font-bold text-success-500">{$aktivnaSezona?.godina ?? '—'}</p>
 					<p class="text-xs text-surface-500">{t.uzgajivacnica.aktivnaSezona}</p>
 				</div>
+			</div>
+
+			<!-- Sekcije panel -->
+			<div class="card p-4 space-y-3">
+				<button
+					class="w-full flex items-center justify-between"
+					on:click={async () => {
+						showSekcijePanel = !showSekcijePanel;
+						if (showSekcijePanel && $aktivnaUzgajivacnica)
+							await loadSekcije($aktivnaUzgajivacnica.id);
+					}}
+				>
+					<div class="flex items-center gap-2">
+						<span class="text-lg">🏠</span>
+						<span class="font-semibold text-sm">Sekcije uzgajivačnice</span>
+						{#if $aktivneSekcije.length > 0}
+							<span class="badge variant-soft text-xs">{$aktivneSekcije.length}</span>
+						{/if}
+					</div>
+					<span class="text-surface-400">{showSekcijePanel ? '▲' : '▼'}</span>
+				</button>
+
+				{#if showSekcijePanel}
+					<div class="space-y-2 pt-1 border-t border-surface-200-700-token">
+						{#each $aktivneSekcije as s (s.id)}
+							{#if sekcijaEditId === s.id && sekcijaShowForm}
+								<!-- Inline edit forma -->
+								<div class="card p-3 space-y-2 variant-soft">
+									<input class="input input-sm" type="text" bind:value={sekcijaInput.naziv} placeholder="Naziv sekcije *" disabled={sekcijaSaving} />
+									<input class="input input-sm" type="text" bind:value={sekcijaInput.opis} placeholder="Opis (opcionalno)" disabled={sekcijaSaving} />
+									<input class="input input-sm" type="number" bind:value={sekcijaInput.kapacitet_kaveza} placeholder="Kapacitet kaveza (opcionalno)" min="1" disabled={sekcijaSaving} />
+									{#if sekcijaError}<p class="text-xs text-error-500">{sekcijaError}</p>{/if}
+									<div class="flex gap-2">
+										<button class="btn btn-sm variant-ghost flex-1" on:click={() => { sekcijaShowForm = false; sekcijaEditId = null; }} disabled={sekcijaSaving}>Odustani</button>
+										<button class="btn btn-sm variant-filled-primary flex-1" on:click={sacuvajSekciju} disabled={sekcijaSaving || !sekcijaInput.naziv.trim()}>
+											{#if sekcijaSaving}<span class="animate-spin mr-1">↻</span>{/if}Sačuvaj
+										</button>
+									</div>
+								</div>
+							{:else}
+								<div class="flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-surface-100-800-token">
+									<div>
+										<span class="text-sm font-medium">{s.naziv}</span>
+										{#if s.opis}<span class="text-xs text-surface-400 ml-2">{s.opis}</span>{/if}
+										{#if s.kapacitet_kaveza}<span class="badge variant-soft text-xs ml-2">{s.kapacitet_kaveza} kaveza</span>{/if}
+									</div>
+									<div class="flex gap-1">
+										<button class="btn btn-sm variant-ghost-surface" on:click={() => otvoriEditSekcija(s)}>✏️</button>
+										<button class="btn btn-sm variant-ghost-error" on:click={() => obrisiSekciju(s.id)}>🗑</button>
+									</div>
+								</div>
+							{/if}
+						{/each}
+
+						{#if $aktivneSekcije.length === 0}
+							<p class="text-xs text-surface-400 text-center py-2">Nema sekcija. Dodajte prvu.</p>
+						{/if}
+
+						{#if !sekcijaShowForm}
+							<button class="btn btn-sm variant-ghost-primary w-full" on:click={otvoriNovaSekcija}>
+								+ Nova sekcija
+							</button>
+						{:else if sekcijaEditId === null}
+							<!-- Nova sekcija forma -->
+							<div class="card p-3 space-y-2 variant-soft">
+								<input class="input input-sm" type="text" bind:value={sekcijaInput.naziv} placeholder="Naziv sekcije *" disabled={sekcijaSaving} />
+								<input class="input input-sm" type="text" bind:value={sekcijaInput.opis} placeholder="Opis (opcionalno)" disabled={sekcijaSaving} />
+								<input class="input input-sm" type="number" bind:value={sekcijaInput.kapacitet_kaveza} placeholder="Kapacitet kaveza (opcionalno)" min="1" disabled={sekcijaSaving} />
+								{#if sekcijaError}<p class="text-xs text-error-500">{sekcijaError}</p>{/if}
+								<div class="flex gap-2">
+									<button class="btn btn-sm variant-ghost flex-1" on:click={() => { sekcijaShowForm = false; }} disabled={sekcijaSaving}>Odustani</button>
+									<button class="btn btn-sm variant-filled-primary flex-1" on:click={sacuvajSekciju} disabled={sekcijaSaving || !sekcijaInput.naziv.trim()}>
+										{#if sekcijaSaving}<span class="animate-spin mr-1">↻</span>{/if}Dodaj
+									</button>
+								</div>
+							</div>
+						{/if}
+					</div>
+				{/if}
 			</div>
 		{/if}
 

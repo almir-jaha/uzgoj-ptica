@@ -3,8 +3,8 @@
 	import { fly } from 'svelte/transition';
 	import { createPtica } from '$lib/stores/ptice';
 	import { setDatumPrvogJajeta, getFazeZaVrstu, setNapomenaPaznje } from '$lib/stores/ciklus';
-	import { updateKavezStatus } from '$lib/stores/sezona';
-	import type { KavezWithDetails, FazaCiklusa, Ptica } from '$lib/db/schema';
+	import { updateKavezStatus, updateKavezSekcija } from '$lib/stores/sezona';
+	import type { KavezWithDetails, FazaCiklusa, Ptica, Sekcija } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
 
 	export let details: KavezWithDetails;
@@ -13,6 +13,20 @@
 	export let prstenPrefiks = '';
 	export let userId: string;
 	export let sezonaGodina: number = new Date().getFullYear();
+	export let sekcije: Sekcija[] = [];
+
+	let sekcijaLoading = false;
+	$: currentSekcijaId = details.sekcija_id ?? '';
+
+	async function promijeniSekciju(sekcijaId: string) {
+		sekcijaLoading = true;
+		try {
+			await updateKavezSekcija(details.id, sekcijaId || null);
+			dispatch('refresh');
+		} finally {
+			sekcijaLoading = false;
+		}
+	}
 
 	type Pogled = 'akcije' | 'mladi' | 'unos';
 	let pogled: Pogled = 'akcije';
@@ -320,6 +334,26 @@
 					<span class="text-xl">▶</span>
 					<span>{t.kavezi.pokreniCiklus}</span>
 				</button>
+			{/if}
+
+			<!-- Sekcija assignment (vidljivo i za prazan i za aktivan kavez) -->
+			{#if sekcije.length > 0}
+				<div class="mt-4 pt-3 border-t border-surface-300-600-token">
+					<label class="label">
+						<span class="text-xs text-surface-500 font-medium">🏠 Sekcija</span>
+						<select
+							class="select text-sm"
+							value={currentSekcijaId}
+							on:change={(e) => promijeniSekciju(e.currentTarget.value)}
+							disabled={sekcijaLoading}
+						>
+							<option value="">— Bez sekcije —</option>
+							{#each sekcije as s (s.id)}
+								<option value={s.id}>{s.naziv}</option>
+							{/each}
+						</select>
+					</label>
+				</div>
 			{/if}
 
 		<!-- ── PREGLED MLADIH ── -->
