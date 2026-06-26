@@ -216,7 +216,9 @@ export interface Zdravlje {
   id: string;
   user_id: string;
   uzgajivacnica_id?: string;
-  ptica_id?: string;          // null = masovni tretman za uzgajivačnicu
+  sezona_id?: string;         // sezona u kojoj je tretman obavljen (za arhiviranje)
+  sekcija_id?: string;        // masovni tretman za sekciju (referenca)
+  ptica_id?: string;          // null = masovni uzgajivačnica-level tretman
   datum: string;
   tip: ZdravljeTip;
   naziv: string;

@@ -13,9 +13,11 @@
 
 	import NovaPticaModal from '$lib/components/NovaPticaModal.svelte';
 	import RodovnikModal from '$lib/components/RodovnikModal.svelte';
+	import MasovniTretmanModal from '$lib/components/MasovniTretmanModal.svelte';
 	import { t } from '$lib/i18n';
 	import { loadZdravlje as loadZdravlje_, createZdravlje, deleteZdravlje, TIP_OPCIJE } from '$lib/stores/zdravlje';
 	import type { Zdravlje, ZdravljeTip } from '$lib/db/schema';
+	import { aktivneSekcije, loadSekcije } from '$lib/stores/sekcija';
 
 	type Filter = 'sve' | 'muzjaci' | 'zenke' | 'ovaSezone' | 'ostale';
 
@@ -26,6 +28,7 @@
 	let editPtica: Ptica | null = null;
 	let rodovnikModalOtvoren = false;
 	let rodovnikPtica: Ptica | null = null;
+	let masovniTretmanOtvoren = false;
 
 	let pretragaBroj = '';
 	let pretragaGodina = '';
@@ -124,13 +127,23 @@
 		zdravljeLoading = true;
 		const currentUser = get(user);
 		if (!currentUser) return;
+		// Uključi individualne zapise za ovu pticu + masovne za uzgajivačnicu (samo bez sekcija_id)
+		// Masovni tretmani po sekcijama su već upisani kao individualni zapisi za svaku pticu
+		const uzgId = ptica.uzgajivacnica_id ?? '';
+		const orClause = uzgId
+			? `ptica_id.eq.${ptica.id},and(ptica_id.is.null,sekcija_id.is.null,uzgajivacnica_id.eq.${uzgId})`
+			: `ptica_id.eq.${ptica.id}`;
 		const { data } = await supabase
 			.from('zdravlje')
 			.select('*')
 			.eq('user_id', currentUser.id)
-			.or(`ptica_id.eq.${ptica.id},and(ptica_id.is.null,uzgajivacnica_id.eq.${ptica.uzgajivacnica_id ?? ''})`)
-			.order('datum', { ascending: false });
-		zdravljeRekordList = (data ?? []) as Zdravlje[];
+			.or(orClause)
+			.order('datum', { ascending: false })
+			.order('created_at', { ascending: false });
+		// Garantovano sortiranje po datumu tretmana na klijentskoj strani
+		zdravljeRekordList = ((data ?? []) as Zdravlje[]).sort(
+			(a, b) => b.datum.localeCompare(a.datum) || b.created_at.localeCompare(a.created_at)
+		);
 		zdravljeLoading = false;
 	}
 
@@ -143,6 +156,7 @@
 			await createZdravlje({
 				user_id: currentUser.id,
 				uzgajivacnica_id: zdravljePtica.uzgajivacnica_id ?? undefined,
+				sezona_id: $aktivnaSezona?.id ?? undefined,
 				ptica_id: zdravljePtica.id,
 				datum: zDatum,
 				tip: zTip,
@@ -151,7 +165,6 @@
 				lijek: zLijek.trim() || undefined,
 				trajanje_dana: zTrajanje !== '' ? Number(zTrajanje) : undefined
 			});
-			// Refresh liste
 			await otvoriZdravlje(zdravljePtica);
 			zdravljeForm = false;
 			zNaziv = ''; zOpis = ''; zLijek = ''; zTrajanje = '';
@@ -161,8 +174,9 @@
 	}
 
 	async function obrisiZdravlje(id: string) {
+		if (!confirm('Obrisati ovaj zdravstveni zapis? Ova radnja se ne može poništiti.')) return;
 		await deleteZdravlje(id);
-		zdravljeRekordList = zdravljeRekordList.filter(z => z.id !== id);
+		zdravljeRekordList = zdravljeRekordList.filter((z) => z.id !== id);
 	}
 
 	async function sacuvajStatus() {
@@ -208,6 +222,9 @@
 		return brojOk && godinaOk;
 	});
 
+	// Učitaj sekcije čim uzgajivačnica postane dostupna (može kasniti iza mount-a)
+	$: if ($aktivnaUzgajivacnica?.id) loadSekcije($aktivnaUzgajivacnica.id);
+
 	function vrstaLabel(vrstaId: string): string {
 		return vrstePtica.find((v) => v.id === vrstaId)?.naziv ?? '—';
 	}
@@ -247,17 +264,27 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<h2 class="h3 font-bold">{t.ptice.title}</h2>
-		{#if !loading}
-			{#if jeNaLimitPtica($ptice.length, $tierLimits)}
-				<span class="badge variant-filled-warning text-xs" title="Dostignut limit za vaš plan">
-					🔒 {$ptice.length}/{$tierLimits.max_ptice} ptica
-				</span>
-			{:else}
-				<button class="btn variant-filled-primary btn-sm" on:click={otvoriNova}>
-					{t.ptice.novaPtica}
+		<div class="flex gap-2 items-center flex-wrap justify-end">
+			{#if $aktivneSekcije.length > 0}
+				<button
+					class="btn variant-ghost-secondary btn-sm"
+					on:click={() => (masovniTretmanOtvoren = true)}
+				>
+					💉 Masovni tretman
 				</button>
 			{/if}
-		{/if}
+			{#if !loading}
+				{#if jeNaLimitPtica($ptice.length, $tierLimits)}
+					<span class="badge variant-filled-warning text-xs" title="Dostignut limit za vaš plan">
+						🔒 {$ptice.length}/{$tierLimits.max_ptice} ptica
+					</span>
+				{:else}
+					<button class="btn variant-filled-primary btn-sm" on:click={otvoriNova}>
+						{t.ptice.novaPtica}
+					</button>
+				{/if}
+			{/if}
+		</div>
 	</div>
 
 	<!-- Filter tabovi -->
@@ -572,7 +599,7 @@
 							<div class="flex items-start justify-between gap-2">
 								<div class="flex-1 min-w-0">
 									<p class="text-sm font-semibold">{tip?.ikona} {z.naziv} {#if jeMasovni}<span class="badge variant-soft-primary text-xs ml-1">masovni</span>{/if}</p>
-									<p class="text-xs text-surface-400">{z.datum} · {tip?.label}</p>
+									<p class="text-xs text-surface-400">{formatDatum(z.datum)} · {tip?.label}</p>
 									{#if z.lijek}<p class="text-xs text-surface-500">💊 {z.lijek}{z.trajanje_dana ? ` · ${z.trajanje_dana} dana` : ''}</p>{/if}
 									{#if z.opis}<p class="text-xs text-surface-500 mt-0.5">{z.opis}</p>{/if}
 								</div>
@@ -586,4 +613,16 @@
 			</div>
 		</div>
 	</div>
+{/if}
+
+{#if masovniTretmanOtvoren && $user}
+	<MasovniTretmanModal
+		userId={$user.id}
+		uzgajivacnicaId={$aktivnaUzgajivacnica?.id ?? ''}
+		sekcije={$aktivneSekcije}
+		svePtice={$filtriranePtice}
+		aktivnaSezonaId={$aktivnaSezona?.id}
+		onClose={() => (masovniTretmanOtvoren = false)}
+		onSuccess={() => (masovniTretmanOtvoren = false)}
+	/>
 {/if}

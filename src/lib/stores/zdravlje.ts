@@ -17,10 +17,10 @@ export async function loadZdravlje(userId: string, pticaId?: string): Promise<vo
 		.from('zdravlje')
 		.select('*')
 		.eq('user_id', userId)
-		.order('datum', { ascending: false });
+		.order('datum', { ascending: false })
+		.order('created_at', { ascending: false });
 
 	if (pticaId) {
-		// Ptičini tretmani + masovni tretmani njene uzgajivačnice
 		query = query.or(`ptica_id.eq.${pticaId},ptica_id.is.null`);
 	}
 
@@ -68,4 +68,27 @@ export async function deleteZdravlje(id: string): Promise<void> {
 	const { error } = await supabase.from('zdravlje').delete().eq('id', id);
 	if (error) throw new Error(error.message);
 	zdravlje.update((list) => list.filter((z) => z.id !== id));
+}
+
+export async function loadZdravljeZaSekciju(sekcijaId: string): Promise<Zdravlje[]> {
+	const { data } = await supabase
+		.from('zdravlje')
+		.select('*')
+		.eq('sekcija_id', sekcijaId)
+		.order('datum', { ascending: false });
+	return (data ?? []) as Zdravlje[];
+}
+
+export async function loadMasovniTretmani(userId: string, uzgajivacnicaId?: string): Promise<Zdravlje[]> {
+	let query = supabase
+		.from('zdravlje')
+		.select('*')
+		.eq('user_id', userId)
+		.is('ptica_id', null)
+		.order('datum', { ascending: false });
+	if (uzgajivacnicaId) {
+		query = query.eq('uzgajivacnica_id', uzgajivacnicaId);
+	}
+	const { data } = await query;
+	return (data ?? []) as Zdravlje[];
 }
