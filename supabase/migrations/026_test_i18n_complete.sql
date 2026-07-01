@@ -284,7 +284,7 @@ SELECT COUNT(*) as total_fields FROM genetika_polja_i18n;
 SELECT
   polje_kljuc,
   vrsta_grupa,
-  COUNT(DISTINCT jsonb_object_keys(nazivi_jezicima)) as languages
+  jsonb_object_keys(nazivi_jezicima)::text as language_key,
+  redoslijed
 FROM genetika_polja_i18n
-GROUP BY polje_kljuc, vrsta_grupa
-ORDER BY redoslijed;
+ORDER BY redoslijed, polje_kljuc;
