@@ -169,7 +169,10 @@ CREATE INDEX IF NOT EXISTS idx_genetika_polja_kljuc ON genetika_polja_i18n(polje
 
 ALTER TABLE genetika_polja_i18n ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "genetika_polja_admin_write" ON genetika_polja_i18n
+DROP POLICY IF EXISTS "genetika_polja_admin_write" ON genetika_polja_i18n;
+DROP POLICY IF EXISTS "genetika_polja_read" ON genetika_polja_i18n;
+
+CREATE POLICY "genetika_polja_admin_write" ON genetika_polja_i18n
   FOR ALL
   USING (
     EXISTS (
@@ -178,7 +181,7 @@ CREATE POLICY IF NOT EXISTS "genetika_polja_admin_write" ON genetika_polja_i18n
     )
   );
 
-CREATE POLICY IF NOT EXISTS "genetika_polja_read" ON genetika_polja_i18n
+CREATE POLICY "genetika_polja_read" ON genetika_polja_i18n
   FOR SELECT
   USING (true);
 
