@@ -127,25 +127,25 @@ CREATE TABLE IF NOT EXISTS istorija (
 );
 
 -- Indexes
-CREATE INDEX idx_ptice_user_id ON ptice(user_id);
-CREATE INDEX idx_ptice_otac_id ON ptice(otac_id);
-CREATE INDEX idx_ptice_majka_id ON ptice(majka_id);
-CREATE INDEX idx_sezona_user_id ON sezona(user_id);
-CREATE INDEX idx_kavezi_sezona_id ON kavezi(sezona_id);
-CREATE INDEX idx_kavezi_user_id ON kavezi(user_id);
-CREATE INDEX idx_kavezi_status ON kavezi(status);
-CREATE INDEX idx_faze_vrsta_id ON faze_ciklusa(vrsta_ptica_id);
-CREATE INDEX idx_parovi_sezona_id ON parovi(sezona_id);
-CREATE INDEX idx_parovi_ptica1_id ON parovi(ptica1_id);
-CREATE INDEX idx_parovi_ptica2_id ON parovi(ptica2_id);
-CREATE INDEX idx_parovi_status ON parovi(status);
-CREATE INDEX idx_ciklusi_kavez_id ON ciklusi(kavez_id);
-CREATE INDEX idx_ciklusi_par_id ON ciklusi(par_id);
-CREATE INDEX idx_ciklusi_sezona_id ON ciklusi(sezona_id);
-CREATE INDEX idx_ciklusi_status ON ciklusi(status);
-CREATE INDEX idx_aktivnosti_ciklus_id ON aktivnosti_ciklusa(ciklus_id);
-CREATE INDEX idx_aktivnosti_faza_id ON aktivnosti_ciklusa(faza_id);
-CREATE INDEX idx_istorija_sezona_id ON istorija(sezona_id);
+CREATE INDEX IF NOT EXISTS idx_ptice_user_id ON ptice(user_id);
+CREATE INDEX IF NOT EXISTS idx_ptice_otac_id ON ptice(otac_id);
+CREATE INDEX IF NOT EXISTS idx_ptice_majka_id ON ptice(majka_id);
+CREATE INDEX IF NOT EXISTS idx_sezona_user_id ON sezona(user_id);
+CREATE INDEX IF NOT EXISTS idx_kavezi_sezona_id ON kavezi(sezona_id);
+CREATE INDEX IF NOT EXISTS idx_kavezi_user_id ON kavezi(user_id);
+CREATE INDEX IF NOT EXISTS idx_kavezi_status ON kavezi(status);
+CREATE INDEX IF NOT EXISTS idx_faze_vrsta_id ON faze_ciklusa(vrsta_ptica_id);
+CREATE INDEX IF NOT EXISTS idx_parovi_sezona_id ON parovi(sezona_id);
+CREATE INDEX IF NOT EXISTS idx_parovi_ptica1_id ON parovi(ptica1_id);
+CREATE INDEX IF NOT EXISTS idx_parovi_ptica2_id ON parovi(ptica2_id);
+CREATE INDEX IF NOT EXISTS idx_parovi_status ON parovi(status);
+CREATE INDEX IF NOT EXISTS idx_ciklusi_kavez_id ON ciklusi(kavez_id);
+CREATE INDEX IF NOT EXISTS idx_ciklusi_par_id ON ciklusi(par_id);
+CREATE INDEX IF NOT EXISTS idx_ciklusi_sezona_id ON ciklusi(sezona_id);
+CREATE INDEX IF NOT EXISTS idx_ciklusi_status ON ciklusi(status);
+CREATE INDEX IF NOT EXISTS idx_aktivnosti_ciklus_id ON aktivnosti_ciklusa(ciklus_id);
+CREATE INDEX IF NOT EXISTS idx_aktivnosti_faza_id ON aktivnosti_ciklusa(faza_id);
+CREATE INDEX IF NOT EXISTS idx_istorija_sezona_id ON istorija(sezona_id);
 
 -- RLS Policies
 ALTER TABLE ptice ENABLE ROW LEVEL SECURITY;
@@ -157,16 +157,19 @@ ALTER TABLE aktivnosti_ciklusa ENABLE ROW LEVEL SECURITY;
 ALTER TABLE istorija ENABLE ROW LEVEL SECURITY;
 
 -- RLS: ptice - korisnik vidi samo svoje
+DROP POLICY IF EXISTS ptice_auth_policy ON ptice;
 CREATE POLICY ptice_auth_policy ON ptice
   FOR ALL USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
 -- RLS: sezona - korisnik vidi samo svoje
+DROP POLICY IF EXISTS sezona_auth_policy ON sezona;
 CREATE POLICY sezona_auth_policy ON sezona
   FOR ALL USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
 -- RLS: kavezi - preko sezona.user_id
+DROP POLICY IF EXISTS kavezi_auth_policy ON kavezi;
 CREATE POLICY kavezi_auth_policy ON kavezi
   FOR ALL USING (
     sezona_id IN (
@@ -180,6 +183,7 @@ CREATE POLICY kavezi_auth_policy ON kavezi
   );
 
 -- RLS: parovi - preko sezona.user_id
+DROP POLICY IF EXISTS parovi_auth_policy ON parovi;
 CREATE POLICY parovi_auth_policy ON parovi
   FOR ALL USING (
     sezona_id IN (
@@ -193,6 +197,7 @@ CREATE POLICY parovi_auth_policy ON parovi
   );
 
 -- RLS: ciklusi - preko sezona.user_id
+DROP POLICY IF EXISTS ciklusi_auth_policy ON ciklusi;
 CREATE POLICY ciklusi_auth_policy ON ciklusi
   FOR ALL USING (
     sezona_id IN (
@@ -206,6 +211,7 @@ CREATE POLICY ciklusi_auth_policy ON ciklusi
   );
 
 -- RLS: aktivnosti_ciklusa - preko ciklusa
+DROP POLICY IF EXISTS aktivnosti_ciklusa_auth_policy ON aktivnosti_ciklusa;
 CREATE POLICY aktivnosti_ciklusa_auth_policy ON aktivnosti_ciklusa
   FOR ALL USING (
     ciklus_id IN (
@@ -223,6 +229,7 @@ CREATE POLICY aktivnosti_ciklusa_auth_policy ON aktivnosti_ciklusa
   );
 
 -- RLS: istorija - korisnik vidi samo svoje
+DROP POLICY IF EXISTS istorija_auth_policy ON istorija;
 CREATE POLICY istorija_auth_policy ON istorija
   FOR ALL USING (
     sezona_id IN (
