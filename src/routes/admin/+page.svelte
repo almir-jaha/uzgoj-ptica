@@ -7,12 +7,14 @@
 		loadFazeZaVrstu, createFaza, updateFaza, deleteFaza,
 		loadAllUserTiers, setUserTier, allUserTiers,
 		loadAdminUzgajivacnice, adminUpdateAppUrl, adminUzgajivacnice,
-		updateVrstaGenetikaPolja
+		updateVrstaGenetikaPolja,
+		genetikaPoljaI18n, loadSvaGenetikaPolja, deleteGenetikaPoljeI18n
 	} from '$lib/stores/admin';
 	import { TIER_LIMITS } from '$lib/stores/userTier';
 	import type { Tier } from '$lib/stores/userTier';
 	import { goto } from '$app/navigation';
-	import type { VrstaPtica, FazaCiklusa } from '$lib/db/schema';
+	import type { VrstaPtica, FazaCiklusa, GenetikaPoljaI18n } from '$lib/db/schema';
+	import NovoGenetikaPoljeModal from '$lib/components/NovoGenetikaPoljeModal.svelte';
 	import {
 		getSchemaForVrsta, type GenetikaPolje, type PoljeTip,
 		GENETIKA_SHEME, type VrstaGrupa
@@ -68,6 +70,12 @@
 	let appUrlEdit: Record<string, string> = {};
 	let appUrlSaving: Record<string, boolean> = {};
 
+	// Genetička polja state
+	let novoGenetikaPoljeOpen = false;
+	let editGenetikaPolje: GenetikaPoljaI18n | null = null;
+	let odabranaGrupa: 'kanarinac_finke' | 'golubovi' | 'papagaji' | 'ostalo' = 'kanarinac_finke';
+	let brisiPoljeId: string | null = null;
+
 	async function handleSetTier(userId: string, tier: Tier) {
 		tierLoading = true;
 		tierError = '';
@@ -89,12 +97,23 @@
 		}
 	}
 
+	async function obrisiGenetikaPolje() {
+		if (brisiPoljeId) {
+			try {
+				await deleteGenetikaPoljeI18n(brisiPoljeId);
+			} finally {
+				brisiPoljeId = null;
+			}
+		}
+	}
+
 	onMount(async () => {
 		if (!isAdmin($user?.email)) return;
 		await Promise.all([
 			loadVrstePtica(),
 			loadAllUserTiers(),
-			loadAdminUzgajivacnice()
+			loadAdminUzgajivacnice(),
+			loadSvaGenetikaPolja()
 		]);
 		// Popuni app_url edit stanja
 		$adminUzgajivacnice.forEach((u) => { appUrlEdit[u.id] = u.app_url ?? ''; });
@@ -915,4 +934,128 @@
 			</div>
 		{/if}
 	</section>
+
+	<!-- ── Genetička polja sa prevodima (17 jezika) ──────────────── -->
+	<section class="space-y-3">
+		<h3 class="h4 font-bold">🧬 Genetička Polja (Prevodi)</h3>
+		<p class="text-sm text-surface-500">Upravljanje genetičkim poljima sa prevodima na sve 17 dostupnih jezika</p>
+
+		<!-- Tab-ovi za grupu -->
+		<div class="flex gap-2 flex-wrap">
+			{#each [
+				{ value: 'kanarinac_finke', label: '🐦 Kanarinac / Finke' },
+				{ value: 'golubovi', label: '🕊️ Golubovi' },
+				{ value: 'papagaji', label: '🦜 Papagaji' },
+				{ value: 'ostalo', label: '❓ Ostalo' }
+			] as grupa}
+				<button
+					class="btn btn-sm"
+					class:variant-filled-primary={odabranaGrupa === grupa.value}
+					class:variant-ghost={odabranaGrupa !== grupa.value}
+					on:click={() => odabranaGrupa = grupa.value}
+				>
+					{grupa.label}
+				</button>
+			{/each}
+		</div>
+
+		<!-- Polja za odabranu grupu -->
+		{@const poljaGrupe = $genetikaPoljaI18n.filter(p => p.vrsta_grupa === odabranaGrupa)}
+		{@const genetikaPolja = poljaGrupe.filter(p => p.sekcija === 'genetika')}
+		{@const ocjenaPolja = poljaGrupe.filter(p => p.sekcija === 'ocjena')}
+
+		{#if genetikaPolja.length > 0 || ocjenaPolja.length > 0}
+			<div class="card p-4 space-y-4">
+				{#if genetikaPolja.length > 0}
+					<div class="space-y-2">
+						<p class="text-sm font-semibold text-surface-500 uppercase tracking-wide">Genetika i izgled</p>
+						<div class="space-y-1">
+							{#each genetikaPolja as polje}
+								{#if brisiPoljeId === polje.id}
+									<div class="px-3 py-2 rounded bg-error-500/10 space-y-2">
+										<p class="text-xs text-error-500">Obrisati polje "{polje.polje_kljuc}"?</p>
+										<div class="flex gap-2">
+											<button class="btn btn-xs variant-ghost flex-1" on:click={() => brisiPoljeId = null}>Ne</button>
+											<button class="btn btn-xs variant-filled-error flex-1" on:click={obrisiGenetikaPolje}>Da</button>
+										</div>
+									</div>
+								{:else}
+									<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-100-800-token group text-xs">
+										<span class="font-mono text-surface-400 shrink-0 w-24">{polje.polje_kljuc}</span>
+										<div class="flex-1 min-w-0">
+											<p class="font-medium truncate">{polje.nazivi_jezicima?.bs ?? polje.polje_kljuc}</p>
+											<p class="text-surface-400 text-xs">Tip: {polje.tip} | Redoslijed: {polje.redoslijed}</p>
+										</div>
+										<button
+											class="btn btn-xs variant-ghost-error opacity-0 group-hover:opacity-100 transition-opacity"
+											on:click={() => brisiPoljeId = polje.id}
+										>
+											Obriši
+										</button>
+									</div>
+								{/if}
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				{#if ocjenaPolja.length > 0}
+					<div class="space-y-2 border-t border-surface-200-700-token pt-4">
+						<p class="text-sm font-semibold text-surface-500 uppercase tracking-wide">Ocjena kvaliteta</p>
+						<div class="space-y-1">
+							{#each ocjenaPolja as polje}
+								{#if brisiPoljeId === polje.id}
+									<div class="px-3 py-2 rounded bg-error-500/10 space-y-2">
+										<p class="text-xs text-error-500">Obrisati polje "{polje.polje_kljuc}"?</p>
+										<div class="flex gap-2">
+											<button class="btn btn-xs variant-ghost flex-1" on:click={() => brisiPoljeId = null}>Ne</button>
+											<button class="btn btn-xs variant-filled-error flex-1" on:click={obrisiGenetikaPolje}>Da</button>
+										</div>
+									</div>
+								{:else}
+									<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-100-800-token group text-xs">
+										<span class="font-mono text-surface-400 shrink-0 w-24">{polje.polje_kljuc}</span>
+										<div class="flex-1 min-w-0">
+											<p class="font-medium truncate">{polje.nazivi_jezicima?.bs ?? polje.polje_kljuc}</p>
+											<p class="text-surface-400 text-xs">Tip: {polje.tip} | Redoslijed: {polje.redoslijed}</p>
+										</div>
+										<button
+											class="btn btn-xs variant-ghost-error opacity-0 group-hover:opacity-100 transition-opacity"
+											on:click={() => brisiPoljeId = polje.id}
+										>
+											Obriši
+										</button>
+									</div>
+								{/if}
+							{/each}
+						</div>
+					</div>
+				{/if}
+			</div>
+		{:else}
+			<p class="text-sm text-surface-400 italic px-3 py-2">
+				Nema genetičkih polja za grupu "{odabranaGrupa}". Klikni dugme ispod da dodaš nova.
+			</p>
+		{/if}
+
+		<button
+			class="btn variant-filled-primary w-full"
+			on:click={() => novoGenetikaPoljeOpen = true}
+		>
+			+ Dodaj novo genetičko polje
+		</button>
+	</section>
+
+	{#if novoGenetikaPoljeOpen}
+		<NovoGenetikaPoljeModal
+			vrstaGrupa={odabranaGrupa}
+			editPolje={editGenetikaPolje}
+			onClose={() => { novoGenetikaPoljeOpen = false; editGenetikaPolje = null; }}
+			onSuccess={() => {
+				novoGenetikaPoljeOpen = false;
+				editGenetikaPolje = null;
+				loadSvaGenetikaPolja();
+			}}
+		/>
+	{/if}
 </div>

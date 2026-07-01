@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import type { VrstaPtica, FazaCiklusa } from '$lib/db/schema';
+import type { VrstaPtica, FazaCiklusa, GenetikaPoljaI18n } from '$lib/db/schema';
 import { supabase } from '$lib/supabase/client';
 import { db } from '$lib/db/dexie';
 import { faze } from '$lib/stores/ciklus';
@@ -179,4 +179,65 @@ export async function adminUpdateAppUrl(uzgajivacnicaId: string, appUrl: string)
   adminUzgajivacnice.update((list) =>
     list.map((u) => (u.id === uzgajivacnicaId ? { ...u, app_url: appUrl.trim() } : u))
   );
+}
+
+// ── Genetička polja sa prevodima (17 jezika) ─────────────────
+
+export const genetikaPoljaI18n = writable<GenetikaPoljaI18n[]>([]);
+
+export async function loadSvaGenetikaPolja(): Promise<void> {
+  adminLoading.set(true);
+  try {
+    const { data, error } = await supabase
+      .from('genetika_polja_i18n')
+      .select('*')
+      .order('vrsta_grupa, redoslijed');
+    if (error) throw new Error(error.message);
+    genetikaPoljaI18n.set(data ?? []);
+  } finally {
+    adminLoading.set(false);
+  }
+}
+
+export async function loadGenetikaPoljaZaGrupu(vrstaGrupa: string): Promise<GenetikaPoljaI18n[]> {
+  const { data, error } = await supabase
+    .from('genetika_polja_i18n')
+    .select('*')
+    .eq('vrsta_grupa', vrstaGrupa)
+    .order('redoslijed');
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+export async function createGenetikaPoljeI18n(
+  data: Omit<GenetikaPoljaI18n, 'id' | 'created_at' | 'updated_at'>
+): Promise<GenetikaPoljaI18n> {
+  const novoPolje: GenetikaPoljaI18n = {
+    id: crypto.randomUUID(),
+    ...data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+  const { error } = await supabase.from('genetika_polja_i18n').insert([novoPolje]);
+  if (error) throw new Error(error.message);
+  genetikaPoljaI18n.update((p) => [...p, novoPolje]);
+  return novoPolje;
+}
+
+export async function updateGenetikaPoljeI18n(
+  id: string,
+  updates: Partial<Omit<GenetikaPoljaI18n, 'id' | 'created_at'>>
+): Promise<void> {
+  const updated = { ...updates, updated_at: new Date().toISOString() };
+  const { error } = await supabase.from('genetika_polja_i18n').update(updated).eq('id', id);
+  if (error) throw new Error(error.message);
+  genetikaPoljaI18n.update((polja) =>
+    polja.map((p) => (p.id === id ? { ...p, ...updated } : p))
+  );
+}
+
+export async function deleteGenetikaPoljeI18n(id: string): Promise<void> {
+  const { error } = await supabase.from('genetika_polja_i18n').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+  genetikaPoljaI18n.update((polja) => polja.filter((p) => p.id !== id));
 }

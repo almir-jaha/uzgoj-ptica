@@ -228,3 +228,22 @@ export interface Zdravlje {
   created_at: string;
   updated_at: string;
 }
+
+// Genetička polja sa prevodima na sve jezike (17 jezika)
+export interface GenetikaPoljaI18n {
+  id: string;
+  polje_kljuc: string;                          // 'vizuelna_mutacija', 'stav', itd.
+  vrsta_grupa: 'kanarinac_finke' | 'golubovi' | 'papagaji' | 'ostalo';
+  tip: 'select' | 'text' | 'tags' | 'stars' | 'number';
+  sekcija: 'genetika' | 'ocjena';
+  redoslijed: number;
+  nazivi_jezicima: Record<string, string>;      // { "bs": "Mutacija", "en": "Mutation", ... }
+  opisi_jezicima?: Record<string, string>;
+  placeholder_jezicima?: Record<string, string>;
+  opcije?: string[];                            // Za select/tags
+  min_vrijednost?: number;                      // Za number/stars
+  max_vrijednost?: number;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+}
