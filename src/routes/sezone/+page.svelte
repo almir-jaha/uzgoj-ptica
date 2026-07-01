@@ -246,7 +246,7 @@
 </script>
 
 <svelte:head>
-	<title>{t.sezona.pageTitle}</title>
+	<title>{$t.sezona.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-4 max-w-4xl">
@@ -254,10 +254,10 @@
 	{#if pregledArhive && $prikazanaSezona}
 		<aside class="alert variant-soft-warning py-2 px-3 flex items-center justify-between gap-3">
 			<p class="text-sm">
-				{t.sezona.pregledArhive} <strong>{$prikazanaSezona.godina}</strong>{t.sezona.izmjeneNisuMoguce}
+				{$t.sezona.pregledArhive} <strong>{$prikazanaSezona.godina}</strong>{$t.sezona.izmjeneNisuMoguce}
 			</p>
 			<button class="btn btn-sm variant-filled-warning shrink-0" on:click={resetujNaAktivnu}>
-				{t.sezona.vratiNaAktivnu}
+				{$t.sezona.vratiNaAktivnu}
 			</button>
 		</aside>
 	{/if}
@@ -267,19 +267,19 @@
 		<div class="flex items-center gap-2 flex-wrap">
 			<h2 class="h3 font-bold">
 				{#if $prikazanaSezona}
-					{t.common.sezona} {$prikazanaSezona.godina}
+					{$t.common.sezona} {$prikazanaSezona.godina}
 					{#if $prikazanaSezona.naziv && $prikazanaSezona.naziv !== `Sezona ${$prikazanaSezona.godina}`}
 						<span class="text-surface-400 font-normal text-lg">— {$prikazanaSezona.naziv}</span>
 					{/if}
 				{:else}
-					{t.nav.sezone}
+					{$t.nav.sezone}
 				{/if}
 			</h2>
 			{#if kaveziDetails.length > 0}
-				<span class="badge variant-soft text-sm">{kaveziDetails.length} {t.kavezi.kaveziLabel}</span>
+				<span class="badge variant-soft text-sm">{kaveziDetails.length} {$t.kavezi.kaveziLabel}</span>
 			{/if}
 			{#if aktivnih > 0}
-				<span class="badge variant-filled-success text-sm">{aktivnih} {t.kavezi.aktivnih}</span>
+				<span class="badge variant-filled-success text-sm">{aktivnih} {$t.kavezi.aktivnih}</span>
 			{/if}
 			{#if alarma > 0}
 				<span class="badge variant-filled-error text-sm">⚠ {alarma} alarm</span>
@@ -292,7 +292,7 @@
 					<button
 						class="btn btn-sm variant-ghost-surface"
 						on:click={() => (prikaziSezone = !prikaziSezone)}
-						title={t.sezona.promijeniSezonu}
+						title={$t.sezona.promijeniSezonu}
 					>
 						📅 {prikaziSezone ? '▲' : '▼'}
 					</button>
@@ -308,16 +308,16 @@
 					<button
 						class="btn btn-sm variant-ghost-surface"
 						on:click={() => (urediSezonuOpen = true)}
-						title={t.sezona.urediTitle}
+						title={$t.sezona.urediTitle}
 					>
-						{t.sezona.urediBtn}
+						{$t.sezona.urediBtn}
 					</button>
 					<button
 						class="btn btn-sm variant-filled-primary"
 						on:click={() => (novaSezonaOpen = true)}
-						title={t.sezona.novaSezona}
+						title={$t.sezona.novaSezona}
 					>
-						{t.sezona.novaSezonaBtn}
+						{$t.sezona.novaSezonaBtn}
 					</button>
 				{/if}
 			</div>
@@ -328,7 +328,7 @@
 	{#if prikaziSezone && sortiraneSeezone.length > 1}
 		<div class="card p-3 space-y-1">
 			<p class="text-xs font-semibold text-surface-500 uppercase tracking-wider px-1 mb-2">
-				{t.sezona.odaberiteSezonu}
+				{$t.sezona.odaberiteSezonu}
 			</p>
 			{#each sortiraneSeezone as sz (sz.id)}
 				<button
@@ -349,7 +349,7 @@
 							? 'variant-filled-success'
 							: 'variant-soft-surface'}"
 					>
-						{sz.status === 'aktiva' ? t.sezona.aktivnaSezona : t.sezona.arhivirana}
+						{sz.status === 'aktiva' ? $t.sezona.aktivnaSezona : $t.sezona.arhivirana}
 					</span>
 				</button>
 			{/each}
@@ -367,10 +367,10 @@
 	{:else if !$prikazanaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-4">
 			<span class="text-6xl">🪹</span>
-			<p class="h4 text-center">{t.kavezi.nemaSezone}</p>
-			<p class="text-surface-500 text-center text-sm">{t.sezona.nemaSezoneOpis}</p>
+			<p class="h4 text-center">{$t.kavezi.nemaSezone}</p>
+			<p class="text-surface-500 text-center text-sm">{$t.sezona.nemaSezoneOpis}</p>
 			<button class="btn variant-filled-primary" on:click={() => (novaSezonaOpen = true)}>
-				{t.sezona.kreirajSezonu}
+				{$t.sezona.kreirajSezonu}
 			</button>
 		</div>
 
@@ -385,7 +385,7 @@
 								{#if grupa.sekcija}
 									🏠 {grupa.sekcija.naziv}
 								{:else}
-									📦 Bez sekcije
+									📦 {$t.sekcije.bezSekcije}
 								{/if}
 							</span>
 							<span class="badge variant-soft text-xs">{grupa.kavezi.length}</span>
@@ -422,7 +422,7 @@
 	{:else}
 		<div class="flex flex-col items-center justify-center py-12 space-y-3">
 			<span class="text-5xl">🏠</span>
-			<p class="text-surface-500 text-center text-sm">{t.kavezi.nemaKaveza}</p>
+			<p class="text-surface-500 text-center text-sm">{$t.kavezi.nemaKaveza}</p>
 		</div>
 	{/if}
 </div>

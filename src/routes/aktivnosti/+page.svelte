@@ -69,7 +69,7 @@
 		notifLoading = false;
 		if (ok) { notifSubscribed = true; notifPermission = 'granted'; }
 		else if (error === 'permission_denied') { notifPermission = 'denied'; }
-		else { notifError = error ?? t.notifikacije.greska; }
+		else { notifError = error ?? $t.notifikacije.greska; }
 	}
 
 	async function iskljuciNotifikacije() {
@@ -173,7 +173,7 @@
 </script>
 
 <svelte:head>
-	<title>{t.aktivnosti.pageTitle}</title>
+	<title>{$t.aktivnosti.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-4 max-w-2xl">
@@ -199,26 +199,26 @@
 			{notifSubscribed ? 'variant-soft-success' : 'variant-soft-surface'}">
 			<div class="space-y-0.5">
 				<p class="text-sm font-semibold">
-					{notifSubscribed ? '🔔 ' + t.notifikacije.aktivna : '🔕 Push obavještenja'}
+					{notifSubscribed ? '🔔 ' + $t.notifikacije.aktivna : '🔕 Push obavještenja'}
 				</p>
 				{#if notifPermission === 'denied'}
-					<p class="text-xs text-warning-500">{t.notifikacije.odbijeno}</p>
+					<p class="text-xs text-warning-500">{$t.notifikacije.odbijeno}</p>
 				{:else if notifError}
 					<p class="text-xs text-error-500">{notifError}</p>
 				{:else if !notifSubscribed}
-					<p class="text-xs text-surface-500">{t.notifikacije.bannerOpis}</p>
+					<p class="text-xs text-surface-500">{$t.notifikacije.bannerOpis}</p>
 				{/if}
 			</div>
 			{#if notifPermission !== 'denied'}
 				{#if notifSubscribed}
 					<button class="btn btn-sm variant-ghost-error shrink-0" on:click={iskljuciNotifikacije} disabled={notifLoading}>
 						{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
-						{t.notifikacije.iskljuci}
+						{$t.notifikacije.iskljuci}
 					</button>
 				{:else}
 					<button class="btn btn-sm variant-filled-primary shrink-0" on:click={ukljuciNotifikacije} disabled={notifLoading}>
 						{#if notifLoading}<span class="animate-spin mr-1">↻</span>{/if}
-						{t.notifikacije.ukljuci}
+						{$t.notifikacije.ukljuci}
 					</button>
 				{/if}
 			{/if}
@@ -250,15 +250,15 @@
 	{:else if !$prikazanaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">📅</span>
-			<p class="h4 text-center">{t.aktivnosti.nemaSezone}</p>
-			<a class="btn variant-filled-primary" href="/sezone">{t.aktivnosti.iditeNaKaveze}</a>
+			<p class="h4 text-center">{$t.aktivnosti.nemaSezone}</p>
+			<a class="btn variant-filled-primary" href="/sezone">{$t.aktivnosti.iditeNaKaveze}</a>
 		</div>
 
 	{:else if $ciklusi.filter((c) => c.status === 'aktivan').length === 0}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">🪺</span>
-			<p class="h4 text-center">{t.aktivnosti.nemaAktivnihCiklusa}</p>
-			<a class="btn variant-filled-primary" href="/sezone">{t.aktivnosti.iditeNaKaveze}</a>
+			<p class="h4 text-center">{$t.aktivnosti.nemaAktivnihCiklusa}</p>
+			<a class="btn variant-filled-primary" href="/sezone">{$t.aktivnosti.iditeNaKaveze}</a>
 		</div>
 
 	{:else if dnevnik.length === 0}

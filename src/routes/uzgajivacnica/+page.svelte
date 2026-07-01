@@ -87,18 +87,18 @@
 			}
 			sekcijaShowForm = false;
 		} catch (err) {
-			sekcijaError = err instanceof Error ? err.message : 'Greška';
+			sekcijaError = err instanceof Error ? err.message : $t.common.greska;
 		} finally {
 			sekcijaSaving = false;
 		}
 	}
 
 	async function obrisiSekciju(id: string) {
-		if (!confirm('Obrisati sekciju? Kavezi u ovoj sekciji će biti bez sekcije.')) return;
+		if (!confirm($t.sekcije.brisanjeKonfirmacija)) return;
 		try {
 			await deleteSekcija(id);
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Greška pri brisanju');
+			alert(err instanceof Error ? err.message : $t.common.greska);
 		}
 	}
 
@@ -165,14 +165,14 @@
 </script>
 
 <svelte:head>
-	<title>{t.uzgajivacnica.pageTitle}</title>
+	<title>{$t.uzgajivacnica.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-5 max-w-lg">
 
 
 	<div class="flex items-center justify-between">
-		<h2 class="h3 font-bold">{t.uzgajivacnica.title}</h2>
+		<h2 class="h3 font-bold">{$t.uzgajivacnica.title}</h2>
 		{#if !showForm}
 			{#if limitDostignut}
 				<span class="badge variant-filled-warning text-xs" title="Dostignut limit za vaš plan">
@@ -252,11 +252,11 @@
 			<div class="grid grid-cols-2 gap-3">
 				<div class="card p-4 text-center space-y-1">
 					<p class="text-3xl font-bold text-primary-500">{$filtriranePtice.length}</p>
-					<p class="text-xs text-surface-500">{t.uzgajivacnica.ukupnoPtica}</p>
+					<p class="text-xs text-surface-500">{$t.uzgajivacnica.ukupnoPtica}</p>
 				</div>
 				<div class="card p-4 text-center space-y-1">
 					<p class="text-3xl font-bold text-success-500">{$aktivnaSezona?.godina ?? '—'}</p>
-					<p class="text-xs text-surface-500">{t.uzgajivacnica.aktivnaSezona}</p>
+					<p class="text-xs text-surface-500">{$t.uzgajivacnica.aktivnaSezona}</p>
 				</div>
 			</div>
 
@@ -272,7 +272,7 @@
 				>
 					<div class="flex items-center gap-2">
 						<span class="text-lg">🏠</span>
-						<span class="font-semibold text-sm">Sekcije uzgajivačnice</span>
+						<span class="font-semibold text-sm">{$t.sekcije.panelTitle}</span>
 						{#if $aktivneSekcije.length > 0}
 							<span class="badge variant-soft text-xs">{$aktivneSekcije.length}</span>
 						{/if}
@@ -286,14 +286,14 @@
 							{#if sekcijaEditId === s.id && sekcijaShowForm}
 								<!-- Inline edit forma -->
 								<div class="card p-3 space-y-2 variant-soft">
-									<input class="input input-sm" type="text" bind:value={sekcijaInput.naziv} placeholder="Naziv sekcije *" disabled={sekcijaSaving} />
-									<input class="input input-sm" type="text" bind:value={sekcijaInput.opis} placeholder="Opis (opcionalno)" disabled={sekcijaSaving} />
-									<input class="input input-sm" type="number" bind:value={sekcijaInput.kapacitet_kaveza} placeholder="Kapacitet kaveza (opcionalno)" min="1" disabled={sekcijaSaving} />
+									<input class="input input-sm" type="text" bind:value={sekcijaInput.naziv} placeholder={$t.sekcije.nazivLabel} disabled={sekcijaSaving} />
+									<input class="input input-sm" type="text" bind:value={sekcijaInput.opis} placeholder={$t.sekcije.opisLabel} disabled={sekcijaSaving} />
+									<input class="input input-sm" type="number" bind:value={sekcijaInput.kapacitet_kaveza} placeholder={$t.sekcije.kapacitetLabel} min="1" disabled={sekcijaSaving} />
 									{#if sekcijaError}<p class="text-xs text-error-500">{sekcijaError}</p>{/if}
 									<div class="flex gap-2">
-										<button class="btn btn-sm variant-ghost flex-1" on:click={() => { sekcijaShowForm = false; sekcijaEditId = null; }} disabled={sekcijaSaving}>Odustani</button>
+										<button class="btn btn-sm variant-ghost flex-1" on:click={() => { sekcijaShowForm = false; sekcijaEditId = null; }} disabled={sekcijaSaving}>{$t.common.odustani}</button>
 										<button class="btn btn-sm variant-filled-primary flex-1" on:click={sacuvajSekciju} disabled={sekcijaSaving || !sekcijaInput.naziv.trim()}>
-											{#if sekcijaSaving}<span class="animate-spin mr-1">↻</span>{/if}Sačuvaj
+											{#if sekcijaSaving}<span class="animate-spin mr-1">↻</span>{/if}{$t.sekcije.spremi}
 										</button>
 									</div>
 								</div>
@@ -302,7 +302,7 @@
 									<div>
 										<span class="text-sm font-medium">{s.naziv}</span>
 										{#if s.opis}<span class="text-xs text-surface-400 ml-2">{s.opis}</span>{/if}
-										{#if s.kapacitet_kaveza}<span class="badge variant-soft text-xs ml-2">{s.kapacitet_kaveza} kaveza</span>{/if}
+										{#if s.kapacitet_kaveza}<span class="badge variant-soft text-xs ml-2">{s.kapacitet_kaveza} {$t.sekcije.kavezaLabel}</span>{/if}
 									</div>
 									<div class="flex gap-1">
 										<button class="btn btn-sm variant-ghost-surface" on:click={() => otvoriEditSekcija(s)}>✏️</button>
@@ -313,24 +313,24 @@
 						{/each}
 
 						{#if $aktivneSekcije.length === 0}
-							<p class="text-xs text-surface-400 text-center py-2">Nema sekcija. Dodajte prvu.</p>
+							<p class="text-xs text-surface-400 text-center py-2">{$t.sekcije.nemaSekcija}</p>
 						{/if}
 
 						{#if !sekcijaShowForm}
 							<button class="btn btn-sm variant-ghost-primary w-full" on:click={otvoriNovaSekcija}>
-								+ Nova sekcija
+								{$t.sekcije.novaSekcijaBtn}
 							</button>
 						{:else if sekcijaEditId === null}
 							<!-- Nova sekcija forma -->
 							<div class="card p-3 space-y-2 variant-soft">
-								<input class="input input-sm" type="text" bind:value={sekcijaInput.naziv} placeholder="Naziv sekcije *" disabled={sekcijaSaving} />
-								<input class="input input-sm" type="text" bind:value={sekcijaInput.opis} placeholder="Opis (opcionalno)" disabled={sekcijaSaving} />
-								<input class="input input-sm" type="number" bind:value={sekcijaInput.kapacitet_kaveza} placeholder="Kapacitet kaveza (opcionalno)" min="1" disabled={sekcijaSaving} />
+								<input class="input input-sm" type="text" bind:value={sekcijaInput.naziv} placeholder={$t.sekcije.nazivLabel} disabled={sekcijaSaving} />
+								<input class="input input-sm" type="text" bind:value={sekcijaInput.opis} placeholder={$t.sekcije.opisLabel} disabled={sekcijaSaving} />
+								<input class="input input-sm" type="number" bind:value={sekcijaInput.kapacitet_kaveza} placeholder={$t.sekcije.kapacitetLabel} min="1" disabled={sekcijaSaving} />
 								{#if sekcijaError}<p class="text-xs text-error-500">{sekcijaError}</p>{/if}
 								<div class="flex gap-2">
-									<button class="btn btn-sm variant-ghost flex-1" on:click={() => { sekcijaShowForm = false; }} disabled={sekcijaSaving}>Odustani</button>
+									<button class="btn btn-sm variant-ghost flex-1" on:click={() => { sekcijaShowForm = false; }} disabled={sekcijaSaving}>{$t.common.odustani}</button>
 									<button class="btn btn-sm variant-filled-primary flex-1" on:click={sacuvajSekciju} disabled={sekcijaSaving || !sekcijaInput.naziv.trim()}>
-										{#if sekcijaSaving}<span class="animate-spin mr-1">↻</span>{/if}Dodaj
+										{#if sekcijaSaving}<span class="animate-spin mr-1">↻</span>{/if}{$t.sekcije.dodajBtn}
 									</button>
 								</div>
 							</div>
@@ -343,7 +343,7 @@
 	{:else}
 		<!-- Forma za kreiranje / uređivanje -->
 		<div class="card p-5 space-y-4">
-			<h3 class="font-bold text-lg">{editId ? 'Uredi uzgajivačnicu' : 'Nova uzgajivačnica'}</h3>
+			<h3 class="font-bold text-lg">{editId ? $t.uzgajivacnica.urediProfil : $t.uzgajivac.naziv}</h3>
 
 			<SlikaUnos
 				bind:this={slikaKomponenta}
@@ -351,12 +351,12 @@
 				bucket="uzgajivaci"
 				userId={$user?.id ?? ''}
 				disabled={saving}
-				label={t.uzgajivac.slika}
+				label={$t.uzgajivac.slika}
 			/>
 
 			<div class="space-y-3">
 				<label class="label">
-					<span class="text-sm font-medium">Naziv uzgajivačnice *</span>
+					<span class="text-sm font-medium">{$t.uzgajivac.naziv} *</span>
 					<input
 						class="input"
 						type="text"
@@ -366,7 +366,7 @@
 					/>
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">Opis</span>
+					<span class="text-sm font-medium">{$t.sekcije.opisLabel}</span>
 					<input
 						class="input"
 						type="text"
@@ -376,64 +376,64 @@
 					/>
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">{t.uzgajivac.imePrezime}</span>
+					<span class="text-sm font-medium">{$t.uzgajivac.imePrezime}</span>
 					<input
 						class="input"
 						type="text"
 						bind:value={input.ime_prezime}
-						placeholder={t.uzgajivac.imePrezimePlaceholder}
+						placeholder={$t.uzgajivac.imePrezimePlaceholder}
 						disabled={saving}
 					/>
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">{t.uzgajivac.adresa}</span>
+					<span class="text-sm font-medium">{$t.uzgajivac.adresa}</span>
 					<input
 						class="input"
 						type="text"
 						bind:value={input.adresa}
-						placeholder={t.uzgajivac.adresaPlaceholder}
+						placeholder={$t.uzgajivac.adresaPlaceholder}
 						disabled={saving}
 					/>
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">{t.uzgajivac.telefon}</span>
+					<span class="text-sm font-medium">{$t.uzgajivac.telefon}</span>
 					<input
 						class="input"
 						type="tel"
 						bind:value={input.telefon}
-						placeholder={t.uzgajivac.telefonPlaceholder}
+						placeholder={$t.uzgajivac.telefonPlaceholder}
 						disabled={saving}
 					/>
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">{t.ptice.prsten_prefiks}</span>
+					<span class="text-sm font-medium">{$t.ptice.prsten_prefiks}</span>
 					<input
 						class="input"
 						type="text"
 						bind:value={input.prsten_prefiks}
-						placeholder={t.ptice.prsten_prefiksPlaceholder}
+						placeholder={$t.ptice.prsten_prefiksPlaceholder}
 						disabled={saving}
 					/>
-					<span class="text-xs text-surface-400">{t.ptice.prsten_prefiksOpis}</span>
+					<span class="text-xs text-surface-400">{$t.ptice.prsten_prefiksOpis}</span>
 				</label>
 				{#if jeAdminUser}
 				<label class="label">
-					<span class="text-sm font-medium">{t.uzgajivac.appUrl} <span class="badge variant-filled-warning text-xs ml-1">Admin</span></span>
+					<span class="text-sm font-medium">{$t.uzgajivac.appUrl} <span class="badge variant-filled-warning text-xs ml-1">Admin</span></span>
 					<input
 						class="input font-mono text-sm"
 						type="url"
 						bind:value={input.app_url}
-						placeholder={t.uzgajivac.appUrlPlaceholder}
+						placeholder={$t.uzgajivac.appUrlPlaceholder}
 						disabled={saving}
 					/>
-					<span class="text-xs text-surface-400">{t.uzgajivac.appUrlOpis}</span>
+					<span class="text-xs text-surface-400">{$t.uzgajivac.appUrlOpis}</span>
 				</label>
 				{/if}
 			</div>
 
 			<div class="flex gap-3 pt-1">
 				<button class="btn variant-ghost flex-1" on:click={() => (showForm = false)} disabled={saving}>
-					{t.common.odustani}
+					{$t.common.odustani}
 				</button>
 				<button
 					class="btn variant-filled-primary flex-1"
@@ -441,7 +441,7 @@
 					disabled={saving || !input.naziv.trim()}
 				>
 					{#if saving}<span class="animate-spin mr-2">↻</span>{/if}
-					{t.uzgajivac.sacuvaj}
+					{$t.uzgajivac.sacuvaj}
 				</button>
 			</div>
 		</div>

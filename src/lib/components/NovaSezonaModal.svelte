@@ -106,7 +106,7 @@
 			onSuccess();
 		} catch (err) {
 			console.error('[NovaSezona] GREŠKA:', err);
-			errorMsg = err instanceof Error ? err.message : t.sezona.greska;
+			errorMsg = err instanceof Error ? err.message : $t.sezona.greska;
 		} finally {
 			loading = false;
 		}
@@ -121,9 +121,9 @@
 >
 	<div class="card w-full max-w-md p-6 space-y-5 max-h-[90vh] overflow-y-auto">
 		<header class="flex items-center justify-between">
-			<h3 class="h4 font-bold">{t.sezona.novaSezona}</h3>
+			<h3 class="h4 font-bold">{$t.sezona.novaSezona}</h3>
 			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose} disabled={loading}>
-				{t.modali.zatvoriBtnTitle}
+				{$t.modali.zatvoriBtnTitle}
 			</button>
 		</header>
 
@@ -131,7 +131,7 @@
 			<!-- Godina + datum -->
 			<div class="grid grid-cols-2 gap-4">
 				<label class="label">
-					<span class="text-sm font-medium">{t.sezona.godina}</span>
+					<span class="text-sm font-medium">{$t.sezona.godina}</span>
 					<input
 						class="input"
 						type="number"
@@ -143,7 +143,7 @@
 					/>
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">{t.sezona.datumPocetka}</span>
+					<span class="text-sm font-medium">{$t.sezona.datumPocetka}</span>
 					<input class="input" type="date" bind:value={datumPocetka} required disabled={loading} />
 				</label>
 			</div>
@@ -155,7 +155,7 @@
 			{/if}
 
 			<label class="label">
-				<span class="text-sm font-medium">{t.sezona.naziv}</span>
+				<span class="text-sm font-medium">{$t.sezona.naziv}</span>
 				<input
 					class="input"
 					type="text"
@@ -168,7 +168,7 @@
 			<!-- Kavezi po sekcijama ili jednostavno -->
 			{#if imaSekcija}
 				<div class="space-y-3">
-					<p class="text-sm font-medium">Kavezi po sekcijama</p>
+					<p class="text-sm font-medium">{$t.novaSezonaSekcije.kaveziPoSekcijama}</p>
 					<div class="space-y-2">
 						{#each sekcijeDist as red, i (red.sekcija_id)}
 							<div class="flex items-center gap-3">
@@ -189,36 +189,24 @@
 					</div>
 
 					<div class="flex items-center justify-between pt-1 border-t border-surface-200-700-token">
-						<span class="text-sm text-surface-500">Ukupno: <strong>{ukupnoKaveza}</strong> kaveza</span>
+						<span class="text-sm text-surface-500">{$t.novaSezonaSekcije.ukupno}: <strong>{ukupnoKaveza}</strong> {$t.novaSezonaSekcije.kaveza}</span>
 					</div>
 
 					<!-- Numerisanje -->
 					<div class="space-y-1 pt-1">
-						<p class="text-xs font-medium text-surface-500">Numerisanje kaveza</p>
+						<p class="text-xs font-medium text-surface-500">{$t.novaSezonaSekcije.numerisanjeTitle}</p>
 						<label class="flex items-start gap-2 cursor-pointer">
-							<input
-								type="radio"
-								class="radio mt-0.5"
-								bind:group={numerisanje}
-								value="kontinuirano"
-								disabled={loading}
-							/>
+							<input type="radio" class="radio mt-0.5" bind:group={numerisanje} value="kontinuirano" disabled={loading} />
 							<div>
-								<p class="text-sm">Kontinuirano (1 → {ukupnoKaveza})</p>
-								<p class="text-xs text-surface-400">Npr. Sekcija A: 1–5, Sekcija B: 6–10</p>
+								<p class="text-sm">{$t.novaSezonaSekcije.kontinuiranoLabel.replace('{ukupno}', String(ukupnoKaveza))}</p>
+								<p class="text-xs text-surface-400">{$t.novaSezonaSekcije.kontinuiranoOpis}</p>
 							</div>
 						</label>
 						<label class="flex items-start gap-2 cursor-pointer">
-							<input
-								type="radio"
-								class="radio mt-0.5"
-								bind:group={numerisanje}
-								value="po_sekciji"
-								disabled={loading}
-							/>
+							<input type="radio" class="radio mt-0.5" bind:group={numerisanje} value="po_sekciji" disabled={loading} />
 							<div>
-								<p class="text-sm">Po sekciji (svaka od 1)</p>
-								<p class="text-xs text-surface-400">Npr. Sekcija A: 1–5, Sekcija B: 1–5</p>
+								<p class="text-sm">{$t.novaSezonaSekcije.poSekcijiLabel}</p>
+								<p class="text-xs text-surface-400">{$t.novaSezonaSekcije.poSekcijiOpis}</p>
 							</div>
 						</label>
 					</div>
@@ -226,7 +214,7 @@
 			{:else}
 				<!-- Bez sekcija — jednostavni unos -->
 				<label class="label">
-					<span class="text-sm font-medium">{t.sezona.brojKaveza}</span>
+					<span class="text-sm font-medium">{$t.sezona.brojKaveza}</span>
 					<input
 						class="input"
 						type="number"
@@ -255,7 +243,7 @@
 
 			<div class="flex gap-3 pt-1">
 				<button class="btn variant-ghost flex-1" type="button" on:click={onClose} disabled={loading}>
-					{t.common.odustani}
+					{$t.common.odustani}
 				</button>
 				<button
 					class="btn variant-filled-primary flex-1"
@@ -263,7 +251,7 @@
 					disabled={loading || ukupnoKaveza < 1 || duplikatGodina}
 				>
 					{#if loading}<span class="animate-spin mr-2">↻</span>{/if}
-					{t.sezona.kreirajSezonu}
+					{$t.sezona.kreirajSezonu}
 				</button>
 			</div>
 		</form>

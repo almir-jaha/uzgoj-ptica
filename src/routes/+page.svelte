@@ -48,7 +48,7 @@
 				if (error) throw error;
 				// Supabase šalje verification email - obavijesti korisnika
 				if (data?.user && !data?.session) {
-					successMsg = t.auth.provjeriEmail;
+					successMsg = $t.auth.provjeriEmail;
 				} else if (data?.session) {
 					session.set(data.session);
 				}
@@ -60,15 +60,15 @@
 		} catch (err) {
 			if (err instanceof Error) {
 				if (err.message.includes('Invalid login credentials')) {
-					errorMsg = t.auth.pogresanEmailLozinka;
+					errorMsg = $t.auth.pogresanEmailLozinka;
 				} else if (err.message.includes('Email not confirmed')) {
-					errorMsg = t.auth.emailNijePotvrdjen;
+					errorMsg = $t.auth.emailNijePotvrdjen;
 					emailNijePotvrdjen = true;
 				} else {
 					errorMsg = err.message;
 				}
 			} else {
-				errorMsg = t.auth.greskaPrivPrijavi;
+				errorMsg = $t.auth.greskaPrivPrijavi;
 			}
 		} finally {
 			loading = false;
@@ -83,15 +83,15 @@
 </script>
 
 <svelte:head>
-	<title>{t.auth.pageTitle}</title>
+	<title>{$t.auth.pageTitle}</title>
 </svelte:head>
 
 {#if $isAuthenticated}
 	<div class="flex min-h-screen items-center justify-center bg-surface-50-900-token">
 		<div class="card p-8 text-center space-y-3">
 			<span class="text-5xl">✅</span>
-			<p class="h4">{t.auth.prijavljeni}</p>
-			<p class="text-surface-500 text-sm">{t.auth.preusmjeravanje}</p>
+			<p class="h4">{$t.auth.prijavljeni}</p>
+			<p class="text-surface-500 text-sm">{$t.auth.preusmjeravanje}</p>
 		</div>
 	</div>
 {:else}
@@ -101,21 +101,21 @@
 			<!-- Logo + naslov -->
 			<div class="text-center space-y-1">
 				<p class="text-6xl leading-none">🐦</p>
-				<h1 class="h2 font-bold">{t.app.nameShort}</h1>
+				<h1 class="h2 font-bold">{$t.app.nameShort}</h1>
 				<p class="text-surface-500 text-sm">
-					{isRegistering ? t.auth.kreirajRacun : t.auth.prijaviteSeNaRacun}
+					{isRegistering ? $t.auth.kreirajRacun : $t.auth.prijaviteSeNaRacun}
 				</p>
 			</div>
 
 			<!-- Forma -->
 			<form class="space-y-4" on:submit|preventDefault={handleSubmit} novalidate>
 				<label class="label">
-					<span class="text-sm font-medium">{t.auth.email}</span>
+					<span class="text-sm font-medium">{$t.auth.email}</span>
 					<input
 						class="input px-4"
 						type="email"
 						bind:value={email}
-						placeholder={t.auth.emailPlaceholder}
+						placeholder={$t.auth.emailPlaceholder}
 						autocomplete="email"
 						required
 						disabled={loading}
@@ -123,7 +123,7 @@
 				</label>
 
 				<label class="label">
-					<span class="text-sm font-medium">{t.auth.lozinka}</span>
+					<span class="text-sm font-medium">{$t.auth.lozinka}</span>
 					<div class="relative">
 						<input
 							class="input px-4 pr-11"
@@ -158,7 +158,7 @@
 						</button>
 					</div>
 					{#if isRegistering}
-						<span class="text-xs text-surface-400">{t.auth.minKaraktera}</span>
+						<span class="text-xs text-surface-400">{$t.auth.minKaraktera}</span>
 					{/if}
 				</label>
 
@@ -198,7 +198,7 @@
 					{#if loading}
 						<span class="inline-block animate-spin mr-2">↻</span>
 					{/if}
-					{isRegistering ? t.auth.registracija : t.auth.prijava}
+					{isRegistering ? $t.auth.registracija : $t.auth.prijava}
 				</button>
 			</form>
 
@@ -206,9 +206,9 @@
 
 			<!-- Prebaci mod -->
 			<p class="text-center text-sm text-surface-500">
-				{isRegistering ? t.auth.vecImateRacun : t.auth.nemateRacun}
+				{isRegistering ? $t.auth.vecImateRacun : $t.auth.nemateRacun}
 				<button class="anchor font-medium" type="button" on:click={switchMode}>
-					{isRegistering ? t.auth.prijaviteSe : t.auth.registrujteSe}
+					{isRegistering ? $t.auth.prijaviteSe : $t.auth.registrujteSe}
 				</button>
 			</p>
 		</div>

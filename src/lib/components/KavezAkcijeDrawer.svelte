@@ -150,7 +150,7 @@
 			dispatch('refresh');
 			pogled = 'mladi';
 		} catch (err) {
-			unosError = err instanceof Error ? err.message : t.ptice.greska;
+			unosError = err instanceof Error ? err.message : $t.ptice.greska;
 		} finally {
 			unosLoading = false;
 		}
@@ -187,8 +187,8 @@
 			{/if}
 			<h3 class="font-bold text-lg">
 				K{details.oznaka}
-				{#if pogled === 'mladi'}· {t.kavezi.pregledMladih}
-				{:else if pogled === 'unos'}· {t.kavezi.brziUnosMlade}
+				{#if pogled === 'mladi'}· {$t.kavezi.pregledMladih}
+				{:else if pogled === 'unos'}· {$t.kavezi.brziUnosMlade}
 				{/if}
 			</h3>
 		</div>
@@ -203,7 +203,7 @@
 			{#if details.aktivni_ciklus}
 				<!-- Info o paru -->
 				<div class="card variant-soft p-3 mb-4 space-y-1">
-					<p class="text-xs text-surface-500">{t.kavezi.roditelji}</p>
+					<p class="text-xs text-surface-500">{$t.kavezi.roditelji}</p>
 					<p class="text-sm font-medium">
 						{spolSimbol(ptica1?.spol ?? '?')} {pticaLabel(ptica1)}
 						&nbsp;×&nbsp;
@@ -215,7 +215,7 @@
 						</p>
 					{/if}
 					{#if mladi.length > 0}
-						<p class="text-xs text-surface-500">{mladi.length} {t.kavezi.ukupnoMladih}</p>
+						<p class="text-xs text-surface-500">{mladi.length} {$t.kavezi.ukupnoMladih}</p>
 					{/if}
 				</div>
 
@@ -236,11 +236,11 @@
 					<div class="space-y-2 mb-2">
 						<button class="btn variant-filled-primary w-full justify-start gap-3" on:click={otvoriUnos}>
 							<span class="text-xl">🐣</span>
-							<span>{t.kavezi.unosMladih}</span>
+							<span>{$t.kavezi.unosMladih}</span>
 						</button>
 						<button class="btn variant-soft w-full justify-start gap-3" on:click={() => (pogled = 'mladi')}>
 							<span class="text-xl">🐦</span>
-							<span>{t.kavezi.pregledMladih}
+							<span>{$t.kavezi.pregledMladih}
 								{#if mladi.length > 0}
 									<span class="badge variant-soft ml-1 text-xs">{mladi.length}</span>
 								{/if}
@@ -271,7 +271,7 @@
 							{/if}
 							<div class="flex gap-2">
 								<button class="btn variant-ghost flex-1" on:click={() => prvoJajeOtvoreno = false} disabled={prvoJajeLoading}>
-									{t.common.odustani}
+									{$t.common.odustani}
 								</button>
 								<button class="btn variant-filled-primary flex-1" on:click={sacuvajPrvoJaje} disabled={prvoJajeLoading || !prvoJajeDatum}>
 									{#if prvoJajeLoading}<span class="animate-spin mr-1">↻</span>{/if}
@@ -302,7 +302,7 @@
 							/>
 							<div class="flex gap-2">
 								<button class="btn variant-ghost flex-1 btn-sm" on:click={() => paznjaOtvorena = false} disabled={paznjaLoading}>
-									{t.common.odustani}
+									{$t.common.odustani}
 								</button>
 								{#if details.aktivni_ciklus?.napomena_paznje}
 									<button class="btn variant-soft-error btn-sm" on:click={() => { paznjaTekst = ''; sacuvajPaznju(); }} disabled={paznjaLoading}>
@@ -319,20 +319,20 @@
 
 					<button class="btn variant-soft-error w-full justify-start gap-3" on:click={() => dispatch('zavrsiCiklus')}>
 						<span class="text-xl">🏁</span>
-						<span>{t.kavezi.zavrsiCiklus}</span>
+						<span>{$t.kavezi.zavrsiCiklus}</span>
 					</button>
 				</div>
 			{:else}
 				<!-- Prazan kavez -->
 				<div class="py-4 text-center text-surface-400 text-sm mb-4">
-					{t.kavezi.prazan}
+					{$t.kavezi.prazan}
 				</div>
 				<button
 					class="btn variant-filled-primary w-full justify-start gap-3"
 					on:click={() => dispatch('pokreniCiklus')}
 				>
 					<span class="text-xl">▶</span>
-					<span>{t.kavezi.pokreniCiklus}</span>
+					<span>{$t.kavezi.pokreniCiklus}</span>
 				</button>
 			{/if}
 
@@ -347,7 +347,7 @@
 							on:change={(e) => promijeniSekciju(e.currentTarget.value)}
 							disabled={sekcijaLoading}
 						>
-							<option value="">— Bez sekcije —</option>
+							<option value="">— {$t.sekcije.bezSekcije} —</option>
 							{#each sekcije as s (s.id)}
 								<option value={s.id}>{s.naziv}</option>
 							{/each}
@@ -359,7 +359,7 @@
 		<!-- ── PREGLED MLADIH ── -->
 		{:else if pogled === 'mladi'}
 			{#if mladi.length === 0}
-				<div class="py-8 text-center text-surface-400 text-sm">{t.kavezi.nemaMladih}</div>
+				<div class="py-8 text-center text-surface-400 text-sm">{$t.kavezi.nemaMladih}</div>
 			{:else}
 				<div class="space-y-2 mt-2">
 					{#each mladi as p (p.id)}
@@ -381,7 +381,7 @@
 			{/if}
 			<div class="mt-4">
 				<button class="btn variant-filled-primary w-full" on:click={otvoriUnos}>
-					🐣 {t.kavezi.unosMladih}
+					🐣 {$t.kavezi.unosMladih}
 				</button>
 			</div>
 
@@ -391,7 +391,7 @@
 				<!-- Roditelji (info, ne-editabilno) -->
 				{#if otac || majka}
 					<div class="card variant-soft p-3 text-xs space-y-0.5">
-						<p class="text-surface-500">{t.kavezi.roditelji}</p>
+						<p class="text-surface-500">{$t.kavezi.roditelji}</p>
 						{#if otac}<p>♂ {pticaLabel(otac)}</p>{/if}
 						{#if majka}<p>♀ {pticaLabel(majka)}</p>{/if}
 					</div>
@@ -399,15 +399,15 @@
 
 				<!-- Naziv -->
 				<label class="label">
-					<span class="text-sm font-medium">{t.ptice.naziv}</span>
-					<input class="input" type="text" bind:value={unosNaziv} placeholder={t.ptice.nazivPlaceholder} disabled={unosLoading} />
+					<span class="text-sm font-medium">{$t.ptice.naziv}</span>
+					<input class="input" type="text" bind:value={unosNaziv} placeholder={$t.ptice.nazivPlaceholder} disabled={unosLoading} />
 				</label>
 
 				<!-- Spol -->
 				<fieldset>
-					<legend class="text-sm font-medium mb-2">{t.ptice.spol}</legend>
+					<legend class="text-sm font-medium mb-2">{$t.ptice.spol}</legend>
 					<div class="flex gap-2">
-						{#each [['M', t.ptice.spolMuzjak], ['Ž', t.ptice.spolZenka], ['?', t.ptice.spolNepoznat]] as [val, label]}
+						{#each [['M', $t.ptice.spolMuzjak], ['Ž', $t.ptice.spolZenka], ['?', $t.ptice.spolNepoznat]] as [val, label]}
 							<label class="flex-1 btn btn-sm cursor-pointer {unosSpol === val ? 'variant-filled-primary' : 'variant-soft'}">
 								<input type="radio" bind:group={unosSpol} value={val} class="sr-only" disabled={unosLoading} />
 								{label}
@@ -419,11 +419,11 @@
 				<!-- Prsten -->
 				<div class="grid grid-cols-[1fr_auto] gap-3 items-end">
 					<label class="label">
-						<span class="text-sm font-medium">{t.ptice.prstenaOznaka}</span>
-						<input class="input" type="text" bind:value={unosOznaka} placeholder={t.ptice.prstenaOznakaPlaceholder} disabled={unosLoading} />
+						<span class="text-sm font-medium">{$t.ptice.prstenaOznaka}</span>
+						<input class="input" type="text" bind:value={unosOznaka} placeholder={$t.ptice.prstenaOznakaPlaceholder} disabled={unosLoading} />
 					</label>
 					<label class="label w-24">
-						<span class="text-sm font-medium">{t.ptice.prstenRedniBroj}</span>
+						<span class="text-sm font-medium">{$t.ptice.prstenRedniBroj}</span>
 						<input class="input" type="number" min="1" bind:value={unosRedniBroj} placeholder="1" disabled={unosLoading} />
 					</label>
 				</div>
@@ -431,11 +431,11 @@
 				<!-- Datum + Godina -->
 				<div class="grid grid-cols-2 gap-3">
 					<label class="label">
-						<span class="text-sm font-medium">{t.ptice.datumRodjenja}</span>
+						<span class="text-sm font-medium">{$t.ptice.datumRodjenja}</span>
 						<input class="input" type="date" bind:value={unosDatum} disabled={unosLoading} />
 					</label>
 					<label class="label">
-						<span class="text-sm font-medium">{t.ptice.godinaUzgoja}</span>
+						<span class="text-sm font-medium">{$t.ptice.godinaUzgoja}</span>
 						<input class="input" type="number" min="2000" max="2099" bind:value={unosGodina} disabled={unosLoading} />
 					</label>
 				</div>
@@ -446,11 +446,11 @@
 
 				<div class="flex gap-3">
 					<button class="btn variant-ghost flex-1" on:click={() => (pogled = 'akcije')} disabled={unosLoading}>
-						{t.common.odustani}
+						{$t.common.odustani}
 					</button>
 					<button class="btn variant-filled-primary flex-1" on:click={sacuvajMladu} disabled={unosLoading}>
 						{#if unosLoading}<span class="animate-spin mr-2">↻</span>{/if}
-						{t.ptice.dodajPticu}
+						{$t.ptice.dodajPticu}
 					</button>
 				</div>
 			</div>

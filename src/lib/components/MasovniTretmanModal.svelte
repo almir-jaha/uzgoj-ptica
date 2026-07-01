@@ -2,6 +2,7 @@
 	import { supabase } from '$lib/supabase/client';
 	import { createZdravlje, TIP_OPCIJE } from '$lib/stores/zdravlje';
 	import type { Ptica, Sekcija, ZdravljeTip } from '$lib/db/schema';
+	import { t } from '$lib/i18n';
 
 	export let userId: string;
 	export let uzgajivacnicaId: string;
@@ -114,7 +115,7 @@
 			);
 			onSuccess();
 		} catch (err) {
-			errorMsg = err instanceof Error ? err.message : 'Greška pri snimanju';
+			errorMsg = err instanceof Error ? err.message : $t.masovniTretman.greska;
 		} finally {
 			saving = false;
 		}
@@ -130,8 +131,8 @@
 	<div class="card w-full max-w-md p-6 space-y-4 max-h-[90vh] overflow-y-auto">
 		<header class="flex items-center justify-between">
 			<div>
-				<h3 class="h4 font-bold">💉 Masovni tretman</h3>
-				<p class="text-xs text-surface-400 mt-0.5">Kreira individualni zapis za svaku pticu u sekciji</p>
+				<h3 class="h4 font-bold">{$t.masovniTretman.title}</h3>
+				<p class="text-xs text-surface-400 mt-0.5">{$t.masovniTretman.subtitle}</p>
 			</div>
 			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose} disabled={saving}>✕</button>
 		</header>
@@ -141,11 +142,11 @@
 			<!-- Sekcija -->
 			{#if sekcije.length === 0}
 				<aside class="alert variant-filled-warning py-2 px-3 text-sm">
-					<p>Nema definisanih sekcija. Dodajte sekcije u postavkama uzgajivačnice.</p>
+					<p>{$t.masovniTretman.nemaSekcijaUpozorenje}</p>
 				</aside>
 			{:else}
 				<label class="label">
-					<span class="text-sm font-medium">🏠 Sekcija</span>
+					<span class="text-sm font-medium">🏠 {$t.masovniTretman.sekcijaLabel}</span>
 					<select class="select" bind:value={sekcijaId} disabled={saving || loadingPtice}>
 						{#each sekcije as s (s.id)}
 							<option value={s.id}>{s.naziv}{s.opis ? ` — ${s.opis}` : ''}</option>
@@ -156,7 +157,7 @@
 				<!-- Ptice u sekciji -->
 				<div class="card p-3 space-y-2 variant-soft">
 					<div class="flex items-center gap-2">
-						<span class="text-sm font-medium">Ptice koje primaju tretman</span>
+						<span class="text-sm font-medium">{$t.masovniTretman.pticePrimaju}</span>
 						{#if loadingPtice}
 							<span class="animate-spin text-xs">↻</span>
 						{:else if ucitanoPtice}
@@ -167,10 +168,7 @@
 					</div>
 
 					{#if ucitanoPtice && pticaUSekciji.length === 0}
-						<p class="text-xs text-surface-400">
-							Nema aktivnih parova/ptica u sekciji <strong>{odabranaSekcija?.naziv}</strong>.
-							Ptice se dodjeljuju sekcijama kroz aktivne cikluse na kavezima.
-						</p>
+						<p class="text-xs text-surface-400">{$t.masovniTretman.nemaPticaUSekciji}</p>
 					{:else if pticaUSekciji.length > 0}
 						<div class="flex flex-wrap gap-1">
 							{#each pticaUSekciji as p (p.id)}
@@ -186,7 +184,7 @@
 
 			<!-- Tip tretmana -->
 			<div class="space-y-1">
-				<span class="text-sm font-medium">Tip tretmana</span>
+				<span class="text-sm font-medium">{$t.masovniTretman.tipTretmana}</span>
 				<div class="flex flex-wrap gap-2">
 					{#each TIP_OPCIJE as opt (opt.value)}
 						<button
@@ -204,17 +202,11 @@
 			<!-- Naziv + datum -->
 			<div class="grid grid-cols-2 gap-3">
 				<label class="label col-span-2 sm:col-span-1">
-					<span class="text-sm font-medium">Naziv tretmana *</span>
-					<input
-						class="input"
-						type="text"
-						bind:value={naziv}
-						placeholder="npr. Vakcinacija NCD, Antibiotik..."
-						disabled={saving}
-					/>
+					<span class="text-sm font-medium">{$t.masovniTretman.nazivLabel}</span>
+					<input class="input" type="text" bind:value={naziv} placeholder={$t.masovniTretman.nazivPlaceholder} disabled={saving} />
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">Datum</span>
+					<span class="text-sm font-medium">{$t.masovniTretman.datumLabel}</span>
 					<input class="input" type="date" bind:value={datum} disabled={saving} />
 				</label>
 			</div>
@@ -222,39 +214,19 @@
 			<!-- Lijek + trajanje -->
 			<div class="grid grid-cols-2 gap-3">
 				<label class="label">
-					<span class="text-sm font-medium">Lijek / preparat</span>
-					<input
-						class="input"
-						type="text"
-						bind:value={lijek}
-						placeholder="npr. Tylosin, Baytril..."
-						disabled={saving}
-					/>
+					<span class="text-sm font-medium">{$t.masovniTretman.lijekLabel}</span>
+					<input class="input" type="text" bind:value={lijek} placeholder={$t.masovniTretman.lijekPlaceholder} disabled={saving} />
 				</label>
 				<label class="label">
-					<span class="text-sm font-medium">Trajanje (dana)</span>
-					<input
-						class="input"
-						type="number"
-						bind:value={trajanje}
-						min="1"
-						max="365"
-						placeholder="npr. 5"
-						disabled={saving}
-					/>
+					<span class="text-sm font-medium">{$t.masovniTretman.trajanjeLabel}</span>
+					<input class="input" type="number" bind:value={trajanje} min="1" max="365" disabled={saving} />
 				</label>
 			</div>
 
 			<!-- Opis -->
 			<label class="label">
-				<span class="text-sm font-medium">Opis / napomena</span>
-				<textarea
-					class="textarea text-sm"
-					rows="2"
-					bind:value={opis}
-					placeholder="Doza, način primjene, razlog tretmana..."
-					disabled={saving}
-				></textarea>
+				<span class="text-sm font-medium">{$t.masovniTretman.opisLabel}</span>
+				<textarea class="textarea text-sm" rows="2" bind:value={opis} placeholder={$t.masovniTretman.opisPlaceholder} disabled={saving}></textarea>
 			</label>
 
 			{#if errorMsg}
@@ -263,7 +235,7 @@
 
 			<div class="flex gap-3 pt-1">
 				<button class="btn variant-ghost flex-1" type="button" on:click={onClose} disabled={saving}>
-					Odustani
+					{$t.common.odustani}
 				</button>
 				<button
 					class="btn variant-filled-primary flex-1"
@@ -271,7 +243,7 @@
 					disabled={saving || !naziv.trim() || !sekcijaId || pticaUSekciji.length === 0 || sekcije.length === 0}
 				>
 					{#if saving}<span class="animate-spin mr-2">↻</span>{/if}
-					Snimi za {pticaUSekciji.length} ptica
+					{$t.masovniTretman.snimiZa} {pticaUSekciji.length} {$t.masovniTretman.ptica}
 				</button>
 			</div>
 		</form>

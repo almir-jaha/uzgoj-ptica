@@ -256,21 +256,21 @@
 </script>
 
 <svelte:head>
-	<title>{t.ptice.pageTitle}</title>
+	<title>{$t.ptice.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-4 max-w-2xl">
 
 	<!-- Header -->
 	<div class="flex items-center justify-between">
-		<h2 class="h3 font-bold">{t.ptice.title}</h2>
+		<h2 class="h3 font-bold">{$t.ptice.title}</h2>
 		<div class="flex gap-2 items-center flex-wrap justify-end">
 			{#if $aktivneSekcije.length > 0}
 				<button
 					class="btn variant-ghost-secondary btn-sm"
 					on:click={() => (masovniTretmanOtvoren = true)}
 				>
-					💉 Masovni tretman
+					{$t.masovniTretman.dugme}
 				</button>
 			{/if}
 			{#if !loading}
@@ -280,7 +280,7 @@
 					</span>
 				{:else}
 					<button class="btn variant-filled-primary btn-sm" on:click={otvoriNova}>
-						{t.ptice.novaPtica}
+						{$t.ptice.novaPtica}
 					</button>
 				{/if}
 			{/if}
@@ -291,11 +291,11 @@
 	{#if !loading && $ptice.length > 0}
 		<div class="flex gap-2 flex-wrap">
 			{#each [
-				['sve',        t.ptice.filtar.sve,           $ptice.length],
-				['muzjaci',    t.ptice.filtar.muzjaci,        $pticeMuzjaci.length],
-				['zenke',      t.ptice.filtar.zenke,          $pticeSenke.length],
+				['sve',        $t.ptice.filtar.sve,           $ptice.length],
+				['muzjaci',    $t.ptice.filtar.muzjaci,        $pticeMuzjaci.length],
+				['zenke',      $t.ptice.filtar.zenke,          $pticeSenke.length],
 				['ovaSezone',  `🐣 ${tekucaGodina}`,          pticeOveSezone.length],
-				['ostale',     t.ptice.filtar.ostale,         pticeOstale.length]
+				['ostale',     $t.ptice.filtar.ostale,         pticeOstale.length]
 			] as [val, label, count] (val)}
 				<button
 					class="btn btn-sm {filter === val ? 'variant-filled-primary' : 'variant-soft'}"
@@ -312,7 +312,7 @@
 		<!-- Pretraga po prstenu -->
 		<div class="flex gap-2 items-end">
 			<label class="label flex-1">
-				<span class="text-xs text-surface-500">{t.ptice.pretragaPoRednomBroju}</span>
+				<span class="text-xs text-surface-500">{$t.ptice.pretragaPoRednomBroju}</span>
 				<input
 					class="input input-sm"
 					type="text"
@@ -322,7 +322,7 @@
 				/>
 			</label>
 			<label class="label w-28">
-				<span class="text-xs text-surface-500">{t.ptice.pretragaPoGodini}</span>
+				<span class="text-xs text-surface-500">{$t.ptice.pretragaPoGodini}</span>
 				<input
 					class="input input-sm"
 					type="text"
@@ -353,18 +353,18 @@
 	{:else if $ptice.length === 0}
 		<div class="flex flex-col items-center justify-center py-16 space-y-4">
 			<span class="text-6xl">🐦</span>
-			<p class="h4 text-center">{t.ptice.nemaPtica}</p>
+			<p class="h4 text-center">{$t.ptice.nemaPtica}</p>
 			<p class="text-surface-500 text-sm text-center max-w-xs">
-				{t.ptice.nemaPticaOpis}
+				{$t.ptice.nemaPticaOpis}
 			</p>
 			<button class="btn variant-filled-primary" on:click={otvoriNova}>
-				{t.ptice.dodajPrvu}
+				{$t.ptice.dodajPrvu}
 			</button>
 		</div>
 
 	<!-- Lista ptica -->
 	{:else if pticaSearch.length === 0}
-		<p class="text-center text-surface-500 py-8">{t.ptice.filtar.nemaPticaZaFilter}</p>
+		<p class="text-center text-surface-500 py-8">{$t.ptice.filtar.nemaPticaZaFilter}</p>
 
 	{:else}
 		<div class="space-y-2">
@@ -427,7 +427,7 @@
 					<!-- Red 3: Akcije -->
 					<div class="flex gap-1 mt-2 pt-2 border-t border-surface-300-600-token">
 						<button class="btn btn-sm variant-ghost-surface flex-1" on:click={() => otvoriUredi(ptica)}>
-							✏️ {t.ptice.uredi}
+							✏️ {$t.ptice.uredi}
 						</button>
 						<button class="btn btn-sm variant-ghost-tertiary flex-1" on:click={() => otvoriRodovnik(ptica)}>
 							🌳 Pedigre

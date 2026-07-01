@@ -10,6 +10,7 @@
 	import { isOnline } from '$lib/stores/network';
 	import { isAdmin } from '$lib/stores/admin';
 	import { t } from '$lib/i18n';
+	import JezikSelector from '$lib/components/JezikSelector.svelte';
 	import { uzgajivacnice, aktivnaUzgajivacnica, loadUzgajivacnice, setAktivnaUzgajivacnica, clearUzgajivacniceStore } from '$lib/stores/uzgajivacnica';
 	import { loadUserTier, userTier } from '$lib/stores/userTier';
 	import { ptice } from '$lib/stores/ptice';
@@ -72,7 +73,7 @@
 				registerSW({
 					onOfflineReady() {
 						toastStore.trigger({
-							message: t.app.offlineReady,
+							message: $t.app.offlineReady,
 							background: 'variant-filled-success',
 							timeout: 4000
 						});
@@ -131,8 +132,8 @@
 					<img src="/app-logo.png" alt="HatchPlan" class="h-10 w-auto" />
 					<span class="hidden sm:block text-xl font-bold tracking-tight ml-1">HatchPlan</span>
 					{#if !$isOnline}
-						<span class="badge variant-filled-warning text-xs ml-2" title={t.app.offlineTitle}>
-							{t.app.offlineBadge}
+						<span class="badge variant-filled-warning text-xs ml-2" title={$t.app.offlineTitle}>
+							{$t.app.offlineBadge}
 						</span>
 					{/if}
 				</svelte:fragment>
@@ -154,20 +155,22 @@
 								{$aktivnaUzgajivacnica.naziv}
 							</span>
 						{/if}
-						<a href="/uzgajivacnica" class="btn btn-sm {$page.url.pathname.startsWith('/uzgajivacnica') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.uzgajivacnica}</a>
-						<a href="/sezone"        class="btn btn-sm {$page.url.pathname.startsWith('/sezone') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.sezone}</a>
-						<a href="/parovi"        class="btn btn-sm {$page.url.pathname.startsWith('/parovi') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.parovi}</a>
-						<a href="/ptice"         class="btn btn-sm {$page.url.pathname.startsWith('/ptice') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.ptice}</a>
-						<a href="/aktivnosti"    class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.aktivnosti}</a>
-						<a href="/statistike"    class="btn btn-sm {$page.url.pathname.startsWith('/statistike') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{t.nav.statistike}</a>
+						<a href="/uzgajivacnica" class="btn btn-sm {$page.url.pathname.startsWith('/uzgajivacnica') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.uzgajivacnica}</a>
+						<a href="/sezone"        class="btn btn-sm {$page.url.pathname.startsWith('/sezone') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.sezone}</a>
+						<a href="/parovi"        class="btn btn-sm {$page.url.pathname.startsWith('/parovi') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.parovi}</a>
+						<a href="/ptice"         class="btn btn-sm {$page.url.pathname.startsWith('/ptice') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.ptice}</a>
+						<a href="/aktivnosti"    class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.aktivnosti}</a>
+						<a href="/statistike"    class="btn btn-sm {$page.url.pathname.startsWith('/statistike') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.statistike}</a>
 						{#if isAdmin($user?.email)}
 							<a href="/admin" class="btn btn-sm {$page.url.pathname.startsWith('/admin') ? 'variant-filled-warning' : 'variant-ghost-warning'}" title="Administracija">🔧</a>
 						{/if}
-						<button class="btn btn-sm variant-ghost-surface ml-1" on:click={auth.signOut} title={t.nav.odjavaTitle}>⎋</button>
+						<JezikSelector />
+						<button class="btn btn-sm variant-ghost-surface ml-1" on:click={auth.signOut} title={$t.nav.odjavaTitle}>⎋</button>
 					</nav>
 
 					<!-- Mobile: uzgajivačnica switcher + izlaz, admin, sign out -->
 					<div class="flex sm:hidden items-center gap-1">
+						<JezikSelector />
 						{#if $uzgajivacnice.length > 1}
 							<select
 								class="select text-xs py-0.5 px-1.5 h-7 max-w-[110px] truncate"
@@ -204,7 +207,7 @@
 						<button
 							class="btn btn-sm variant-ghost-surface"
 							on:click={auth.signOut}
-							title={t.nav.odjavaTitle}
+							title={$t.nav.odjavaTitle}
 						>
 							<span>⎋</span>
 						</button>

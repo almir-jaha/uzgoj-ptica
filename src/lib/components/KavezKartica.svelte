@@ -98,10 +98,10 @@
 
 	{#if details.status === 'prazan'}
 		<div class="flex-1 flex items-center justify-center">
-			<p class="text-surface-400 text-xs text-center">{t.kavezi.prazan}</p>
+			<p class="text-surface-400 text-xs text-center">{$t.kavezi.prazan}</p>
 		</div>
 		{#if !readonly}
-			<p class="text-xs text-surface-400 text-center mt-auto">↑ {t.kavezi.pokreniCiklus}</p>
+			<p class="text-xs text-surface-400 text-center mt-auto">↑ {$t.kavezi.pokreniCiklus}</p>
 		{/if}
 	{:else}
 		<!-- Par + broj mladih -->
@@ -152,14 +152,14 @@
 								? 'variant-filled-warning'
 								: 'variant-soft'} shrink-0"
 					>
-						{daniDo === 0 ? t.kavezi.danas : daniDo === 1 ? t.kavezi.sutra : `${daniDo}d`}
+						{daniDo === 0 ? $t.kavezi.danas : daniDo === 1 ? $t.kavezi.sutra : `${daniDo}d`}
 					</span>
 				{/if}
 			</div>
 		{:else if fazeZaVrstu.length === 0}
 			<p class="text-xs text-warning-500">⚠ Faze nisu postavljene</p>
 		{:else}
-			<p class="text-xs text-surface-400">{t.kavezi.sveRazePravrsene}</p>
+			<p class="text-xs text-surface-400">{$t.kavezi.sveRazePravrsene}</p>
 		{/if}
 
 		<!-- Datum sljedeće aktivnosti -->

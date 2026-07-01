@@ -68,7 +68,7 @@
 			await finishPar(zavrsiParId, zavrsiStatus);
 			zavrsiParId = null;
 		} catch (err) {
-			zavrsiError = err instanceof Error ? err.message : t.parovi.greska;
+			zavrsiError = err instanceof Error ? err.message : $t.parovi.greska;
 		} finally {
 			zavrsiLoading = false;
 		}
@@ -104,7 +104,7 @@
 </script>
 
 <svelte:head>
-	<title>{t.parovi.pageTitle}</title>
+	<title>{$t.parovi.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-4 max-w-2xl">
@@ -112,14 +112,14 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h2 class="h3 font-bold">{t.parovi.title}</h2>
+			<h2 class="h3 font-bold">{$t.parovi.title}</h2>
 			{#if $prikazanaSezona}
-				<p class="text-sm text-surface-500">{t.common.sezona} {$prikazanaSezona.godina}</p>
+				<p class="text-sm text-surface-500">{$t.common.sezona} {$prikazanaSezona.godina}</p>
 			{/if}
 		</div>
 		{#if $prikazanaSezona && !loading}
 			<button class="btn variant-filled-primary btn-sm" on:click={() => (novParOpen = true)}>
-				{t.parovi.noviPar}
+				{$t.parovi.noviPar}
 			</button>
 		{/if}
 	</div>
@@ -136,22 +136,22 @@
 	{:else if !$prikazanaSezona}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">📅</span>
-			<p class="h4 text-center">{t.parovi.nemaSezone}</p>
+			<p class="h4 text-center">{$t.parovi.nemaSezone}</p>
 			<p class="text-surface-500 text-sm text-center">
-				{t.parovi.nemaSezoneOpis}
+				{$t.parovi.nemaSezoneOpis}
 			</p>
-			<a class="btn variant-filled-primary" href="/kavezi">{t.parovi.iditeNaKaveze}</a>
+			<a class="btn variant-filled-primary" href="/kavezi">{$t.parovi.iditeNaKaveze}</a>
 		</div>
 
 	<!-- Nema ptica -->
 	{:else if $ptice.length === 0}
 		<div class="flex flex-col items-center justify-center py-16 space-y-3">
 			<span class="text-5xl">🐦</span>
-			<p class="h4 text-center">{t.parovi.nemaPtica}</p>
+			<p class="h4 text-center">{$t.parovi.nemaPtica}</p>
 			<p class="text-surface-500 text-sm text-center">
-				{t.parovi.nemaPticaOpis}
+				{$t.parovi.nemaPticaOpis}
 			</p>
-			<a class="btn variant-filled-primary" href="/ptice">{t.parovi.dodajPtice}</a>
+			<a class="btn variant-filled-primary" href="/ptice">{$t.parovi.dodajPtice}</a>
 		</div>
 
 	{:else}
@@ -160,7 +160,7 @@
 		{#if aktivniParovi.length > 0}
 			<section class="space-y-2">
 				<h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wider px-1">
-					{t.parovi.aktivniParovi} ({aktivniParovi.length})
+					{$t.parovi.aktivniParovi} ({aktivniParovi.length})
 				</h3>
 
 				{#each aktivniParovi as par (par.id)}
@@ -177,19 +177,19 @@
 									{pticaLabel(par.ptica2_id)}
 								</p>
 								<p class="text-xs text-surface-500">
-									{t.parovi.od} {formatDatum(par.datum_formiranja)}
+									{$t.parovi.od} {formatDatum(par.datum_formiranja)}
 								</p>
 								{#if par.napomena}
 									<p class="text-xs text-surface-500 italic">{par.napomena}</p>
 								{/if}
 							</div>
-							<span class="badge variant-filled-success text-xs shrink-0">{t.parovi.aktivan}</span>
+							<span class="badge variant-filled-success text-xs shrink-0">{$t.parovi.aktivan}</span>
 						</div>
 
 						<!-- Inline završetak -->
 						{#if zavrsiParId === par.id}
 							<div class="space-y-2 pt-1 border-t border-surface-200-700-token">
-								<p class="text-sm font-medium">{t.parovi.zavrsiPitanje}</p>
+								<p class="text-sm font-medium">{$t.parovi.zavrsiPitanje}</p>
 								<div class="flex gap-2">
 									<label class="flex items-center gap-1.5 text-sm cursor-pointer">
 										<input
@@ -199,7 +199,7 @@
 											value="završen"
 											disabled={zavrsiLoading}
 										/>
-										{t.parovi.zavrsen}
+										{$t.parovi.zavrsen}
 									</label>
 									<label class="flex items-center gap-1.5 text-sm cursor-pointer">
 										<input
@@ -209,7 +209,7 @@
 											value="razdvojen"
 											disabled={zavrsiLoading}
 										/>
-										{t.parovi.razdvojen}
+										{$t.parovi.razdvojen}
 									</label>
 								</div>
 								{#if zavrsiError}
@@ -221,7 +221,7 @@
 										on:click={() => { zavrsiParId = null; zavrsiError = ''; }}
 										disabled={zavrsiLoading}
 									>
-										{t.common.odustani}
+										{$t.common.odustani}
 									</button>
 									<button
 										class="btn btn-sm variant-filled-warning flex-1"
@@ -229,7 +229,7 @@
 										disabled={zavrsiLoading}
 									>
 										{#if zavrsiLoading}<span class="animate-spin mr-1">↻</span>{/if}
-										{t.common.potvrdi}
+										{$t.common.potvrdi}
 									</button>
 								</div>
 							</div>
@@ -238,7 +238,7 @@
 								class="btn btn-sm variant-soft-warning w-full"
 								on:click={() => otvoriZavrsetak(par.id)}
 							>
-								{t.parovi.zavrsiPar}
+								{$t.parovi.zavrsiPar}
 							</button>
 						{/if}
 					</div>
@@ -249,10 +249,10 @@
 			<div class="flex flex-col items-center justify-center py-12 space-y-3">
 				<span class="text-5xl">🪺</span>
 				<p class="text-surface-500 text-center">
-					{t.parovi.nemaAktivnih}
+					{$t.parovi.nemaAktivnih}
 				</p>
 				<button class="btn variant-filled-primary" on:click={() => (novParOpen = true)}>
-					{t.parovi.kreirajPrvi}
+					{$t.parovi.kreirajPrvi}
 				</button>
 			</div>
 		{/if}
@@ -261,7 +261,7 @@
 		{#if zavrseniParovi.length > 0}
 			<section class="space-y-2">
 				<h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wider px-1">
-					{t.parovi.arhiva} ({zavrseniParovi.length})
+					{$t.parovi.arhiva} ({zavrseniParovi.length})
 				</h3>
 				{#each zavrseniParovi as par (par.id)}
 					<div class="card p-4 opacity-60">
@@ -284,7 +284,7 @@
 									? 'variant-soft-surface'
 									: 'variant-soft-warning'} text-xs shrink-0"
 							>
-								{par.status === 'završen' ? t.parovi.zavrsen : t.parovi.razdvojen}
+								{par.status === 'završen' ? $t.parovi.zavrsen : $t.parovi.razdvojen}
 							</span>
 						</div>
 					</div>
