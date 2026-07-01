@@ -277,7 +277,11 @@ END $$;
 
 -- Verifikacija: prikaži sve unete genetika polja
 SELECT COUNT(*) as total_fields FROM genetika_polja_i18n;
-SELECT polje_kljuc, vrsta_grupa, COUNT(DISTINCT jsonb_object_keys(nazivi_jezicima)) as languages
+
+SELECT
+  polje_kljuc,
+  vrsta_grupa,
+  COUNT(DISTINCT jsonb_object_keys(nazivi_jezicima)) as languages
 FROM genetika_polja_i18n
 GROUP BY polje_kljuc, vrsta_grupa
 ORDER BY redoslijed;
