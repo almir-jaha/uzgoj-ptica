@@ -28,7 +28,7 @@
 			role="presentation"
 			on:click={() => (otvoren = false)}
 		></div>
-		<div class="absolute right-0 top-full mt-1 z-50 card shadow-xl p-1 min-w-[180px] max-h-[70vh] overflow-y-auto">
+		<div class="absolute right-0 top-full mt-1 z-50 card shadow-xl p-1 min-w-[240px] max-h-[70vh] overflow-y-auto">
 			{#each Object.entries(LANGUAGES) as [code, meta]}
 				<button
 					class="w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm text-left
