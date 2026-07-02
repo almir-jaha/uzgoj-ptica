@@ -8,7 +8,7 @@
 		loadAllUserTiers, setUserTier, allUserTiers,
 		loadAdminUzgajivacnice, adminUpdateAppUrl, adminUzgajivacnice,
 		updateVrstaGenetikaPolja,
-		genetikaPoljaI18n, loadSvaGenetikaPolja, deleteGenetikaPoljeI18n
+		genetikaPoljaI18n, loadSvaGenetikaPolja, deleteGenetikaPoljeI18n, createGenetikaPoljeI18n
 	} from '$lib/stores/admin';
 	import { TIER_LIMITS } from '$lib/stores/userTier';
 	import type { Tier } from '$lib/stores/userTier';
@@ -119,6 +119,39 @@
 			} finally {
 				brisiPoljeId = null;
 			}
+		}
+	}
+
+	let seedingI18n = false;
+	async function ucitajZadanuShemu() {
+		const shema = GENETIKA_SHEME[odabranaGrupa as VrstaGrupa];
+		if (!shema || shema.length === 0) return;
+		seedingI18n = true;
+		try {
+			const existing = $genetikaPoljaI18n.filter(p => p.vrsta_grupa === odabranaGrupa);
+			const existingKljucevi = new Set(existing.map(p => p.polje_kljuc));
+			let added = 0;
+			for (const [i, polje] of shema.entries()) {
+				if (existingKljucevi.has(polje.kljuc)) continue;
+				await createGenetikaPoljeI18n({
+					polje_kljuc: polje.kljuc,
+					vrsta_grupa: odabranaGrupa,
+					tip: polje.tip,
+					sekcija: polje.sekcija,
+					redoslijed: i + 1,
+					nazivi_jezicima: { bs: polje.naziv },
+					opcije: polje.opcije ?? [],
+					opcije_jezicima: {},
+					opisi_jezicima: {},
+					placeholder_jezicima: polje.placeholder ? { bs: polje.placeholder } : {},
+					min_vrijednost: polje.min,
+					max_vrijednost: polje.max
+				});
+				added++;
+			}
+			if (added > 0) await loadSvaGenetikaPolja();
+		} finally {
+			seedingI18n = false;
 		}
 	}
 
@@ -1100,14 +1133,20 @@
 										<span class="font-mono text-surface-400 shrink-0 w-24">{polje.polje_kljuc}</span>
 										<div class="flex-1 min-w-0">
 											<p class="font-medium truncate">{polje.nazivi_jezicima?.bs ?? polje.polje_kljuc}</p>
-											<p class="text-surface-400 text-xs">Tip: {polje.tip} | Redoslijed: {polje.redoslijed}</p>
+											<p class="text-surface-400 text-xs">Tip: {polje.tip} | Red: {polje.redoslijed}{polje.opcije?.length ? ` | ${polje.opcije.length} opcija` : ''}</p>
 										</div>
-										<button
-											class="btn btn-xs variant-ghost-error opacity-0 group-hover:opacity-100 transition-opacity"
-											on:click={() => brisiPoljeId = polje.id}
-										>
-											Obriši
-										</button>
+										<div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+											<button
+												class="btn btn-xs variant-ghost px-1.5"
+												title="Uredi"
+												on:click={() => { editGenetikaPolje = polje; novoGenetikaPoljeOpen = true; }}
+											>✏</button>
+											<button
+												class="btn btn-xs variant-ghost-error px-1.5"
+												title="Obriši"
+												on:click={() => brisiPoljeId = polje.id}
+											>🗑</button>
+										</div>
 									</div>
 								{/if}
 							{/each}
@@ -1133,14 +1172,20 @@
 										<span class="font-mono text-surface-400 shrink-0 w-24">{polje.polje_kljuc}</span>
 										<div class="flex-1 min-w-0">
 											<p class="font-medium truncate">{polje.nazivi_jezicima?.bs ?? polje.polje_kljuc}</p>
-											<p class="text-surface-400 text-xs">Tip: {polje.tip} | Redoslijed: {polje.redoslijed}</p>
+											<p class="text-surface-400 text-xs">Tip: {polje.tip} | Red: {polje.redoslijed}{polje.opcije?.length ? ` | ${polje.opcije.length} opcija` : ''}</p>
 										</div>
-										<button
-											class="btn btn-xs variant-ghost-error opacity-0 group-hover:opacity-100 transition-opacity"
-											on:click={() => brisiPoljeId = polje.id}
-										>
-											Obriši
-										</button>
+										<div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+											<button
+												class="btn btn-xs variant-ghost px-1.5"
+												title="Uredi"
+												on:click={() => { editGenetikaPolje = polje; novoGenetikaPoljeOpen = true; }}
+											>✏</button>
+											<button
+												class="btn btn-xs variant-ghost-error px-1.5"
+												title="Obriši"
+												on:click={() => brisiPoljeId = polje.id}
+											>🗑</button>
+										</div>
 									</div>
 								{/if}
 							{/each}
@@ -1159,12 +1204,25 @@
 			</p>
 		{/if}
 
-		<button
-			class="btn variant-filled-primary w-full"
-			on:click={() => novoGenetikaPoljeOpen = true}
-		>
-			+ Dodaj novo genetičko polje
-		</button>
+		<div class="flex gap-2">
+			<button
+				class="btn variant-filled-primary flex-1"
+				on:click={() => { editGenetikaPolje = null; novoGenetikaPoljeOpen = true; }}
+			>
+				+ Dodaj novo genetičko polje
+			</button>
+			{#if (GENETIKA_SHEME[odabranaGrupa] ?? []).length > 0}
+				<button
+					class="btn variant-ghost-secondary"
+					on:click={ucitajZadanuShemu}
+					disabled={seedingI18n}
+					title="Učitaj polja iz zadane sheme za ovu grupu (preskače postojeća)"
+				>
+					{#if seedingI18n}<span class="animate-spin mr-1">↻</span>{/if}
+					Učitaj zadanu shemu
+				</button>
+			{/if}
+		</div>
 	</section>
 
 	{#if novoGenetikaPoljeOpen}
