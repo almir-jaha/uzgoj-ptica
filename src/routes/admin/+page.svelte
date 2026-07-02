@@ -1130,7 +1130,8 @@
 									</div>
 								{:else}
 									<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-100-800-token group text-xs">
-										<span class="font-mono text-surface-400 shrink-0 w-24">{polje.polje_kljuc}</span>
+										<span class="font-mono text-[10px] text-surface-400 shrink-0 w-44 truncate border-r border-surface-200-700-token pr-2"
+											title={polje.polje_kljuc}>{polje.polje_kljuc}</span>
 										<div class="flex-1 min-w-0">
 											<p class="font-medium truncate">{polje.nazivi_jezicima?.bs ?? polje.polje_kljuc}</p>
 											<p class="text-surface-400 text-xs">Tip: {polje.tip} | Red: {polje.redoslijed}{polje.opcije?.length ? ` | ${polje.opcije.length} opcija` : ''}</p>
@@ -1169,7 +1170,8 @@
 									</div>
 								{:else}
 									<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-100-800-token group text-xs">
-										<span class="font-mono text-surface-400 shrink-0 w-24">{polje.polje_kljuc}</span>
+										<span class="font-mono text-[10px] text-surface-400 shrink-0 w-44 truncate border-r border-surface-200-700-token pr-2"
+											title={polje.polje_kljuc}>{polje.polje_kljuc}</span>
 										<div class="flex-1 min-w-0">
 											<p class="font-medium truncate">{polje.nazivi_jezicima?.bs ?? polje.polje_kljuc}</p>
 											<p class="text-surface-400 text-xs">Tip: {polje.tip} | Red: {polje.redoslijed}{polje.opcije?.length ? ` | ${polje.opcije.length} opcija` : ''}</p>
