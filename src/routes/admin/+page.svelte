@@ -19,6 +19,7 @@
 		getSchemaForVrsta, type GenetikaPolje, type PoljeTip,
 		GENETIKA_SHEME, type VrstaGrupa
 	} from '$lib/utils/genetika-schema';
+	import { LANGUAGES, type LangCode } from '$lib/i18n/locale';
 
 	// Redirect if not admin
 	$: if ($user !== undefined && !isAdmin($user?.email)) goto('/kavezi');
@@ -37,8 +38,15 @@
 	let formaVrstaNaziv = '';
 	let formaVrstaNapomena = '';
 	let formaVrstaGrupa = 'ostalo';
+	let formaVrstaPrevodi: Record<string, string> = {};
+	let formaVrstaPreviziOtvoreni = false;
 	let vrstaLoading = false;
 	let vrstaError = '';
+
+	function initPrevodi(existing?: Record<string, string>) {
+		const langs = Object.keys(LANGUAGES) as LangCode[];
+		formaVrstaPrevodi = Object.fromEntries(langs.map((l) => [l, existing?.[l] ?? '']));
+	}
 
 	const GRUPA_OPCIJE = [
 		{ value: 'ostalo',          label: '— Ostalo (nema posebnih polja)' },
@@ -139,6 +147,8 @@
 		formaVrstaNaziv = '';
 		formaVrstaNapomena = '';
 		formaVrstaGrupa = 'ostalo';
+		formaVrstaPreviziOtvoreni = false;
+		initPrevodi();
 		vrstaError = '';
 		novaVrstaOpen = true;
 	}
@@ -148,6 +158,8 @@
 		formaVrstaNaziv = vrsta.naziv;
 		formaVrstaNapomena = vrsta.napomena ?? '';
 		formaVrstaGrupa = vrsta.grupa ?? 'ostalo';
+		formaVrstaPreviziOtvoreni = false;
+		initPrevodi(vrsta.nazivi_jezicima as Record<string, string> | undefined);
 		vrstaError = '';
 		novaVrstaOpen = true;
 	}
@@ -157,10 +169,18 @@
 		vrstaLoading = true;
 		vrstaError = '';
 		try {
+			// Filtriraj prazne prevode
+			const prevodi: Record<string, string> = {};
+			for (const [lang, val] of Object.entries(formaVrstaPrevodi)) {
+				if (val.trim()) prevodi[lang] = val.trim();
+			}
+			// BS naziv uvijek iz glavnog polja
+			prevodi.bs = formaVrstaNaziv.trim();
+
 			if (editVrsta) {
-				await updateVrstaPtica(editVrsta.id, formaVrstaNaziv, formaVrstaNapomena || undefined, formaVrstaGrupa);
+				await updateVrstaPtica(editVrsta.id, formaVrstaNaziv, formaVrstaNapomena || undefined, formaVrstaGrupa, prevodi);
 			} else {
-				await createVrstaPtica(formaVrstaNaziv, formaVrstaNapomena || undefined, formaVrstaGrupa);
+				await createVrstaPtica(formaVrstaNaziv, formaVrstaNapomena || undefined, formaVrstaGrupa, prevodi);
 			}
 			novaVrstaOpen = false;
 			editVrsta = null;
@@ -551,6 +571,38 @@
 					<span class="text-xs font-medium">Napomena</span>
 					<textarea class="textarea text-sm" rows="2" bind:value={formaVrstaNapomena} placeholder="Opcionalna bilješka..." disabled={vrstaLoading}></textarea>
 				</label>
+
+				<!-- Prevodi naziva na jezike -->
+				<div class="space-y-1">
+					<button
+						type="button"
+						class="btn btn-xs variant-ghost w-full justify-between text-xs"
+						on:click={() => (formaVrstaPreviziOtvoreni = !formaVrstaPreviziOtvoreni)}
+						disabled={vrstaLoading}
+					>
+						<span>🌍 Prevodi naziva ({Object.values(formaVrstaPrevodi).filter(v => v.trim()).length}/{Object.keys(LANGUAGES).length} jezika)</span>
+						<span>{formaVrstaPreviziOtvoreni ? '▲' : '▼'}</span>
+					</button>
+					{#if formaVrstaPreviziOtvoreni}
+						<div class="card variant-soft p-3 grid grid-cols-1 gap-2">
+							{#each Object.entries(LANGUAGES) as [code, meta]}
+								{#if code !== 'bs'}
+									<label class="label">
+										<span class="text-xs font-medium">{meta.flag} {meta.naziv}</span>
+										<input
+											class="input input-sm"
+											type="text"
+											placeholder="{formaVrstaNaziv || 'naziv'} na {meta.naziv}..."
+											bind:value={formaVrstaPrevodi[code]}
+											disabled={vrstaLoading}
+										/>
+									</label>
+								{/if}
+							{/each}
+						</div>
+					{/if}
+				</div>
+
 				{#if vrstaError}
 					<p class="text-error-500 text-xs">{vrstaError}</p>
 				{/if}

@@ -15,6 +15,7 @@
 	import { loadUserTier, userTier } from '$lib/stores/userTier';
 	import { ptice } from '$lib/stores/ptice';
 	import { sezone } from '$lib/stores/sezona';
+	import { loadGenetikaPolja } from '$lib/stores/genetikaI18n';
 
 	initializeStores();
 	const toastStore = getToastStore();
@@ -32,6 +33,7 @@
 		lastLoadedUserId = $user.id;
 		loadUzgajivacnice($user.id);
 		loadUserTier($user.id, $user.email ?? '');
+		loadGenetikaPolja();
 	}
 
 	onMount(async () => {

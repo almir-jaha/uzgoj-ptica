@@ -15,6 +15,7 @@
 	import RodovnikModal from '$lib/components/RodovnikModal.svelte';
 	import MasovniTretmanModal from '$lib/components/MasovniTretmanModal.svelte';
 	import { t } from '$lib/i18n';
+	import { locale } from '$lib/i18n/locale';
 	import { loadZdravlje as loadZdravlje_, createZdravlje, deleteZdravlje, TIP_OPCIJE } from '$lib/stores/zdravlje';
 	import type { Zdravlje, ZdravljeTip } from '$lib/db/schema';
 	import { aktivneSekcije, loadSekcije } from '$lib/stores/sekcija';
@@ -225,8 +226,11 @@
 	// Učitaj sekcije čim uzgajivačnica postane dostupna (može kasniti iza mount-a)
 	$: if ($aktivnaUzgajivacnica?.id) loadSekcije($aktivnaUzgajivacnica.id);
 
+	$: currentLocale = $locale;
 	function vrstaLabel(vrstaId: string): string {
-		return vrstePtica.find((v) => v.id === vrstaId)?.naziv ?? '—';
+		const v = vrstePtica.find((vp) => vp.id === vrstaId);
+		if (!v) return '—';
+		return v.nazivi_jezicima?.[currentLocale] ?? v.naziv;
 	}
 
 	function formatDatum(datum?: string): string {

@@ -2,6 +2,7 @@
 	import { createPtica, updatePtica, pticeMuzjaci, pticeSenke } from '$lib/stores/ptice';
 	import type { Ptica, VrstaPtica } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
+	import { locale } from '$lib/i18n/locale';
 	import SlikaUnos from './SlikaUnos.svelte';
 	import GenetikaPolja from './GenetikaPolja.svelte';
 	import { getSchemaForVrsta } from '$lib/utils/genetika-schema';
@@ -193,7 +194,9 @@
 					<select class="select" bind:value={vrstaId} required disabled={loading}>
 						<option value="" disabled>{$t.ptice.odaberiteVrstu}</option>
 						{#each vrstePtica as vrsta (vrsta.id)}
-							<option value={vrsta.id}>{vrsta.naziv}</option>
+							<option value={vrsta.id}>
+								{vrsta.nazivi_jezicima?.[$locale] ?? vrsta.naziv}
+							</option>
 						{/each}
 					</select>
 				</label>

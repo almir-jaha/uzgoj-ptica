@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { GenetikaPolje } from '$lib/utils/genetika-schema';
 	import { t } from '$lib/i18n';
+	import { genetikaLabels } from '$lib/stores/genetikaI18n';
 
 	export let polje: GenetikaPolje;
 	export let genetika: Record<string, unknown>;
@@ -34,11 +35,13 @@
 	function handleTagKeydown(e: KeyboardEvent) {
 		if (e.key === 'Enter') { e.preventDefault(); addTag(); }
 	}
+
+	$: starValue = Number(genetika[polje.kljuc] || 0);
 </script>
 
 {#if polje.tip === 'select'}
 	<label class="label">
-		<span class="text-sm">{$t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
 		<select
 			class="select select-sm"
 			value={String(genetika[polje.kljuc] ?? '')}
@@ -53,7 +56,7 @@
 
 {:else if polje.tip === 'text'}
 	<label class="label">
-		<span class="text-sm">{$t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
 		<input
 			class="input input-sm"
 			type="text"
@@ -72,7 +75,7 @@
 
 {:else if polje.tip === 'tags'}
 	<div class="space-y-1.5">
-		<span class="text-sm">{$t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
 		{#if getTags().length > 0}
 			<div class="flex flex-wrap gap-1">
 				{#each getTags() as tag}
@@ -109,7 +112,7 @@
 
 {:else if polje.tip === 'number'}
 	<label class="label">
-		<span class="text-sm">{$t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
 		<input
 			class="input input-sm"
 			type="number"
@@ -124,20 +127,20 @@
 
 {:else if polje.tip === 'stars'}
 	<div class="space-y-1">
-		<span class="text-sm">{$t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
 		<div class="flex gap-1 items-center">
 			{#each [1, 2, 3, 4, 5] as n}
 				<button
 					type="button"
 					class="text-xl leading-none transition-colors
-						{n <= (genetika[polje.kljuc] || 0) ? 'text-warning-500' : 'text-surface-300'}
+						{n <= starValue ? 'text-warning-500' : 'text-surface-300'}
 						{disabled ? 'cursor-default' : 'hover:text-warning-400 cursor-pointer'}"
 					on:click={() => !disabled && onSetStars(polje.kljuc, n)}
 					title="{n}/5"
 				>★</button>
 			{/each}
-			{#if (genetika[polje.kljuc] || 0) > 0}
-				<span class="text-xs text-surface-500 ml-1">{genetika[polje.kljuc]}/5</span>
+			{#if starValue > 0}
+				<span class="text-xs text-surface-500 ml-1">{starValue}/5</span>
 			{/if}
 		</div>
 	</div>

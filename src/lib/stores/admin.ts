@@ -42,13 +42,17 @@ export async function loadVrstePtica() {
 export async function createVrstaPtica(
   naziv: string,
   napomena?: string,
-  grupa = 'ostalo'
+  grupa = 'ostalo',
+  nazivi_jezicima?: Record<string, string>
 ): Promise<VrstaPtica> {
   const newVrsta: VrstaPtica = {
     id: crypto.randomUUID(),
     naziv: naziv.trim(),
     napomena,
     grupa,
+    nazivi_jezicima: nazivi_jezicima && Object.keys(nazivi_jezicima).length > 0
+      ? nazivi_jezicima
+      : undefined,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   };
@@ -63,9 +67,16 @@ export async function updateVrstaPtica(
   id: string,
   naziv: string,
   napomena?: string,
-  grupa?: string
+  grupa?: string,
+  nazivi_jezicima?: Record<string, string>
 ) {
-  const updated = { naziv: naziv.trim(), napomena, grupa: grupa ?? 'ostalo', updated_at: new Date().toISOString() };
+  const updated: Partial<VrstaPtica> & { updated_at: string } = {
+    naziv: naziv.trim(),
+    napomena,
+    grupa: grupa ?? 'ostalo',
+    updated_at: new Date().toISOString()
+  };
+  if (nazivi_jezicima !== undefined) updated.nazivi_jezicima = nazivi_jezicima;
   const { error } = await supabase.from('vrsta_ptica').update(updated).eq('id', id);
   if (error) throw new Error(error.message);
   await db.vrsta_ptica.update(id, updated);
