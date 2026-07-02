@@ -5,9 +5,9 @@
 	export let polje: Partial<GenetikaPoljaI18n> | null = null;
 	export let loading = false;
 
-	let nazivi: Record<LangCode, string> = {};
-	let opisi: Record<LangCode, string> = {};
-	let placeholderi: Record<LangCode, string> = {};
+	let nazivi: Record<LangCode, string> = {} as Record<LangCode, string>;
+	let opisi: Record<LangCode, string> = {} as Record<LangCode, string>;
+	let placeholderi: Record<LangCode, string> = {} as Record<LangCode, string>;
 
 	$: {
 		if (!polje) {
@@ -46,6 +46,10 @@
 		placeholderi = placeholderi;
 	}
 
+	function lc(code: string): LangCode {
+		return code as LangCode;
+	}
+
 	export function getJSONBData() {
 		return {
 			nazivi_jezicima: nazivi,
@@ -67,8 +71,8 @@
 						class="input input-sm"
 						type="text"
 						placeholder="Naziv na {meta.naziv}..."
-						value={nazivi[code as LangCode] ?? ''}
-						on:input={(e) => updateNaziv(code as LangCode, e.currentTarget.value)}
+						value={nazivi[lc(code)] ?? ''}
+						on:input={(e) => updateNaziv(lc(code), e.currentTarget.value)}
 						disabled={loading}
 					/>
 				</label>
@@ -87,8 +91,8 @@
 						class="input input-sm"
 						type="text"
 						placeholder="Opis na {meta.naziv}..."
-						value={opisi[code as LangCode] ?? ''}
-						on:input={(e) => updateOpis(code as LangCode, e.currentTarget.value)}
+						value={opisi[lc(code)] ?? ''}
+						on:input={(e) => updateOpis(lc(code), e.currentTarget.value)}
 						disabled={loading}
 					/>
 				</label>
@@ -107,9 +111,9 @@
 						class="input input-sm"
 						type="text"
 						placeholder="npr. Lutino..."
-						value={placeholderi[code as LangCode] ?? ''}
+						value={placeholderi[lc(code)] ?? ''}
 						on:input={(e) =>
-							updatePlaceholder(code as LangCode, e.currentTarget.value)}
+							updatePlaceholder(lc(code), e.currentTarget.value)}
 						disabled={loading}
 					/>
 				</label>

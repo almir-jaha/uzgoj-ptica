@@ -960,11 +960,12 @@
 		</div>
 
 		<!-- Polja za odabranu grupu -->
-		{@const poljaGrupe = $genetikaPoljaI18n.filter(p => p.vrsta_grupa === odabranaGrupa)}
-		{@const genetikaPolja = poljaGrupe.filter(p => p.sekcija === 'genetika')}
-		{@const ocjenaPolja = poljaGrupe.filter(p => p.sekcija === 'ocjena')}
+		{#if $genetikaPoljaI18n.length > 0}
+			{@const poljaGrupe = $genetikaPoljaI18n.filter(p => p.vrsta_grupa === odabranaGrupa)}
+			{@const genetikaPolja = poljaGrupe.filter(p => p.sekcija === 'genetika')}
+			{@const ocjenaPolja = poljaGrupe.filter(p => p.sekcija === 'ocjena')}
 
-		{#if genetikaPolja.length > 0 || ocjenaPolja.length > 0}
+			{#if genetikaPolja.length > 0 || ocjenaPolja.length > 0}
 			<div class="card p-4 space-y-4">
 				{#if genetikaPolja.length > 0}
 					<div class="space-y-2">
@@ -1032,9 +1033,14 @@
 					</div>
 				{/if}
 			</div>
+			{:else}
+				<p class="text-sm text-surface-400 italic px-3 py-2">
+					Nema genetičkih polja za grupu "{odabranaGrupa}". Klikni dugme ispod da dodaš nova.
+				</p>
+			{/if}
 		{:else}
 			<p class="text-sm text-surface-400 italic px-3 py-2">
-				Nema genetičkih polja za grupu "{odabranaGrupa}". Klikni dugme ispod da dodaš nova.
+				Nema ucitanih genetičkih polja. Čekaj da se učitaju...
 			</p>
 		{/if}
 
