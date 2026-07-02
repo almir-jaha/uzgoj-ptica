@@ -241,7 +241,8 @@ export interface GenetikaPoljaI18n {
   nazivi_jezicima: Record<string, string>;      // { "bs": "Mutacija", "en": "Mutation", ... }
   opisi_jezicima?: Record<string, string>;
   placeholder_jezicima?: Record<string, string>;
-  opcije?: string[];                            // Za select/tags
+  opcije?: string[];                            // Za select/tags (BS vrijednosti — što se čuva u DB)
+  opcije_jezicima?: Record<string, string[]>;  // Prevedeni labeli { "en": ["Lutino","Albino"], ... }
   min_vrijednost?: number;                      // Za number/stars
   max_vrijednost?: number;
   created_by?: string;

@@ -50,6 +50,7 @@
 				nazivi_jezicima: jsonbData?.nazivi_jezicima ?? {},
 				opisi_jezicima: jsonbData?.opisi_jezicima ?? {},
 				placeholder_jezicima: jsonbData?.placeholder_jezicima ?? {},
+				opcije_jezicima: jsonbData?.opcije_jezicima ?? {},
 				opcije:
 					formTip === 'select' || formTip === 'tags'
 						? formOpcije
@@ -187,7 +188,13 @@
 			</div>
 
 			<!-- 17 jezičnih prevoda -->
-			<GenetikaPoljeI18nForm bind:this={formRef} loading={loading} polje={editPolje} />
+			<GenetikaPoljeI18nForm
+				bind:this={formRef}
+				loading={loading}
+				polje={editPolje}
+				hasOpcije={formTip === 'select' || formTip === 'tags'}
+				opcijeBs={formOpcije.split(',').map(s => s.trim()).filter(Boolean)}
+			/>
 
 			{#if error}
 				<aside class="alert variant-filled-error text-sm">{error}</aside>

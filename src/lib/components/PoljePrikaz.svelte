@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GenetikaPolje } from '$lib/utils/genetika-schema';
 	import { t } from '$lib/i18n';
-	import { genetikaLabels } from '$lib/stores/genetikaI18n';
+	import { genetikaLabels, genetikaOpcijeDisplay, genetikaPlaceholderi } from '$lib/stores/genetikaI18n';
 
 	export let polje: GenetikaPolje;
 	export let genetika: Record<string, unknown>;
@@ -48,8 +48,8 @@
 			on:change={(e) => onSetVal(polje.kljuc, e.currentTarget.value)}
 			{disabled}
 		>
-			{#each (polje.opcije ?? []) as opt}
-				<option value={opt}>{opt || '— nije odabrano —'}</option>
+			{#each (polje.opcije ?? []) as opt, i}
+				<option value={opt}>{$genetikaOpcijeDisplay[polje.kljuc]?.[i] ?? (opt || '— nije odabrano —')}</option>
 			{/each}
 		</select>
 	</label>
@@ -63,12 +63,14 @@
 			list="dl-{polje.kljuc}"
 			value={String(genetika[polje.kljuc] ?? '')}
 			on:input={(e) => onSetVal(polje.kljuc, e.currentTarget.value)}
-			placeholder={polje.placeholder ?? ''}
+			placeholder={$genetikaPlaceholderi[polje.kljuc] ?? polje.placeholder ?? ''}
 			{disabled}
 		/>
 		{#if polje.opcije?.length}
 			<datalist id="dl-{polje.kljuc}">
-				{#each polje.opcije as opt}<option value={opt} />{/each}
+				{#each (polje.opcije ?? []) as opt, i}
+					<option value={opt}>{$genetikaOpcijeDisplay[polje.kljuc]?.[i] ?? opt}</option>
+				{/each}
 			</datalist>
 		{/if}
 	</label>
@@ -101,7 +103,9 @@
 				/>
 				{#if polje.opcije?.length}
 					<datalist id="dl-tags-{polje.kljuc}">
-						{#each polje.opcije as opt}<option value={opt} />{/each}
+						{#each (polje.opcije ?? []) as opt, i}
+							<option value={opt}>{$genetikaOpcijeDisplay[polje.kljuc]?.[i] ?? opt}</option>
+						{/each}
 					</datalist>
 				{/if}
 				<button type="button" class="btn btn-sm variant-soft"
@@ -120,7 +124,7 @@
 			max={polje.max ?? 999}
 			value={genetika[polje.kljuc] || ''}
 			on:input={(e) => onSetVal(polje.kljuc, e.currentTarget.valueAsNumber || undefined)}
-			placeholder={polje.placeholder ?? ''}
+			placeholder={$genetikaPlaceholderi[polje.kljuc] ?? polje.placeholder ?? ''}
 			{disabled}
 		/>
 	</label>
