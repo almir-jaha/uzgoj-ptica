@@ -240,8 +240,15 @@ export async function updateGenetikaPoljeI18n(
   updates: Partial<Omit<GenetikaPoljaI18n, 'id' | 'created_at'>>
 ): Promise<void> {
   const updated = { ...updates, updated_at: new Date().toISOString() };
-  const { error } = await supabase.from('genetika_polja_i18n').update(updated).eq('id', id);
+  const { data, error } = await supabase
+    .from('genetika_polja_i18n')
+    .update(updated)
+    .eq('id', id)
+    .select('id');
   if (error) throw new Error(error.message);
+  if (!data || data.length === 0) {
+    throw new Error('Nema dozvole za ažuriranje (RLS policy). Prijavite se kao admin.');
+  }
   genetikaPoljaI18n.update((polja) =>
     polja.map((p) => (p.id === id ? { ...p, ...updated } : p))
   );
