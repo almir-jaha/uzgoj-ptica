@@ -3,6 +3,7 @@
 	import { getCurrentPhase, getDaysUntilNextPhase } from '$lib/stores/ciklus';
 	import type { KavezWithDetails, FazaCiklusa, Ptica } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
+	import { locale } from '$lib/i18n/locale';
 
 	export let details: KavezWithDetails;
 	export let faze: FazaCiklusa[] = [];
@@ -21,6 +22,9 @@
 	$: daniDo = details.aktivni_ciklus ? getDaysUntilNextPhase(details.aktivni_ciklus, faze) : null;
 
 	$: todayStr = new Date().toISOString().split('T')[0];
+	$: fazaNaziv = trenutnaFaza
+		? (trenutnaFaza.nazivi_jezicima?.[$locale] ?? trenutnaFaza.naziv)
+		: '';
 	$: isAlarm =
 		details.status === 'alarm' ||
 		(details.sledeca_aktivnost
@@ -123,7 +127,7 @@
 
 		<!-- Traka faza -->
 		{#if fazeZaVrstu.length > 0}
-			<div class="flex gap-0.5 rounded overflow-hidden" title={trenutnaFaza?.naziv ?? ''}>
+			<div class="flex gap-0.5 rounded overflow-hidden" title={fazaNaziv}>
 				{#each fazeZaVrstu as faza (faza.id)}
 					<div
 						class="h-2 flex-1 transition-opacity"
@@ -142,7 +146,7 @@
 					class="text-xs font-semibold px-1.5 py-0.5 rounded truncate leading-tight"
 					style="background-color: {trenutnaFaza.boja}; color: {chipTextColor(trenutnaFaza.boja)}"
 				>
-					{trenutnaFaza.naziv}
+					{fazaNaziv}
 				</span>
 				{#if daniDo !== null}
 					<span

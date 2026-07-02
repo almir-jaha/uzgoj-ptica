@@ -10,6 +10,7 @@
 	import { supabase } from '$lib/supabase/client';
 	import { lokalnoSezone, lokalnoPodaci } from '$lib/utils/localLoad';
 	import { t } from '$lib/i18n';
+	import { locale } from '$lib/i18n/locale';
 	import {
 		getPermissionStatus,
 		isPushSubscribed,
@@ -286,7 +287,7 @@
 					<div class="flex-1 min-w-0">
 						<p class="font-semibold text-sm {jeChecked ? 'line-through' : ''}">Kavez {s.kavezOznaka}</p>
 						<p class="text-sm {jeChecked ? 'line-through' : ''}" style={s.faza?.boja ? `color: ${s.faza.boja}` : ''}>
-							{s.faza?.naziv ?? '—'}
+							{s.faza ? (s.faza.nazivi_jezicima?.[$locale] ?? s.faza.naziv) : '—'}
 						</p>
 					</div>
 

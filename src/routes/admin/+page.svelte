@@ -63,8 +63,15 @@
 	let formaFazaDana = 7;
 	let formaFazaRedoslijed = 1;
 	let formaFazaOpis = '';
+	let formaFazaPrevodi: Record<string, string> = {};
+	let formaFazaPreviziOtvoreni = false;
 	let fazaLoading = false;
 	let fazaError = '';
+
+	function initFazaPrevodi(existing?: Record<string, string>) {
+		const langs = Object.keys(LANGUAGES) as LangCode[];
+		formaFazaPrevodi = Object.fromEntries(langs.map((l) => [l, existing?.[l] ?? '']));
+	}
 
 	let brisiVrstaId: string | null = null;
 	let brisiFazaId: string | null = null;
@@ -214,6 +221,8 @@
 		formaFazaDana = 7;
 		formaFazaRedoslijed = (existingFaze.length + 1);
 		formaFazaOpis = '';
+		formaFazaPreviziOtvoreni = false;
+		initFazaPrevodi();
 		fazaError = '';
 	}
 
@@ -225,6 +234,8 @@
 		formaFazaDana = faza.broj_dana;
 		formaFazaRedoslijed = faza.redoslijed;
 		formaFazaOpis = faza.opis ?? '';
+		formaFazaPreviziOtvoreni = false;
+		initFazaPrevodi(faza.nazivi_jezicima as Record<string, string> | undefined);
 		fazaError = '';
 	}
 
@@ -239,9 +250,16 @@
 		fazaLoading = true;
 		fazaError = '';
 		try {
+			// Prevodi: filtriraj prazne, BS uvijek iz naziva
+			const prevodi: Record<string, string> = { bs: formaFazaNaziv.trim() };
+			for (const [lang, val] of Object.entries(formaFazaPrevodi)) {
+				if (lang !== 'bs' && val.trim()) prevodi[lang] = val.trim();
+			}
+
 			if (editFaza) {
 				await updateFaza(editFaza.id, {
 					naziv: formaFazaNaziv.trim(),
+					nazivi_jezicima: prevodi,
 					boja: formaFazaBoja,
 					broj_dana: formaFazaDana,
 					redoslijed: formaFazaRedoslijed,
@@ -249,7 +267,7 @@
 				});
 				fazePoVrsti[novaFazaZaVrstu] = fazePoVrsti[novaFazaZaVrstu].map((f) =>
 					f.id === editFaza!.id
-						? { ...f, naziv: formaFazaNaziv.trim(), boja: formaFazaBoja, broj_dana: formaFazaDana, redoslijed: formaFazaRedoslijed, opis: formaFazaOpis || undefined }
+						? { ...f, naziv: formaFazaNaziv.trim(), nazivi_jezicima: prevodi, boja: formaFazaBoja, broj_dana: formaFazaDana, redoslijed: formaFazaRedoslijed, opis: formaFazaOpis || undefined }
 						: f
 				).sort((a, b) => a.redoslijed - b.redoslijed);
 			} else {
@@ -257,6 +275,7 @@
 					vrsta_ptica_id: novaFazaZaVrstu,
 					redoslijed: formaFazaRedoslijed,
 					naziv: formaFazaNaziv.trim(),
+					nazivi_jezicima: prevodi,
 					boja: formaFazaBoja,
 					broj_dana: formaFazaDana,
 					opis: formaFazaOpis || undefined
@@ -712,6 +731,28 @@
 																<input class="input input-sm" type="text" bind:value={formaFazaOpis} placeholder="Bilješka..." disabled={fazaLoading} />
 															</label>
 														</div>
+														<!-- Prevodi naziva faze -->
+														<div class="space-y-1">
+															<button type="button" class="btn btn-xs variant-ghost w-full justify-between text-xs"
+																on:click={() => (formaFazaPreviziOtvoreni = !formaFazaPreviziOtvoreni)} disabled={fazaLoading}>
+																<span>🌍 Prevodi naziva ({Object.values(formaFazaPrevodi).filter(v => v.trim()).length}/{Object.keys(LANGUAGES).length} jez.)</span>
+																<span>{formaFazaPreviziOtvoreni ? '▲' : '▼'}</span>
+															</button>
+															{#if formaFazaPreviziOtvoreni}
+																<div class="card variant-soft p-2 grid grid-cols-2 gap-1.5">
+																	{#each Object.entries(LANGUAGES) as [code, meta]}
+																		{#if code !== 'bs'}
+																			<label class="label">
+																				<span class="text-xs">{meta.flag} {meta.naziv}</span>
+																				<input class="input input-sm" type="text"
+																					placeholder="{formaFazaNaziv || 'naziv'} na {meta.naziv}..."
+																					bind:value={formaFazaPrevodi[code]} disabled={fazaLoading} />
+																			</label>
+																		{/if}
+																	{/each}
+																</div>
+															{/if}
+														</div>
 														{#if fazaError}<p class="text-error-500 text-xs">{fazaError}</p>{/if}
 														<div class="flex gap-2">
 															<button class="btn btn-sm variant-ghost flex-1" on:click={otkaziFormuFaze} disabled={fazaLoading}>Odustani</button>
@@ -792,6 +833,28 @@
 													<span class="text-xs font-medium">Opis (opt.)</span>
 													<input class="input input-sm" type="text" bind:value={formaFazaOpis} placeholder="Bilješka..." disabled={fazaLoading} />
 												</label>
+											</div>
+											<!-- Prevodi naziva faze -->
+											<div class="space-y-1">
+												<button type="button" class="btn btn-xs variant-ghost w-full justify-between text-xs"
+													on:click={() => (formaFazaPreviziOtvoreni = !formaFazaPreviziOtvoreni)} disabled={fazaLoading}>
+													<span>🌍 Prevodi naziva ({Object.values(formaFazaPrevodi).filter(v => v.trim()).length}/{Object.keys(LANGUAGES).length} jez.)</span>
+													<span>{formaFazaPreviziOtvoreni ? '▲' : '▼'}</span>
+												</button>
+												{#if formaFazaPreviziOtvoreni}
+													<div class="card variant-soft p-2 grid grid-cols-2 gap-1.5">
+														{#each Object.entries(LANGUAGES) as [code, meta]}
+															{#if code !== 'bs'}
+																<label class="label">
+																	<span class="text-xs">{meta.flag} {meta.naziv}</span>
+																	<input class="input input-sm" type="text"
+																		placeholder="{formaFazaNaziv || 'naziv'} na {meta.naziv}..."
+																		bind:value={formaFazaPrevodi[code]} disabled={fazaLoading} />
+																</label>
+															{/if}
+														{/each}
+													</div>
+												{/if}
 											</div>
 											{#if fazaError}<p class="text-error-500 text-xs">{fazaError}</p>{/if}
 											<div class="flex gap-2">

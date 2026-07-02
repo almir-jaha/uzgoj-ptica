@@ -127,6 +127,7 @@ export async function createFaza(data: {
   boja: string;
   broj_dana: number;
   opis?: string;
+  nazivi_jezicima?: Record<string, string>;
 }): Promise<FazaCiklusa> {
   const newFaza: FazaCiklusa = {
     id: crypto.randomUUID(),
@@ -137,14 +138,13 @@ export async function createFaza(data: {
   const { error } = await supabase.from('faze_ciklusa').insert([newFaza]);
   if (error) throw new Error(error.message);
   await db.faze_ciklusa.add(newFaza);
-  // Ažuriraj globalni faze store
   faze.update((f) => [...f, newFaza]);
   return newFaza;
 }
 
 export async function updateFaza(
   id: string,
-  data: Partial<Pick<FazaCiklusa, 'naziv' | 'boja' | 'broj_dana' | 'redoslijed' | 'opis'>>
+  data: Partial<Pick<FazaCiklusa, 'naziv' | 'boja' | 'broj_dana' | 'redoslijed' | 'opis' | 'nazivi_jezicima'>>
 ) {
   const updated = { ...data, updated_at: new Date().toISOString() };
   const { error } = await supabase.from('faze_ciklusa').update(updated).eq('id', id);

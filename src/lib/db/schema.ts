@@ -104,6 +104,7 @@ export interface FazaCiklusa {
   vrsta_ptica_id: string;
   redoslijed: number;
   naziv: string;
+  nazivi_jezicima?: Record<string, string>;
   boja: string;
   broj_dana: number;
   opis?: string;
