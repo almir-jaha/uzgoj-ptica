@@ -110,12 +110,10 @@ Komponente:
 
 ## Aktivne greške / Pending zadaci
 
-### BUG (kritično) — Snimanje prijevoda genetičkih polja ne radi
-- Admin upiše EN prijevod, klikne "Ažuriraj polje" — bez greške, ali prijevod nije u bazi
-- **RLS policy** je promijenjen na `auth.uid()` (migration 032), ali još nije potvrđeno da radi
-- `updateGenetikaPoljeI18n` ima `.select('id')` — ako RLS blokira, sad baca vidljivu grešku
-- **Sljedeći korak:** provjeriti da li se prikazuje greška u UI-u; ako ne → problem je u Svelte reaktivnosti (store resetuje formu)
-- Relevantni fajlovi: `src/lib/stores/admin.ts`, `src/lib/components/NovoGenetikaPoljeModal.svelte`, `src/lib/components/GenetikaPoljeI18nForm.svelte`
+### RIJEŠENO — Snimanje prijevoda genetičkih polja
+- Migration 032 (`auth.uid()` RLS policy) potvrđena na remote bazi 2026-07-06
+- `updateGenetikaPoljeI18n` u `admin.ts` baca vidljivu grešku ako RLS blokira (`.select('id')` check)
+- Korisnik potvrdio da je funkcionalnost radila već od 2026-07-02 (četvrtak)
 
 ### Ostali pending zadaci
 - Prevodi opcija genetičkih polja za sve jezike (UI postoji, save ne radi)

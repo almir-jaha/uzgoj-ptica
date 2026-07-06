@@ -1,6 +1,9 @@
 node_modules/
 .svelte-kit/
 build/
+dist/
+.git/
 .env
+.env.local
 .vercel
 supabase/.temp/
