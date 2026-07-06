@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { LANGUAGES, type LangCode } from '$lib/i18n/locale';
 	import type { GenetikaPoljaI18n } from '$lib/db/schema';
 
@@ -13,7 +14,7 @@
 	// Opcije po jeziku kao comma-separated string (radi lakšeg unosa)
 	let opcijeStr: Record<LangCode, string> = {} as Record<LangCode, string>;
 
-	$: {
+	onMount(() => {
 		const allLangs = Object.keys(LANGUAGES) as LangCode[];
 		if (!polje) {
 			nazivi = Object.fromEntries(allLangs.map((l) => [l, ''])) as Record<LangCode, string>;
@@ -30,7 +31,7 @@
 				allLangs.map((l) => [l, (existingOpcije?.[l] ?? []).join(', ')])
 			) as Record<LangCode, string>;
 		}
-	}
+	});
 
 	function updateNaziv(lang: LangCode, value: string) {
 		nazivi[lang] = value;

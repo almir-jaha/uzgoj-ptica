@@ -30,9 +30,7 @@
 	}
 
 	async function handleSubmit() {
-		console.log('[DEBUG] handleSubmit pozvan', { formNaziv, formKljuc, editPolje: editPolje?.id });
 		if (!formNaziv.trim() || !formKljuc.trim()) {
-			console.log('[DEBUG] validacija NIJE prošla — prekid ovdje');
 			error = 'Naziv i ključ su obavezni';
 			return;
 		}
@@ -42,7 +40,6 @@
 
 		try {
 			const jsonbData = formRef?.getJSONBData?.();
-			console.log('[DEBUG] jsonbData iz forme:', jsonbData);
 
 			const poljeData: Omit<GenetikaPoljaI18n, 'id' | 'created_at' | 'updated_at'> = {
 				polje_kljuc: formKljuc.trim(),
@@ -67,19 +64,14 @@
 					formTip === 'number' || formTip === 'stars' ? formMinMax.max : undefined
 			};
 
-			console.log('[DEBUG] poljeData koji se šalje:', poljeData);
-
 			if (editPolje) {
-				console.log('[DEBUG] pozivam updateGenetikaPoljeI18n za id', editPolje.id);
 				await updateGenetikaPoljeI18n(editPolje.id, poljeData);
-				console.log('[DEBUG] updateGenetikaPoljeI18n završio bez greške');
 			} else {
 				await createGenetikaPoljeI18n(poljeData);
 			}
 
 			onSuccess();
 		} catch (err) {
-			console.error('[DEBUG] handleSubmit greška:', err);
 			error = err instanceof Error ? err.message : 'Greška pri čuvanju';
 		} finally {
 			loading = false;

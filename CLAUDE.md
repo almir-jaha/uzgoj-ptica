@@ -58,7 +58,7 @@ SvelteKit PWA za upravljanje uzgojem ptica (kavezi, parovi, ciklusi, zdravlje, g
 029 genetika_opcije_i18n   — opcije_jezicima kolona na genetika_polja_i18n
 030 fix_golubovi            — ispravka Haiku greške (pogrešni vrsta_grupa i tip)
 031 fix_rls_email          — zamjena subquery sa auth.email() (NEUSPJEŠNO)
-032 fix_rls_uid            — auth.uid() = admin UUID (trenutni, još se testira)
+032 fix_rls_uid            — auth.uid() = admin UUID (potvrđen na remote bazi 2026-07-06)
 ```
 
 ## Višejezičnost (i18n) — 17 jezika
@@ -115,7 +115,11 @@ Komponente:
 - `updateGenetikaPoljeI18n` u `admin.ts` baca vidljivu grešku ako RLS blokira (`.select('id')` check)
 - Korisnik potvrdio da je funkcionalnost radila već od 2026-07-02 (četvrtak)
 
+### RIJEŠENO — GenetikaPoljeI18nForm gubio unos prije submit-a
+- `$:` blok u `GenetikaPoljeI18nForm.svelte` resetovao `nazivi`/`opisi`/`placeholderi`/`opcijeStr` na svaki parent re-render, brišući otkucane vrijednosti prije nego što bi `getJSONBData()` bio pozvan pri submit-u
+- Fix: `onMount(() => {...})` umjesto `$:` bloka (sigurno jer se forma potpuno unmount/remount-uje kroz `{#if novoGenetikaPoljeOpen}` u `admin/+page.svelte`)
+- Potvrđeno lokalnim testom 2026-07-06; izmjene nekomitovane (korisnik želi commit kasnije)
+
 ### Ostali pending zadaci
-- Prevodi opcija genetičkih polja za sve jezike (UI postoji, save ne radi)
 - Public store (`genetikaI18n.ts`) ne sinhronizira se automatski kad admin izmijeni polje — treba reload stranice
 - 42 pre-existing TypeScript greške u `sezone`, `statistike`, `PoljePrikaz` — nisu naše, ne blokira build
