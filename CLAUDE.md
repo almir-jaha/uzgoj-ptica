@@ -38,7 +38,10 @@ SvelteKit PWA za upravljanje uzgojem ptica (kavezi, parovi, ciklusi, zdravlje, g
 | `src/lib/i18n/index.ts` | `t` store, `locale` store, `LANGUAGES` metadata |
 | `src/lib/i18n/locale.ts` | Upravljanje jezikom, localStorage persistence |
 | `src/lib/utils/genetika-schema.ts` | `getSchemaForVrsta()` — čita custom_fields.genetika_polja, fallback na GENETIKA_SHEME |
-| `src/routes/admin/+page.svelte` | Admin panel (vrste, korisnici, genetička polja) |
+| `src/routes/admin/+page.svelte` | Admin panel (vrste, korisnici, genetička polja, prijedlozi prijevoda) |
+| `src/lib/stores/prijevodPrijedlozi.ts` | Community prijevodi — submitPrijedlog, loadSviPrijedlozi, prihvatiPrijedlog, odbijPrijedlog |
+| `src/lib/server/i18nFileUpdater.ts` | Server-only — upisuje prihvaćeni prijevod direktno u `src/lib/i18n/<jezik>.ts` |
+| `src/lib/components/TranslatableLabel.svelte` | 💬 ikona na hover pored prevedenog termina — otvara PrijedlogModal |
 
 ## DB shema — migrations
 
@@ -59,6 +62,7 @@ SvelteKit PWA za upravljanje uzgojem ptica (kavezi, parovi, ciklusi, zdravlje, g
 030 fix_golubovi            — ispravka Haiku greške (pogrešni vrsta_grupa i tip)
 031 fix_rls_email          — zamjena subquery sa auth.email() (NEUSPJEŠNO)
 032 fix_rls_uid            — auth.uid() = admin UUID (potvrđen na remote bazi 2026-07-06)
+033 prijevod_prijedlozi    — community prijevodi (potvrđena na remote bazi 2026-07-07)
 ```
 
 ## Višejezičnost (i18n) — 17 jezika
@@ -103,7 +107,20 @@ Sekcije:
 - Vrste ptica (CRUD + prevodi naziva)
 - Korisnici (tier management)
 - Genetička polja i prevodi (CRUD + i18n za sva 17 jezika)
+- Prijedlozi prijevoda (community — Prihvati/Odbij pending prijedloge)
 
 Komponente:
 - `NovoGenetikaPoljeModal.svelte` — create/edit genetičkog polja
 - `GenetikaPoljeI18nForm.svelte` — forma za 17 jezičnih prevoda (naziv, opis, placeholder, opcije)
+
+## Community prijevodi (ZAVRŠENO, testirano lokalno 2026-07-07)
+
+Korisnici predlažu bolji prijevod bilo kojeg i18n termina direktno iz UI-a; admin pregleda i prihvata/odbija.
+
+- **Tabela:** `prijevod_prijedlozi` (migracija 033) — `termin_kljuc` (dot-path, npr. `"ptice.title"`), `jezik`, `trenutni_prijevod`, `prijedlog`, `komentar?`, `user_id`, `status` (`pending`/`prihvaćen`/`odbijen`)
+- **RLS:** korisnik INSERT/SELECT samo vlastite; admin FOR ALL preko fiksnog admin UUID-a (isti pattern kao `genetika_polja_i18n`, migracija 032)
+- **UI:** `TranslatableLabel.svelte` (key + value) prikazuje 💬 ikonu na hover ulogovanom korisniku → otvara `PrijedlogModal.svelte`. Trenutno ožičeno samo na naslovu `/ptice` stranice kao demo — nije retrofitovano na ostatak aplikacije
+- **Prihvatanje mijenja fajl na disku:** admin klik na "Prihvati" zove `POST /admin/prijevod-prijedlozi` (`+server.ts`), koji preko `i18nFileUpdater.ts` upisuje novu vrijednost direktno u `src/lib/i18n/<jezik>.ts`, pa tek onda ažurira status u bazi
+  - **Radi samo lokalno (`npm run dev`)** — endpoint provjerava `dev` iz `$app/environment` i vraća 503 na produkciji, jer je Vercel (`adapter-vercel`) fajl-sistem read-only/efemeran
+  - Workflow: pokreni app lokalno → prihvati prijedlog → `git diff` pokaže izmjenu u i18n fajlu → commit + push kao i inače
+- **Auth za file-write endpoint:** klijent šalje `Authorization: Bearer <access_token>`; server verifikuje preko `supabase.auth.getUser(token)` + `isAdmin(email)` (nema service-role ključa, ne treba)
