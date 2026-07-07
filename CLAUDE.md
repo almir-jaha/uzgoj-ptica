@@ -107,7 +107,3 @@ Sekcije:
 Komponente:
 - `NovoGenetikaPoljeModal.svelte` — create/edit genetičkog polja
 - `GenetikaPoljeI18nForm.svelte` — forma za 17 jezičnih prevoda (naziv, opis, placeholder, opcije)
-
-## Pending zadaci
-
-- `genetikaI18n.ts` store ne sinhronizira automatski kad admin izmijeni polje — treba reload stranice
