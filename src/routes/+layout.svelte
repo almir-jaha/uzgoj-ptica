@@ -163,9 +163,9 @@
 						<a href="/ptice"         class="btn btn-sm {$page.url.pathname.startsWith('/ptice') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.ptice}</a>
 						<a href="/aktivnosti"    class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.aktivnosti}</a>
 						<a href="/statistike"    class="btn btn-sm {$page.url.pathname.startsWith('/statistike') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.statistike}</a>
-						<a href="/prijevodi" class="btn btn-sm {$page.url.pathname.startsWith('/prijevodi') ? 'variant-filled-primary' : 'variant-ghost-surface'}" title="Prijedlozi prijevoda">💬</a>
+						<a href="/prijevodi" class="btn btn-sm {$page.url.pathname.startsWith('/prijevodi') ? 'variant-filled-primary' : 'variant-ghost-surface'}" title={$t.prijevodi.naslov}>💬</a>
 						{#if isAdmin($user?.email)}
-							<a href="/admin" class="btn btn-sm {$page.url.pathname.startsWith('/admin') ? 'variant-filled-warning' : 'variant-ghost-warning'}" title="Administracija">🔧</a>
+							<a href="/admin" class="btn btn-sm {$page.url.pathname.startsWith('/admin') ? 'variant-filled-warning' : 'variant-ghost-warning'}" title={$t.nav.administracija}>🔧</a>
 						{/if}
 						<JezikSelector />
 						<button class="btn btn-sm variant-ghost-surface ml-1" on:click={auth.signOut} title={$t.nav.odjavaTitle}>⎋</button>
@@ -191,15 +191,15 @@
 								class="btn btn-sm {$page.url.pathname.startsWith('/admin')
 									? 'variant-filled-warning'
 									: 'variant-ghost-warning'}"
-								title="Administracija"
+								title={$t.nav.administracija}
 							>
 								🔧
 							</a>
 						{/if}
-						<a href="/prijevodi" class="btn btn-sm {$page.url.pathname.startsWith('/prijevodi') ? 'variant-filled-primary' : 'variant-ghost-surface'}" title="Prijedlozi prijevoda">💬</a>
+						<a href="/prijevodi" class="btn btn-sm {$page.url.pathname.startsWith('/prijevodi') ? 'variant-filled-primary' : 'variant-ghost-surface'}" title={$t.prijevodi.naslov}>💬</a>
 						<button
 							class="btn btn-sm variant-ghost-surface"
-							title="Pritisni Back za izlaz"
+							title={$t.nav.pritisniBackZaIzlaz}
 							on:click={() => {
 								// Android PWA ne dozvoljava direktan izlaz via JS.
 								// Vraćamo se na prvu stranicu historije — jedan Back tada izlazi iz app.

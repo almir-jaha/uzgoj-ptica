@@ -18,7 +18,9 @@ export const tr: Translations = {
 		aktivnosti: '📋 Etkinlikler',
 		statistike: '📊 İstatistikler',
 		odjava: 'Çıkış yap',
-		odjavaTitle: 'Çıkış yap'
+		odjavaTitle: 'Çıkış yap',
+		administracija: 'Administration',
+		pritisniBackZaIzlaz: 'Press Back to exit'
 	},
 
 	auth: {
@@ -62,7 +64,8 @@ export const tr: Translations = {
 		datumPocetka: 'Başlangıç tarihi',
 		datumZavrsetka: 'Bitiş tarihi',
 		sezona: 'Sezon',
-		idite: 'Sezonlara git'
+		idite: 'Sezonlara git',
+		promijeniJezikTitle: 'Change language / Promijeni jezik'
 	},
 
 	sezona: {
@@ -78,6 +81,7 @@ export const tr: Translations = {
 		datumPocetka: 'Başlangıç tarihi',
 		naziv: 'Ad (isteğe bağlı)',
 		nazivPlaceholder: 'Sezon {godina}',
+		paroviOveSezoneTitle: 'Pairs of this season',
 		zavrsiIArhiviraj: '{godina} sezonunu bitir ve arşivle',
 		duplikatGodina: '{godina} sezonu zaten aktif. Yılı değiştirin veya aktif sezonu bitirin.',
 		greska: 'Sezon oluşturulurken hata',
@@ -162,6 +166,11 @@ export const tr: Translations = {
 		title: 'Kuşlar',
 		pageTitle: 'Kuşlar – HatchPlan',
 		novaPtica: '+ Yeni kuş',
+		dostignutLimitTitle: 'Plan limit reached',
+		resetujPretraguTitle: 'Reset search',
+		statusPticeTitle: 'Bird status',
+		statusNapomenaLabel: 'Note',
+		statusNapomenaPlaceholder: 'E.g. Sold to John Smith, Died due to illness...',
 		filtar: {
 			sve: 'Tümü',
 			muzjaci: '♂ Erkekler',
@@ -222,6 +231,8 @@ export const tr: Translations = {
 		title: 'Kuşevi',
 		naziv: 'Kuşevi adı',
 		nazivPlaceholder: 'örn. Yılmaz Kuşevi',
+		nazivInputPlaceholder: 'e.g. Bird Aviary, Pigeon loft...',
+		opisInputPlaceholder: 'e.g. Type Canary Aviary, Homing pigeons...',
 		imePrezime: 'Ad ve soyad',
 		imePrezimePlaceholder: 'Ahmet Yılmaz',
 		adresa: 'Adres',
@@ -267,6 +278,7 @@ export const tr: Translations = {
 		napomenaOpt: 'Not (isteğe b.)',
 		napomenaPlaceholder: 'Not...',
 		greska: 'Hata',
+		dnevnikNaslov: 'Breeding Journal', printListuTitle: 'Print list',
 		obavljene: '✅ Tamamlandı'
 	},
 
@@ -413,6 +425,9 @@ export const tr: Translations = {
 		greska: 'Kafes eklenirken hata',
 		greskaKavez: 'Kafes silinirken hata',
 		greskaSezone: 'Sezon silinirken hata',
+		ispraviDatumPrvogJajeta: 'Correct date of first egg',
+		unesiDatumPrvogJajeta: 'Enter date of first egg',
+		paznjaPlaceholder: 'E.g. Illness — give antibiotics for 3 days, preventive drops...',
 	},
 
 	novaSezonaSekcije: {
@@ -453,5 +468,52 @@ export const tr: Translations = {
 			parNijePronadjen: 'Çift bulunamadı',
 			pticaNijePronadjena: 'Kuş bulunamadı — kuşları kontrol edin'
 		}
+	},
+
+	zdravlje: {
+		naslov: 'Health Journal',
+		noviUnosBtn: '+ New entry',
+		vrstaLabel: 'Type',
+		datumLabel: 'Date',
+		nazivDijagnozaLabel: 'Name / diagnosis *',
+		nazivPlaceholder: 'E.g. Salmonellosis, Preventive drops, Vaccination...',
+		lijekLabel: 'Medication',
+		lijekPlaceholder: 'E.g. Baytril 10%',
+		trajanjeLabel: 'Duration (days)',
+		napomenaLabel: 'Note',
+		napomenaPlaceholder: 'Dose, observations, treatment course...',
+		spremiBtn: 'Save',
+		danaSufiks: 'days',
+		nemaZapisa: 'No health records',
+		obrisiTitle: 'Delete',
+		potvrdaBrisanja: 'Delete this health record? This action cannot be undone.',
+		masovniBadge: 'mass'
+	},
+
+	prijevodi: {
+		pageTitle: 'Translation Suggestions – HatchPlan',
+		naslov: 'Translation Suggestions',
+		opis: 'See a worse translation? Click 💬 next to the term and suggest a better one — the admin will review it.',
+		sekcijaUiTermini: 'UI Terms',
+		kljucTh: 'Key',
+		trenutniPrijevod: 'Current translation',
+		predloziIkonaTitle: 'Suggest a better translation',
+		sekcijaFazeCiklusa: 'Cycle Phases',
+		nemaFaza: 'No phases entered.',
+		nazivBsTh: 'Name (BS)',
+		prijevodTh: 'Translation',
+		sekcijaVrstePtica: 'Bird Species',
+		nemaVrsta: 'No species entered.',
+		modalNaslov: 'Suggest a better translation',
+		modalHvala: 'Thanks! Your suggestion has been sent for admin review.',
+		modalTerminBsOriginal: 'Term (BS original)',
+		modalTvojPrijedlog: 'Your suggestion *',
+		modalPrijedlogPlaceholder: 'Better translation...',
+		modalKomentar: 'Comment (optional)',
+		modalKomentarPlaceholder: 'Why is this better?',
+		modalPosaljiBtn: 'Send suggestion',
+		modalSaljemBtn: 'Sending...',
+		greskaPrazanPrijedlog: 'Enter a translation suggestion',
+		greskaSlanja: 'Error sending suggestion'
 	}
 } as const satisfies Translations;

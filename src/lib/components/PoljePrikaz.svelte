@@ -99,7 +99,7 @@
 					type="text"
 					list="dl-tags-{polje.kljuc}"
 					bind:value={tagInputVal}
-					placeholder="Dodaj..."
+					placeholder={$t.genetikaPolja.dodaj}
 					on:keydown={handleTagKeydown}
 				/>
 				{#if polje.opcije?.length}

@@ -301,9 +301,9 @@
 					<a
 						href="/parovi"
 						class="btn btn-sm variant-ghost-tertiary"
-						title="Parovi ove sezone"
+						title={$t.sezona.paroviOveSezoneTitle}
 					>
-						💑 Parovi
+						{$t.nav.parovi}
 					</a>
 					<button
 						class="btn btn-sm variant-ghost-surface"

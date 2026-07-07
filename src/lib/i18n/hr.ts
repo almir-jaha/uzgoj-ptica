@@ -11,7 +11,8 @@ export const hr: Translations = {
 		uzgajivacnica: '🏡 Uzgajivačnica', sezone: '📅 Sezone',
 		parovi: '💑 Parovi', ptice: '🐦 Ptice',
 		aktivnosti: '📋 Aktivnosti', statistike: '📊 Statistike',
-		odjava: 'Odjava', odjavaTitle: 'Odjava'
+		odjava: 'Odjava', odjavaTitle: 'Odjava',
+		administracija: 'Administration', pritisniBackZaIzlaz: 'Press Back to exit'
 	},
 	auth: {
 		pageTitle: 'Prijava – HatchPlan', prijavljeni: 'Prijavljeni ste!',
@@ -35,7 +36,8 @@ export const hr: Translations = {
 		aktivna: 'Aktivna', zavrsen: 'Završen',
 		napomenaOpt: 'Napomena (neobavezno)', napomenaPlaceholder: 'Bilješka...',
 		datumPocetka: 'Datum početka', datumZavrsetka: 'Datum završetka',
-		sezona: 'Sezona', idite: 'Idi na Sezone'
+		sezona: 'Sezona', idite: 'Idi na Sezone',
+		promijeniJezikTitle: 'Change language / Promijeni jezik'
 	},
 	sezona: {
 		title: 'Sezona', novaSezona: 'Nova sezona', urediSezonu: 'Uredi sezonu',
@@ -44,6 +46,7 @@ export const hr: Translations = {
 		nemaSezoneOpis: 'Kreirajte prvu sezonu kako biste počeli pratiti kaveze.',
 		godina: 'Godina', brojKaveza: 'Broj kaveza', datumPocetka: 'Datum početka',
 		naziv: 'Naziv (neobavezno)', nazivPlaceholder: 'Sezona {godina}',
+		paroviOveSezoneTitle: 'Pairs of this season',
 		zavrsiIArhiviraj: 'Završi sezonu {godina} i arhiviraj je',
 		duplikatGodina: 'Sezona {godina} je već aktivna.',
 		greska: 'Greška pri kreiranju sezone', arhivirana: 'arhivirana',
@@ -90,6 +93,9 @@ export const hr: Translations = {
 	},
 	ptice: {
 		title: 'Ptice', pageTitle: 'Ptice – HatchPlan', novaPtica: '+ Nova ptica',
+		dostignutLimitTitle: 'Plan limit reached', resetujPretraguTitle: 'Reset search',
+		statusPticeTitle: 'Bird status', statusNapomenaLabel: 'Note',
+		statusNapomenaPlaceholder: 'E.g. Sold to John Smith, Died due to illness...',
 		filtar: { sve: 'Sve', muzjaci: '♂ Mužjaci', zenke: '♀ Ženke',
 			ovaSezone: '🐣 Ove sezone', ostale: '🦅 Ostale',
 			nemaPticaZaFilter: 'Nema ptica za odabrani filter.' },
@@ -123,6 +129,8 @@ export const hr: Translations = {
 	uzgajivac: {
 		title: 'Uzgajivačnica', naziv: 'Naziv uzgajivačnice',
 		nazivPlaceholder: 'npr. Uzgajivačnica Horvat',
+		nazivInputPlaceholder: 'npr. Uzgajivačnica ptica, Golubnjak...',
+		opisInputPlaceholder: 'npr. Uzgajivačnica kanarinaca stasa, Golubovi pismonoše...',
 		imePrezime: 'Ime i prezime', imePrezimePlaceholder: 'Ivan Horvat',
 		adresa: 'Adresa', adresaPlaceholder: 'Ilica 1, Zagreb',
 		telefon: 'Telefon', telefonPlaceholder: '+385 91 000 0000',
@@ -148,7 +156,9 @@ export const hr: Translations = {
 			uskoro: '🔔 Uskoro – 7 dana', buduce: '📋 Buduće' },
 		potrebnoDo: 'Potrebno do:', obavi: '✓ Obavi',
 		datumObavljanja: 'Datum obavljanja', napomenaOpt: 'Napomena (neoб.)',
-		napomenaPlaceholder: 'Bilješka...', greska: 'Greška', obavljene: '✅ Obavljene'
+		napomenaPlaceholder: 'Bilješka...', greska: 'Greška',
+		dnevnikNaslov: 'Dnevnik uzgoja', printListuTitle: 'Printaj listu',
+		obavljene: '✅ Obavljene'
 	},
 	statistike: {
 		title: 'Statistike', pageTitle: 'Statistike – HatchPlan',
@@ -245,6 +255,9 @@ export const hr: Translations = {
 		greska: 'Greška pri dodavanju kaveza',
 		greskaKavez: 'Greška pri brisanju kaveza',
 		greskaSezone: 'Greška pri brisanju sezone',
+		ispraviDatumPrvogJajeta: 'Ispravi datum prvog jajeta',
+		unesiDatumPrvogJajeta: 'Unesi datum prvog jajeta',
+		paznjaPlaceholder: 'Npr. Bolest — dati antibiotik 3 dana, Preventivna kap...',
 	},
 
 	genetikaPolja: {
@@ -299,5 +312,52 @@ export const hr: Translations = {
 			parNijePronadjen: 'Par nije pronađen',
 			pticaNijePronadjena: 'Ptica nije pronađena — provjerite ptice'
 		}
+	},
+
+	zdravlje: {
+		naslov: 'Health Journal',
+		noviUnosBtn: '+ New entry',
+		vrstaLabel: 'Type',
+		datumLabel: 'Date',
+		nazivDijagnozaLabel: 'Name / diagnosis *',
+		nazivPlaceholder: 'E.g. Salmonellosis, Preventive drops, Vaccination...',
+		lijekLabel: 'Medication',
+		lijekPlaceholder: 'E.g. Baytril 10%',
+		trajanjeLabel: 'Duration (days)',
+		napomenaLabel: 'Note',
+		napomenaPlaceholder: 'Dose, observations, treatment course...',
+		spremiBtn: 'Save',
+		danaSufiks: 'days',
+		nemaZapisa: 'No health records',
+		obrisiTitle: 'Delete',
+		potvrdaBrisanja: 'Delete this health record? This action cannot be undone.',
+		masovniBadge: 'mass'
+	},
+
+	prijevodi: {
+		pageTitle: 'Translation Suggestions – HatchPlan',
+		naslov: 'Translation Suggestions',
+		opis: 'See a worse translation? Click 💬 next to the term and suggest a better one — the admin will review it.',
+		sekcijaUiTermini: 'UI Terms',
+		kljucTh: 'Key',
+		trenutniPrijevod: 'Current translation',
+		predloziIkonaTitle: 'Suggest a better translation',
+		sekcijaFazeCiklusa: 'Cycle Phases',
+		nemaFaza: 'No phases entered.',
+		nazivBsTh: 'Name (BS)',
+		prijevodTh: 'Translation',
+		sekcijaVrstePtica: 'Bird Species',
+		nemaVrsta: 'No species entered.',
+		modalNaslov: 'Suggest a better translation',
+		modalHvala: 'Thanks! Your suggestion has been sent for admin review.',
+		modalTerminBsOriginal: 'Term (BS original)',
+		modalTvojPrijedlog: 'Your suggestion *',
+		modalPrijedlogPlaceholder: 'Better translation...',
+		modalKomentar: 'Comment (optional)',
+		modalKomentarPlaceholder: 'Why is this better?',
+		modalPosaljiBtn: 'Send suggestion',
+		modalSaljemBtn: 'Sending...',
+		greskaPrazanPrijedlog: 'Enter a translation suggestion',
+		greskaSlanja: 'Error sending suggestion'
 	}
 } as const satisfies Translations;

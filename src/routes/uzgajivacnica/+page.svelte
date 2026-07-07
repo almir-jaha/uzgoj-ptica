@@ -175,7 +175,7 @@
 		<h2 class="h3 font-bold">{$t.uzgajivacnica.title}</h2>
 		{#if !showForm}
 			{#if limitDostignut}
-				<span class="badge variant-filled-warning text-xs" title="Dostignut limit za vaš plan">
+				<span class="badge variant-filled-warning text-xs" title={$t.ptice.dostignutLimitTitle}>
 					🔒 Limit: {$uzgajivacnice.length}/{$tierLimits.max_uzgajivacnice}
 				</span>
 			{:else}
@@ -361,7 +361,7 @@
 						class="input"
 						type="text"
 						bind:value={input.naziv}
-						placeholder="npr. Uzgajivačnica ptica, Golubnjak..."
+						placeholder={$t.uzgajivac.nazivInputPlaceholder}
 						disabled={saving}
 					/>
 				</label>
@@ -371,7 +371,7 @@
 						class="input"
 						type="text"
 						bind:value={input.opis}
-						placeholder="npr. Uzgajivačnica kanarinaca stasa, Golubovi pismonoše..."
+						placeholder={$t.uzgajivac.opisInputPlaceholder}
 						disabled={saving}
 					/>
 				</label>

@@ -180,16 +180,16 @@
 <div class="container mx-auto p-4 space-y-4 max-w-2xl">
 
 	<div class="flex items-center justify-between no-print">
-		<h2 class="h3 font-bold">Dnevnik uzgoja</h2>
+		<h2 class="h3 font-bold">{$t.aktivnosti.dnevnikNaslov}</h2>
 		{#if dnevnik.length > 0}
-			<button class="btn btn-sm variant-ghost-surface" on:click={() => window.print()} title="Printaj listu">
+			<button class="btn btn-sm variant-ghost-surface" on:click={() => window.print()} title={$t.aktivnosti.printListuTitle}>
 				🖨️ Print
 			</button>
 		{/if}
 	</div>
 	<!-- Print header — vidljiv samo pri štampanju -->
 	<div class="print-only hidden">
-		<h1 class="text-xl font-bold">Dnevnik uzgoja</h1>
+		<h1 class="text-xl font-bold">{$t.aktivnosti.dnevnikNaslov}</h1>
 		<p class="text-sm capitalize">{formatDatumPrikaz(odabraniDatum)} — {odabraniDatum}</p>
 		{#if $prikazanaSezona}<p class="text-sm text-gray-500">Sezona {$prikazanaSezona.godina}</p>{/if}
 	</div>

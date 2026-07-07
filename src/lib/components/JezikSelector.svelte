@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { locale, LANGUAGES } from '$lib/i18n';
+	import { locale, LANGUAGES, t } from '$lib/i18n';
 	import type { LangCode } from '$lib/i18n';
 
 	let otvoren = false;
@@ -14,7 +14,7 @@
 	<button
 		class="btn btn-sm variant-ghost-surface flex items-center gap-1.5 px-2"
 		on:click={() => (otvoren = !otvoren)}
-		title="Change language / Promijeni jezik"
+		title={$t.common.promijeniJezikTitle}
 	>
 		<span class="text-base leading-none">{LANGUAGES[$locale].flag}</span>
 		<span class="text-xs hidden sm:inline">{LANGUAGES[$locale].naziv}</span>

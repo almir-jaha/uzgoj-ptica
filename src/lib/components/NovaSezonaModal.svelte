@@ -72,7 +72,7 @@
 					user_id: userId,
 					uzgajivacnica_id: uzgajivacnicaId || undefined,
 					godina,
-					naziv: naziv.trim() || `Sezona ${godina}`,
+					naziv: naziv.trim() || $t.sezona.nazivPlaceholder.replace('{godina}', String(godina)),
 					broj_kaveza: ukupnoKaveza,
 					datum_pocetka: datumPocetka,
 					status: 'aktiva'
@@ -150,7 +150,7 @@
 
 			{#if duplikatGodina && !loading}
 				<aside class="alert variant-filled-error py-2 px-3 text-sm">
-					<p>Sezona {godina} je već aktivna. Promijenite godinu ili završite aktivnu sezonu.</p>
+					<p>{$t.sezona.duplikatGodina.replace('{godina}', String(godina))}</p>
 				</aside>
 			{/if}
 
@@ -160,7 +160,7 @@
 					class="input"
 					type="text"
 					bind:value={naziv}
-					placeholder="Sezona {godina}"
+					placeholder={$t.sezona.nazivPlaceholder.replace('{godina}', String(godina))}
 					disabled={loading}
 				/>
 			</label>

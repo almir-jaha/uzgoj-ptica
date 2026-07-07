@@ -16,7 +16,9 @@ export const bs = {
 		aktivnosti: '📋 Aktivnosti',
 		statistike: '📊 Statistike',
 		odjava: 'Odjava',
-		odjavaTitle: 'Odjava'
+		odjavaTitle: 'Odjava',
+		administracija: 'Administracija',
+		pritisniBackZaIzlaz: 'Pritisni Back za izlaz'
 	},
 
 	auth: {
@@ -60,7 +62,8 @@ export const bs = {
 		datumPocetka: 'Datum početka',
 		datumZavrsetka: 'Datum završetka',
 		sezona: 'Sezona',
-		idite: 'Idi na Sezone'
+		idite: 'Idi na Sezone',
+		promijeniJezikTitle: 'Change language / Promijeni jezik'
 	},
 
 	sezona: {
@@ -76,6 +79,7 @@ export const bs = {
 		datumPocetka: 'Datum početka',
 		naziv: 'Naziv (opcionalno)',
 		nazivPlaceholder: 'Sezona {godina}',
+		paroviOveSezoneTitle: 'Parovi ove sezone',
 		zavrsiIArhiviraj: 'Završi sezonu {godina} i arhiviraj je',
 		duplikatGodina: 'Sezona {godina} je već aktivna. Promijenite godinu ili završite aktivnu sezonu.',
 		greska: 'Greška pri kreiranju sezone',
@@ -160,6 +164,11 @@ export const bs = {
 		title: 'Ptice',
 		pageTitle: 'Ptice – HatchPlan',
 		novaPtica: '+ Nova ptica',
+		dostignutLimitTitle: 'Dostignut limit za vaš plan',
+		resetujPretraguTitle: 'Resetuj pretragu',
+		statusPticeTitle: 'Status ptice',
+		statusNapomenaLabel: 'Napomena',
+		statusNapomenaPlaceholder: 'Npr. Prodana Ivanu Ivanoviću, Uginula zbog bolesti...',
 		filtar: {
 			sve: 'Sve',
 			muzjaci: '♂ Mužjaci',
@@ -220,6 +229,8 @@ export const bs = {
 		title: 'Uzgajivačnica',
 		naziv: 'Naziv uzgajivačnice',
 		nazivPlaceholder: 'npr. Uzgajivačnica Jaha',
+		nazivInputPlaceholder: 'npr. Uzgajivačnica ptica, Golubnjak...',
+		opisInputPlaceholder: 'npr. Uzgajivačnica kanarinaca stasa, Golubovi pismonoše...',
 		imePrezime: 'Ime i prezime',
 		imePrezimePlaceholder: 'Almir Jaha',
 		adresa: 'Adresa',
@@ -265,6 +276,8 @@ export const bs = {
 		napomenaOpt: 'Napomena (opt.)',
 		napomenaPlaceholder: 'Bilješka...',
 		greska: 'Greška',
+		dnevnikNaslov: 'Dnevnik uzgoja',
+		printListuTitle: 'Printaj listu',
 		obavljene: '✅ Obavljene'
 	},
 
@@ -411,6 +424,9 @@ export const bs = {
 		greska: 'Greška pri dodavanju kaveza',
 		greskaKavez: 'Greška pri brisanju kaveza',
 		greskaSezone: 'Greška pri brisanju sezone',
+		ispraviDatumPrvogJajeta: 'Ispravi datum prvog jajeta',
+		unesiDatumPrvogJajeta: 'Unesi datum prvog jajeta',
+		paznjaPlaceholder: 'Npr. Bolest — dati antibiotik 3 dana, Preventivna kap...',
 	},
 
 	novaSezonaSekcije: {
@@ -451,6 +467,53 @@ export const bs = {
 			parNijePronadjen: 'Par nije pronađen',
 			pticaNijePronadjena: 'Ptica nije pronađena — provjerite ptice'
 		}
+	},
+
+	zdravlje: {
+		naslov: 'Zdravstveni dnevnik',
+		noviUnosBtn: '+ Novi unos',
+		vrstaLabel: 'Vrsta',
+		datumLabel: 'Datum',
+		nazivDijagnozaLabel: 'Naziv / dijagnoza *',
+		nazivPlaceholder: 'Npr. Salmoneloze, Preventivna kap, Vakcinacija...',
+		lijekLabel: 'Lijek/preparat',
+		lijekPlaceholder: 'Npr. Baytril 10%',
+		trajanjeLabel: 'Trajanje (dana)',
+		napomenaLabel: 'Napomena',
+		napomenaPlaceholder: 'Doza, zapažanja, tok liječenja...',
+		spremiBtn: 'Spremi',
+		danaSufiks: 'dana',
+		nemaZapisa: 'Nema zdravstvenih zapisa',
+		obrisiTitle: 'Obriši',
+		potvrdaBrisanja: 'Obrisati ovaj zdravstveni zapis? Ova radnja se ne može poništiti.',
+		masovniBadge: 'masovni'
+	},
+
+	prijevodi: {
+		pageTitle: 'Prijedlozi prijevoda – HatchPlan',
+		naslov: 'Prijedlozi prijevoda',
+		opis: 'Vidiš lošiji prijevod? Klikni na 💬 pored termina i predloži bolji — admin će ga pregledati.',
+		sekcijaUiTermini: 'UI termini',
+		kljucTh: 'Ključ',
+		trenutniPrijevod: 'Trenutni prijevod',
+		predloziIkonaTitle: 'Predloži bolji prijevod',
+		sekcijaFazeCiklusa: 'Faze ciklusa',
+		nemaFaza: 'Nema unesenih faza.',
+		nazivBsTh: 'Naziv (BS)',
+		prijevodTh: 'Prijevod',
+		sekcijaVrstePtica: 'Vrste ptica',
+		nemaVrsta: 'Nema unesenih vrsta.',
+		modalNaslov: 'Predloži bolji prijevod',
+		modalHvala: 'Hvala! Prijedlog je poslan na pregled adminu.',
+		modalTerminBsOriginal: 'Termin (BS original)',
+		modalTvojPrijedlog: 'Tvoj prijedlog *',
+		modalPrijedlogPlaceholder: 'Bolji prijevod...',
+		modalKomentar: 'Komentar (opcionalno)',
+		modalKomentarPlaceholder: 'Zašto je ovo bolje?',
+		modalPosaljiBtn: 'Pošalji prijedlog',
+		modalSaljemBtn: 'Šaljem...',
+		greskaPrazanPrijedlog: 'Unesi prijedlog prijevoda',
+		greskaSlanja: 'Greška pri slanju prijedloga'
 	}
 } as const;
 

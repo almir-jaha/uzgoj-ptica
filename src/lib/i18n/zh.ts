@@ -18,7 +18,9 @@ export const zh: Translations = {
 		aktivnosti: '📋 活动',
 		statistike: '📊 统计',
 		odjava: '退出登录',
-		odjavaTitle: '退出登录'
+		odjavaTitle: '退出登录',
+		administracija: 'Administration',
+		pritisniBackZaIzlaz: 'Press Back to exit'
 	},
 
 	auth: {
@@ -62,7 +64,8 @@ export const zh: Translations = {
 		datumPocetka: '开始日期',
 		datumZavrsetka: '结束日期',
 		sezona: '季节',
-		idite: '前往繁殖季节'
+		idite: '前往繁殖季节',
+		promijeniJezikTitle: 'Change language / Promijeni jezik'
 	},
 
 	sezona: {
@@ -78,6 +81,7 @@ export const zh: Translations = {
 		datumPocetka: '开始日期',
 		naziv: '名称（可选）',
 		nazivPlaceholder: '{godina}年繁殖季',
+		paroviOveSezoneTitle: 'Pairs of this season',
 		zavrsiIArhiviraj: '结束{godina}年季节并归档',
 		duplikatGodina: '{godina}年季节已存在。请更改年份或结束当前季节。',
 		greska: '创建季节时出错',
@@ -162,6 +166,11 @@ export const zh: Translations = {
 		title: '鸟类',
 		pageTitle: '鸟类 – HatchPlan',
 		novaPtica: '+ 新鸟',
+		dostignutLimitTitle: 'Plan limit reached',
+		resetujPretraguTitle: 'Reset search',
+		statusPticeTitle: 'Bird status',
+		statusNapomenaLabel: 'Note',
+		statusNapomenaPlaceholder: 'E.g. Sold to John Smith, Died due to illness...',
 		filtar: {
 			sve: '全部',
 			muzjaci: '♂ 雄鸟',
@@ -222,6 +231,8 @@ export const zh: Translations = {
 		title: '禽舍',
 		naziv: '禽舍名称',
 		nazivPlaceholder: '例如 王氏禽舍',
+		nazivInputPlaceholder: 'e.g. Bird Aviary, Pigeon loft...',
+		opisInputPlaceholder: 'e.g. Type Canary Aviary, Homing pigeons...',
 		imePrezime: '姓名',
 		imePrezimePlaceholder: '王小明',
 		adresa: '地址',
@@ -267,6 +278,7 @@ export const zh: Translations = {
 		napomenaOpt: '备注（选填）',
 		napomenaPlaceholder: '备注...',
 		greska: '错误',
+		dnevnikNaslov: 'Breeding Journal', printListuTitle: 'Print list',
 		obavljene: '✅ 已完成'
 	},
 
@@ -413,6 +425,9 @@ export const zh: Translations = {
 		greska: '添加笼子时出错',
 		greskaKavez: '删除笼子时出错',
 		greskaSezone: '删除季节时出错',
+		ispraviDatumPrvogJajeta: 'Correct date of first egg',
+		unesiDatumPrvogJajeta: 'Enter date of first egg',
+		paznjaPlaceholder: 'E.g. Illness — give antibiotics for 3 days, preventive drops...',
 	},
 
 	novaSezonaSekcije: {
@@ -453,5 +468,52 @@ export const zh: Translations = {
 			parNijePronadjen: '未找到繁殖对',
 			pticaNijePronadjena: '未找到鸟 — 请检查鸟类'
 		}
+	},
+
+	zdravlje: {
+		naslov: 'Health Journal',
+		noviUnosBtn: '+ New entry',
+		vrstaLabel: 'Type',
+		datumLabel: 'Date',
+		nazivDijagnozaLabel: 'Name / diagnosis *',
+		nazivPlaceholder: 'E.g. Salmonellosis, Preventive drops, Vaccination...',
+		lijekLabel: 'Medication',
+		lijekPlaceholder: 'E.g. Baytril 10%',
+		trajanjeLabel: 'Duration (days)',
+		napomenaLabel: 'Note',
+		napomenaPlaceholder: 'Dose, observations, treatment course...',
+		spremiBtn: 'Save',
+		danaSufiks: 'days',
+		nemaZapisa: 'No health records',
+		obrisiTitle: 'Delete',
+		potvrdaBrisanja: 'Delete this health record? This action cannot be undone.',
+		masovniBadge: 'mass'
+	},
+
+	prijevodi: {
+		pageTitle: 'Translation Suggestions – HatchPlan',
+		naslov: 'Translation Suggestions',
+		opis: 'See a worse translation? Click 💬 next to the term and suggest a better one — the admin will review it.',
+		sekcijaUiTermini: 'UI Terms',
+		kljucTh: 'Key',
+		trenutniPrijevod: 'Current translation',
+		predloziIkonaTitle: 'Suggest a better translation',
+		sekcijaFazeCiklusa: 'Cycle Phases',
+		nemaFaza: 'No phases entered.',
+		nazivBsTh: 'Name (BS)',
+		prijevodTh: 'Translation',
+		sekcijaVrstePtica: 'Bird Species',
+		nemaVrsta: 'No species entered.',
+		modalNaslov: 'Suggest a better translation',
+		modalHvala: 'Thanks! Your suggestion has been sent for admin review.',
+		modalTerminBsOriginal: 'Term (BS original)',
+		modalTvojPrijedlog: 'Your suggestion *',
+		modalPrijedlogPlaceholder: 'Better translation...',
+		modalKomentar: 'Comment (optional)',
+		modalKomentarPlaceholder: 'Why is this better?',
+		modalPosaljiBtn: 'Send suggestion',
+		modalSaljemBtn: 'Sending...',
+		greskaPrazanPrijedlog: 'Enter a translation suggestion',
+		greskaSlanja: 'Error sending suggestion'
 	}
 } as const satisfies Translations;

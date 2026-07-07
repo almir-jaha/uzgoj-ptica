@@ -260,11 +260,11 @@
 							}}
 						>
 							<span class="text-xl">🥚</span>
-							<span>{details.aktivni_ciklus.datum_prvog_jajeta ? 'Ispravi datum prvog jajeta' : 'Unesi datum prvog jajeta'}</span>
+							<span>{details.aktivni_ciklus.datum_prvog_jajeta ? $t.kavezUredi.ispraviDatumPrvogJajeta : $t.kavezUredi.unesiDatumPrvogJajeta}</span>
 						</button>
 					{:else}
 						<div class="card variant-soft-primary p-4 space-y-3">
-							<p class="text-sm font-medium">Datum prvog jajeta</p>
+							<p class="text-sm font-medium">{$t.modali.ciklus.datumPrvogJajeta}</p>
 							<input class="input" type="date" bind:value={prvoJajeDatum} disabled={prvoJajeLoading} />
 							{#if prvoJajeError}
 								<p class="text-xs text-error-500">{prvoJajeError}</p>
@@ -297,7 +297,7 @@
 								class="textarea text-sm"
 								rows="2"
 								bind:value={paznjaTekst}
-								placeholder="Npr. Bolest — dati antibiotik 3 dana, Preventivna kap..."
+								placeholder={$t.kavezUredi.paznjaPlaceholder}
 								disabled={paznjaLoading}
 							/>
 							<div class="flex gap-2">

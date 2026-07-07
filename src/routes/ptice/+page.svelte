@@ -175,7 +175,7 @@
 	}
 
 	async function obrisiZdravlje(id: string) {
-		if (!confirm('Obrisati ovaj zdravstveni zapis? Ova radnja se ne može poništiti.')) return;
+		if (!confirm($t.zdravlje.potvrdaBrisanja)) return;
 		await deleteZdravlje(id);
 		zdravljeRekordList = zdravljeRekordList.filter((z) => z.id !== id);
 	}
@@ -287,7 +287,7 @@
 			{/if}
 			{#if !loading}
 				{#if jeNaLimitPtica($ptice.length, $tierLimits)}
-					<span class="badge variant-filled-warning text-xs" title="Dostignut limit za vaš plan">
+					<span class="badge variant-filled-warning text-xs" title={$t.ptice.dostignutLimitTitle}>
 						🔒 {$ptice.length}/{$tierLimits.max_ptice} ptica
 					</span>
 				{:else}
@@ -341,7 +341,7 @@
 				<button
 					class="btn btn-sm variant-ghost-error mb-0.5 shrink-0"
 					on:click={resetujPretragu}
-					title="Resetuj pretragu"
+					title={$t.ptice.resetujPretraguTitle}
 				>✕</button>
 			{/if}
 		</div>
@@ -441,12 +441,12 @@
 						<button
 							class="btn btn-sm {ptica.status_evidencije && ptica.status_evidencije !== 'aktivna' ? 'variant-soft-error' : 'variant-ghost-surface'}"
 							on:click={() => otvoriStatus(ptica)}
-							title="Status ptice"
+							title={$t.ptice.statusPticeTitle}
 						>📋</button>
 						<button
 							class="btn btn-sm variant-ghost-surface"
 							on:click={() => otvoriZdravlje(ptica)}
-							title="Zdravstveni dnevnik"
+							title={$t.zdravlje.naslov}
 						>💊</button>
 					</div>
 				</div>
@@ -503,19 +503,19 @@
 				</label>
 				{#if statusVrijednost !== 'aktivna'}
 					<label class="label">
-						<span class="text-sm font-medium">Datum</span>
+						<span class="text-sm font-medium">{$t.zdravlje.datumLabel}</span>
 						<input class="input" type="date" bind:value={statusDatum} disabled={statusLoading} />
 					</label>
 					<label class="label">
-						<span class="text-sm font-medium">Napomena</span>
+						<span class="text-sm font-medium">{$t.ptice.statusNapomenaLabel}</span>
 						<textarea class="textarea text-sm" rows="2" bind:value={statusNapomena}
-							placeholder="Npr. Prodana Ivanu Ivanoviću, Uginula zbog bolesti..."
+							placeholder={$t.ptice.statusNapomenaPlaceholder}
 							disabled={statusLoading} />
 					</label>
 				{/if}
 			</div>
 			<div class="flex gap-3 pt-1">
-				<button class="btn variant-ghost flex-1" on:click={() => statusPtica = null} disabled={statusLoading}>Odustani</button>
+				<button class="btn variant-ghost flex-1" on:click={() => statusPtica = null} disabled={statusLoading}>{$t.common.odustani}</button>
 				<button class="btn variant-filled-primary flex-1" on:click={sacuvajStatus} disabled={statusLoading}>
 					{#if statusLoading}<span class="animate-spin mr-1">↻</span>{/if}
 					Spremi
@@ -536,7 +536,7 @@
 		<div class="card w-full max-w-lg p-5 space-y-4 max-h-[85vh] flex flex-col">
 			<header class="flex items-center justify-between shrink-0">
 				<div>
-					<h3 class="h4 font-bold">💊 Zdravstveni dnevnik</h3>
+					<h3 class="h4 font-bold">💊 {$t.zdravlje.naslov}</h3>
 					<p class="text-sm text-surface-500 truncate">{zdravljePtica.naziv || zdravljePtica.prstena_oznaka || zdravljePtica.id.slice(0,8)}</p>
 				</div>
 				<button class="btn-icon btn-icon-sm variant-ghost" on:click={() => zdravljePtica = null}>✕</button>
@@ -545,13 +545,13 @@
 			<!-- Forma za novi unos -->
 			{#if !zdravljeForm}
 				<button class="btn variant-filled-primary w-full shrink-0" on:click={() => { zdravljeForm = true; zNaziv = ''; zOpis = ''; zLijek = ''; zTrajanje = ''; zTip = 'bolest'; zDatum = new Date().toISOString().split('T')[0]; }}>
-					+ Novi unos
+					{$t.zdravlje.noviUnosBtn}
 				</button>
 			{:else}
 				<div class="card variant-soft p-4 space-y-3 shrink-0">
 					<div class="grid grid-cols-2 gap-3">
 						<label class="label">
-							<span class="text-sm font-medium">Vrsta</span>
+							<span class="text-sm font-medium">{$t.zdravlje.vrstaLabel}</span>
 							<select class="select" bind:value={zTip} disabled={zSaving}>
 								{#each TIP_OPCIJE as op}
 									<option value={op.value}>{op.ikona} {op.label}</option>
@@ -559,33 +559,33 @@
 							</select>
 						</label>
 						<label class="label">
-							<span class="text-sm font-medium">Datum</span>
+							<span class="text-sm font-medium">{$t.zdravlje.datumLabel}</span>
 							<input class="input" type="date" bind:value={zDatum} disabled={zSaving} />
 						</label>
 					</div>
 					<label class="label">
-						<span class="text-sm font-medium">Naziv / dijagnoza *</span>
-						<input class="input" type="text" bind:value={zNaziv} placeholder="Npr. Salmoneloze, Preventivna kap, Vakcinacija..." disabled={zSaving} />
+						<span class="text-sm font-medium">{$t.zdravlje.nazivDijagnozaLabel}</span>
+						<input class="input" type="text" bind:value={zNaziv} placeholder={$t.zdravlje.nazivPlaceholder} disabled={zSaving} />
 					</label>
 					<div class="grid grid-cols-2 gap-3">
 						<label class="label">
-							<span class="text-sm font-medium">Lijek/preparat</span>
-							<input class="input" type="text" bind:value={zLijek} placeholder="Npr. Baytril 10%" disabled={zSaving} />
+							<span class="text-sm font-medium">{$t.zdravlje.lijekLabel}</span>
+							<input class="input" type="text" bind:value={zLijek} placeholder={$t.zdravlje.lijekPlaceholder} disabled={zSaving} />
 						</label>
 						<label class="label">
-							<span class="text-sm font-medium">Trajanje (dana)</span>
+							<span class="text-sm font-medium">{$t.zdravlje.trajanjeLabel}</span>
 							<input class="input" type="number" min="1" bind:value={zTrajanje} placeholder="7" disabled={zSaving} />
 						</label>
 					</div>
 					<label class="label">
-						<span class="text-sm font-medium">Napomena</span>
-						<textarea class="textarea text-sm" rows="2" bind:value={zOpis} placeholder="Doza, zapažanja, tok liječenja..." disabled={zSaving} />
+						<span class="text-sm font-medium">{$t.zdravlje.napomenaLabel}</span>
+						<textarea class="textarea text-sm" rows="2" bind:value={zOpis} placeholder={$t.zdravlje.napomenaPlaceholder} disabled={zSaving} />
 					</label>
 					<div class="flex gap-2">
-						<button class="btn variant-ghost flex-1" on:click={() => zdravljeForm = false} disabled={zSaving}>Odustani</button>
+						<button class="btn variant-ghost flex-1" on:click={() => zdravljeForm = false} disabled={zSaving}>{$t.common.odustani}</button>
 						<button class="btn variant-filled-primary flex-1" on:click={sacuvajZdravlje} disabled={zSaving || !zNaziv.trim()}>
 							{#if zSaving}<span class="animate-spin mr-1">↻</span>{/if}
-							Spremi
+							{$t.zdravlje.spremiBtn}
 						</button>
 					</div>
 				</div>
@@ -594,9 +594,9 @@
 			<!-- Lista zapisa -->
 			<div class="overflow-y-auto flex-1 space-y-2">
 				{#if zdravljeLoading}
-					<p class="text-center text-surface-400 py-4">↻ Učitavanje...</p>
+					<p class="text-center text-surface-400 py-4">↻ {$t.common.ucitavanje}</p>
 				{:else if zdravljeRekordList.length === 0}
-					<p class="text-center text-surface-400 py-8 text-sm">Nema zdravstvenih zapisa</p>
+					<p class="text-center text-surface-400 py-8 text-sm">{$t.zdravlje.nemaZapisa}</p>
 				{:else}
 					{#each zdravljeRekordList as z (z.id)}
 						{@const tip = TIP_OPCIJE.find(o => o.value === z.tip)}
@@ -604,13 +604,13 @@
 						<div class="card p-3 space-y-1">
 							<div class="flex items-start justify-between gap-2">
 								<div class="flex-1 min-w-0">
-									<p class="text-sm font-semibold">{tip?.ikona} {z.naziv} {#if jeMasovni}<span class="badge variant-soft-primary text-xs ml-1">masovni</span>{/if}</p>
+									<p class="text-sm font-semibold">{tip?.ikona} {z.naziv} {#if jeMasovni}<span class="badge variant-soft-primary text-xs ml-1">{$t.zdravlje.masovniBadge}</span>{/if}</p>
 									<p class="text-xs text-surface-400">{formatDatum(z.datum)} · {tip?.label}</p>
-									{#if z.lijek}<p class="text-xs text-surface-500">💊 {z.lijek}{z.trajanje_dana ? ` · ${z.trajanje_dana} dana` : ''}</p>{/if}
+									{#if z.lijek}<p class="text-xs text-surface-500">💊 {z.lijek}{z.trajanje_dana ? ` · ${z.trajanje_dana} ${$t.zdravlje.danaSufiks}` : ''}</p>{/if}
 									{#if z.opis}<p class="text-xs text-surface-500 mt-0.5">{z.opis}</p>{/if}
 								</div>
 								{#if !jeMasovni}
-								<button class="btn-icon btn-icon-sm variant-ghost-error shrink-0" on:click={() => obrisiZdravlje(z.id)} title="Obriši">✕</button>
+								<button class="btn-icon btn-icon-sm variant-ghost-error shrink-0" on:click={() => obrisiZdravlje(z.id)} title={$t.zdravlje.obrisiTitle}>✕</button>
 								{/if}
 							</div>
 						</div>

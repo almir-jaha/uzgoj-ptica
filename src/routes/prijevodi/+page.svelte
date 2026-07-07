@@ -44,26 +44,26 @@
 </script>
 
 <svelte:head>
-	<title>Prijedlozi prijevoda – HatchPlan</title>
+	<title>{$t.prijevodi.pageTitle}</title>
 </svelte:head>
 
 <div class="container mx-auto p-4 space-y-6 max-w-4xl">
 	<div>
-		<h2 class="h3 font-bold">💬 Prijedlozi prijevoda</h2>
+		<h2 class="h3 font-bold">💬 {$t.prijevodi.naslov}</h2>
 		<p class="text-sm text-surface-500">
-			Vidiš lošiji prijevod? Klikni na 💬 pored termina i predloži bolji — admin će ga pregledati.
+			{$t.prijevodi.opis}
 		</p>
 	</div>
 
 	<!-- Sekcija 1: UI termini -->
 	<section class="space-y-2">
-		<h3 class="h4 font-bold">UI termini ({$locale})</h3>
+		<h3 class="h4 font-bold">{$t.prijevodi.sekcijaUiTermini} ({$locale})</h3>
 		<div class="card overflow-x-auto">
 			<table class="table table-compact w-full text-sm">
 				<thead>
 					<tr>
-						<th>Ključ</th>
-						<th>Trenutni prijevod</th>
+						<th>{$t.prijevodi.kljucTh}</th>
+						<th>{$t.prijevodi.trenutniPrijevod}</th>
 						<th class="w-10"></th>
 					</tr>
 				</thead>
@@ -75,7 +75,7 @@
 							<td>
 								<button
 									class="btn-icon btn-icon-sm variant-ghost"
-									title="Predloži bolji prijevod"
+									title={$t.prijevodi.predloziIkonaTitle}
 									on:click={() =>
 										(aktivniModal = {
 											terminKljuc: termin.kljuc,
@@ -97,18 +97,18 @@
 
 	<!-- Sekcija 2: Faze ciklusa -->
 	<section class="space-y-2">
-		<h3 class="h4 font-bold">Faze ciklusa</h3>
+		<h3 class="h4 font-bold">{$t.prijevodi.sekcijaFazeCiklusa}</h3>
 		{#if loading}
-			<p class="text-sm text-surface-400 italic px-3 py-2">Učitavanje...</p>
+			<p class="text-sm text-surface-400 italic px-3 py-2">{$t.common.ucitavanje}</p>
 		{:else if faze.length === 0}
-			<p class="text-sm text-surface-400 italic px-3 py-2">Nema unesenih faza.</p>
+			<p class="text-sm text-surface-400 italic px-3 py-2">{$t.prijevodi.nemaFaza}</p>
 		{:else}
 			<div class="card overflow-x-auto">
 				<table class="table table-compact w-full text-sm">
 					<thead>
 						<tr>
-							<th>Naziv (BS)</th>
-							<th>Prijevod ({$locale})</th>
+							<th>{$t.prijevodi.nazivBsTh}</th>
+							<th>{$t.prijevodi.prijevodTh} ({$locale})</th>
 							<th class="w-10"></th>
 						</tr>
 					</thead>
@@ -121,7 +121,7 @@
 								<td>
 									<button
 										class="btn-icon btn-icon-sm variant-ghost"
-										title="Predloži bolji prijevod"
+										title={$t.prijevodi.predloziIkonaTitle}
 										on:click={() =>
 											(aktivniModal = {
 												terminKljuc: faza.naziv,
@@ -144,18 +144,18 @@
 
 	<!-- Sekcija 3: Vrste ptica -->
 	<section class="space-y-2">
-		<h3 class="h4 font-bold">Vrste ptica</h3>
+		<h3 class="h4 font-bold">{$t.prijevodi.sekcijaVrstePtica}</h3>
 		{#if loading}
-			<p class="text-sm text-surface-400 italic px-3 py-2">Učitavanje...</p>
+			<p class="text-sm text-surface-400 italic px-3 py-2">{$t.common.ucitavanje}</p>
 		{:else if vrste.length === 0}
-			<p class="text-sm text-surface-400 italic px-3 py-2">Nema unesenih vrsta.</p>
+			<p class="text-sm text-surface-400 italic px-3 py-2">{$t.prijevodi.nemaVrsta}</p>
 		{:else}
 			<div class="card overflow-x-auto">
 				<table class="table table-compact w-full text-sm">
 					<thead>
 						<tr>
-							<th>Naziv (BS)</th>
-							<th>Prijevod ({$locale})</th>
+							<th>{$t.prijevodi.nazivBsTh}</th>
+							<th>{$t.prijevodi.prijevodTh} ({$locale})</th>
 							<th class="w-10"></th>
 						</tr>
 					</thead>
@@ -168,7 +168,7 @@
 								<td>
 									<button
 										class="btn-icon btn-icon-sm variant-ghost"
-										title="Predloži bolji prijevod"
+										title={$t.prijevodi.predloziIkonaTitle}
 										on:click={() =>
 											(aktivniModal = {
 												terminKljuc: vrsta.naziv,

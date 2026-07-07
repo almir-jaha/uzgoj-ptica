@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { submitPrijedlog } from '$lib/stores/prijevodPrijedlozi';
+	import { t } from '$lib/i18n';
 	import type { LangCode } from '$lib/i18n/locale';
 	import type { PrijevodIzvor } from '$lib/db/schema';
 
@@ -20,7 +21,7 @@
 
 	async function handleSubmit() {
 		if (!prijedlog.trim()) {
-			error = 'Unesi prijedlog prijevoda';
+			error = $t.prijevodi.greskaPrazanPrijedlog;
 			return;
 		}
 		loading = true;
@@ -38,7 +39,7 @@
 			});
 			poslano = true;
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Greška pri slanju prijedloga';
+			error = err instanceof Error ? err.message : $t.prijevodi.greskaSlanja;
 		} finally {
 			loading = false;
 		}
@@ -48,46 +49,46 @@
 <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
 	<div class="card w-full max-w-md p-5 space-y-4">
 		<header class="flex items-center justify-between">
-			<h3 class="h4 font-bold">💬 Predloži bolji prijevod</h3>
+			<h3 class="h4 font-bold">💬 {$t.prijevodi.modalNaslov}</h3>
 			<button class="btn-icon btn-icon-sm variant-ghost" on:click={onClose}>✕</button>
 		</header>
 
 		{#if poslano}
-			<p class="text-sm text-success-500">Hvala! Prijedlog je poslan na pregled adminu.</p>
-			<button class="btn variant-filled-primary w-full" on:click={onClose}>Zatvori</button>
+			<p class="text-sm text-success-500">{$t.prijevodi.modalHvala}</p>
+			<button class="btn variant-filled-primary w-full" on:click={onClose}>{$t.common.zatvori}</button>
 		{:else}
 			<form class="space-y-3" on:submit|preventDefault={handleSubmit}>
 				<div class="text-xs text-surface-500 font-mono break-all">{terminKljuc}</div>
 
 				<label class="label">
-					<span class="text-xs font-medium">Termin (BS original)</span>
+					<span class="text-xs font-medium">{$t.prijevodi.modalTerminBsOriginal}</span>
 					<input class="input input-sm" type="text" value={bsOriginal} disabled />
 				</label>
 
 				<label class="label">
-					<span class="text-xs font-medium">Trenutni prijevod ({jezik})</span>
+					<span class="text-xs font-medium">{$t.prijevodi.trenutniPrijevod} ({jezik})</span>
 					<input class="input input-sm" type="text" value={trenutniPrijevod} disabled />
 				</label>
 
 				<label class="label">
-					<span class="text-xs font-medium">Tvoj prijedlog *</span>
+					<span class="text-xs font-medium">{$t.prijevodi.modalTvojPrijedlog}</span>
 					<input
 						class="input input-sm"
 						type="text"
 						bind:value={prijedlog}
-						placeholder="Bolji prijevod..."
+						placeholder={$t.prijevodi.modalPrijedlogPlaceholder}
 						disabled={loading}
 						required
 					/>
 				</label>
 
 				<label class="label">
-					<span class="text-xs font-medium">Komentar (opcionalno)</span>
+					<span class="text-xs font-medium">{$t.prijevodi.modalKomentar}</span>
 					<textarea
 						class="textarea text-sm"
 						rows="2"
 						bind:value={komentar}
-						placeholder="Zašto je ovo bolje?"
+						placeholder={$t.prijevodi.modalKomentarPlaceholder}
 						disabled={loading}
 					></textarea>
 				</label>
@@ -103,10 +104,10 @@
 						on:click={onClose}
 						disabled={loading}
 					>
-						Odustani
+						{$t.common.odustani}
 					</button>
 					<button type="submit" class="btn variant-filled-primary flex-1" disabled={loading}>
-						{loading ? 'Šaljem...' : 'Pošalji prijedlog'}
+						{loading ? $t.prijevodi.modalSaljemBtn : $t.prijevodi.modalPosaljiBtn}
 					</button>
 				</div>
 			</form>

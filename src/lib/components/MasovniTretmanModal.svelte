@@ -162,7 +162,7 @@
 							<span class="animate-spin text-xs">↻</span>
 						{:else if ucitanoPtice}
 							<span class="badge {pticaUSekciji.length > 0 ? 'variant-filled-success' : 'variant-soft-warning'} text-xs">
-								{pticaUSekciji.length} {pticaUSekciji.length === 1 ? 'ptica' : 'ptica'}
+								{pticaUSekciji.length} {$t.masovniTretman.ptica}
 							</span>
 						{/if}
 					</div>
