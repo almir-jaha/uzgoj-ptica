@@ -1140,8 +1140,9 @@
 	<section class="space-y-3">
 		<h3 class="h4 font-bold">💬 Prijedlozi prijevoda</h3>
 		<p class="text-sm text-surface-500">
-			Prihvatanje odmah upisuje novi prijevod u i18n fajl — radi samo lokalno (npm run dev).
-			Nakon prihvatanja potrebno je commitovati i deployovati izmjenu.
+			Prijedlozi za "faza_ciklusa" i "vrsta_ptica" se prihvataju odmah (upis u bazu, radi svugdje).
+			Prijedlozi za "i18n" upisuju novi prijevod direktno u i18n fajl — radi samo lokalno (npm run dev),
+			nakon čega treba commitovati i deployovati izmjenu.
 		</p>
 
 		{#if prijedlogError}
@@ -1156,7 +1157,10 @@
 					<div class="card p-3 space-y-2">
 						<div class="flex items-center justify-between gap-2">
 							<span class="font-mono text-xs text-surface-500 break-all">{p.termin_kljuc}</span>
-							<span class="badge variant-soft text-xs">{p.jezik}</span>
+							<div class="flex gap-1 shrink-0">
+								<span class="badge variant-soft-secondary text-xs">{p.izvor}</span>
+								<span class="badge variant-soft text-xs">{p.jezik}</span>
+							</div>
 						</div>
 						<div class="grid grid-cols-2 gap-2 text-sm">
 							<div>

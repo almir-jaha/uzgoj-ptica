@@ -250,12 +250,15 @@ export interface GenetikaPoljaI18n {
   updated_at: string;
 }
 
-// Community prijevodi — korisnici predlažu bolje prijevode i18n termina, admin ih pregleda
+// Community prijevodi — korisnici predlažu bolje prijevode termina, admin ih pregleda
 export type PrijevodStatus = 'pending' | 'prihvaćen' | 'odbijen';
+export type PrijevodIzvor = 'i18n' | 'faza_ciklusa' | 'vrsta_ptica';
 
 export interface PrijevodPrijedlog {
   id: string;
-  termin_kljuc: string;         // dot-path ključ iz i18n strukture, npr. 'nav.sezone'
+  termin_kljuc: string;         // 'i18n': dot-path ključ (npr. 'nav.sezone'); baza: BS naziv reda
+  izvor: PrijevodIzvor;
+  izvor_id?: string | null;     // null za 'i18n', UUID reda za 'faza_ciklusa'/'vrsta_ptica'
   jezik: string;                // LangCode iz src/lib/i18n/locale.ts
   trenutni_prijevod: string;
   prijedlog: string;

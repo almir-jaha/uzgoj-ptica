@@ -163,6 +163,7 @@
 						<a href="/ptice"         class="btn btn-sm {$page.url.pathname.startsWith('/ptice') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.ptice}</a>
 						<a href="/aktivnosti"    class="btn btn-sm {$page.url.pathname.startsWith('/aktivnosti') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.aktivnosti}</a>
 						<a href="/statistike"    class="btn btn-sm {$page.url.pathname.startsWith('/statistike') ? 'variant-filled-primary' : 'variant-ghost-surface'}">{$t.nav.statistike}</a>
+						<a href="/prijevodi" class="btn btn-sm {$page.url.pathname.startsWith('/prijevodi') ? 'variant-filled-primary' : 'variant-ghost-surface'}" title="Prijedlozi prijevoda">💬</a>
 						{#if isAdmin($user?.email)}
 							<a href="/admin" class="btn btn-sm {$page.url.pathname.startsWith('/admin') ? 'variant-filled-warning' : 'variant-ghost-warning'}" title="Administracija">🔧</a>
 						{/if}
@@ -195,6 +196,7 @@
 								🔧
 							</a>
 						{/if}
+						<a href="/prijevodi" class="btn btn-sm {$page.url.pathname.startsWith('/prijevodi') ? 'variant-filled-primary' : 'variant-ghost-surface'}" title="Prijedlozi prijevoda">💬</a>
 						<button
 							class="btn btn-sm variant-ghost-surface"
 							title="Pritisni Back za izlaz"

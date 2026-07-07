@@ -93,6 +93,23 @@ export async function deleteVrstaPtica(id: string) {
   vrstePtica.update((v) => v.filter((vp) => vp.id !== id));
 }
 
+// Ažurira prijevod za JEDAN jezik u nazivi_jezicima JSONB, bez brisanja ostalih jezika
+export async function updateVrstaNazivJezik(vrstaId: string, jezik: string, noviNaziv: string): Promise<void> {
+  const { data: existing, error: fetchError } = await supabase
+    .from('vrsta_ptica')
+    .select('nazivi_jezicima')
+    .eq('id', vrstaId)
+    .single();
+  if (fetchError) throw new Error(fetchError.message);
+
+  const nazivi = { ...(existing?.nazivi_jezicima ?? {}), [jezik]: noviNaziv };
+  const updated = { nazivi_jezicima: nazivi, updated_at: new Date().toISOString() };
+  const { error } = await supabase.from('vrsta_ptica').update(updated).eq('id', vrstaId);
+  if (error) throw new Error(error.message);
+
+  vrstePtica.update((v) => v.map((vp) => (vp.id === vrstaId ? { ...vp, ...updated } : vp)));
+}
+
 export async function updateVrstaGenetikaPolja(
   vrstaId: string,
   polja: GenetikaPolje[]
@@ -158,6 +175,23 @@ export async function deleteFaza(id: string) {
   if (error) throw new Error(error.message);
   await db.faze_ciklusa.delete(id);
   faze.update((f) => f.filter((fz) => fz.id !== id));
+}
+
+// Ažurira prijevod za JEDAN jezik u nazivi_jezicima JSONB, bez brisanja ostalih jezika
+export async function updateFazaNazivJezik(fazaId: string, jezik: string, noviNaziv: string): Promise<void> {
+  const { data: existing, error: fetchError } = await supabase
+    .from('faze_ciklusa')
+    .select('nazivi_jezicima')
+    .eq('id', fazaId)
+    .single();
+  if (fetchError) throw new Error(fetchError.message);
+
+  const nazivi = { ...(existing?.nazivi_jezicima ?? {}), [jezik]: noviNaziv };
+  const updated = { nazivi_jezicima: nazivi, updated_at: new Date().toISOString() };
+  const { error } = await supabase.from('faze_ciklusa').update(updated).eq('id', fazaId);
+  if (error) throw new Error(error.message);
+
+  faze.update((f) => f.map((fz) => (fz.id === fazaId ? { ...fz, ...updated } : fz)));
 }
 
 // ── Uzgajivačnice (admin — svi korisnici) ───────────────────

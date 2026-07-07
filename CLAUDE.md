@@ -39,9 +39,10 @@ SvelteKit PWA za upravljanje uzgojem ptica (kavezi, parovi, ciklusi, zdravlje, g
 | `src/lib/i18n/locale.ts` | Upravljanje jezikom, localStorage persistence |
 | `src/lib/utils/genetika-schema.ts` | `getSchemaForVrsta()` — čita custom_fields.genetika_polja, fallback na GENETIKA_SHEME |
 | `src/routes/admin/+page.svelte` | Admin panel (vrste, korisnici, genetička polja, prijedlozi prijevoda) |
+| `src/routes/prijevodi/+page.svelte` | Centralna stranica za community prijevode — 3 sekcije (UI termini, faze, vrste) |
 | `src/lib/stores/prijevodPrijedlozi.ts` | Community prijevodi — submitPrijedlog, loadSviPrijedlozi, prihvatiPrijedlog, odbijPrijedlog |
-| `src/lib/server/i18nFileUpdater.ts` | Server-only — upisuje prihvaćeni prijevod direktno u `src/lib/i18n/<jezik>.ts` |
-| `src/lib/components/TranslatableLabel.svelte` | 💬 ikona na hover pored prevedenog termina — otvara PrijedlogModal |
+| `src/lib/server/i18nFileUpdater.ts` | Server-only — upisuje prihvaćeni i18n prijevod direktno u `src/lib/i18n/<jezik>.ts` |
+| `src/lib/i18n/flatten.ts` | `flattenTranslations()` — ugniježđeni i18n objekat → ravna dot-path mapa |
 
 ## DB shema — migrations
 
@@ -63,6 +64,7 @@ SvelteKit PWA za upravljanje uzgojem ptica (kavezi, parovi, ciklusi, zdravlje, g
 031 fix_rls_email          — zamjena subquery sa auth.email() (NEUSPJEŠNO)
 032 fix_rls_uid            — auth.uid() = admin UUID (potvrđen na remote bazi 2026-07-06)
 033 prijevod_prijedlozi    — community prijevodi (potvrđena na remote bazi 2026-07-07)
+034 prijevod_prijedlozi_izvor — izvor/izvor_id kolone: 'i18n' | 'faza_ciklusa' | 'vrsta_ptica' (potvrđena 2026-07-07)
 ```
 
 ## Višejezičnost (i18n) — 17 jezika
@@ -115,12 +117,19 @@ Komponente:
 
 ## Community prijevodi (ZAVRŠENO, testirano lokalno 2026-07-07)
 
-Korisnici predlažu bolji prijevod bilo kojeg i18n termina direktno iz UI-a; admin pregleda i prihvata/odbija.
+**Napomena:** prvobitni pokušaj (💬 ikona ožičena inline po cijeloj aplikaciji preko `TranslatableLabel.svelte`) je napušten — previše mjesta gdje `$t.xxx` strukturalno ne može nositi komponentu (`<svelte:head><title>`, HTML atributi, JS dodjele, data nizovi, nav traka) i previše rizika od loma layouta. Zamijenjeno centralnom `/prijevodi` stranicom.
 
-- **Tabela:** `prijevod_prijedlozi` (migracija 033) — `termin_kljuc` (dot-path, npr. `"ptice.title"`), `jezik`, `trenutni_prijevod`, `prijedlog`, `komentar?`, `user_id`, `status` (`pending`/`prihvaćen`/`odbijen`)
+Ruta `/prijevodi` — 3 sekcije za korisnikov trenutni jezik (`$locale`):
+1. **UI termini** — `flattenTranslations()` (`src/lib/i18n/flatten.ts`) pretvara `$t` (trenutni jezik) i `bs` (original) u ravne dot-path mape (`{ 'ptice.title': 'Ptice' }`); tabela: ključ | trenutni prijevod | 💬
+2. **Faze ciklusa** — direktan `supabase.from('faze_ciklusa').select('*')`; tabela: naziv (BS) | `nazivi_jezicima[locale] ?? naziv` | 💬
+3. **Vrste ptica** — direktan `supabase.from('vrsta_ptica').select('*')`; tabela: naziv (BS) | `nazivi_jezicima[locale] ?? naziv` | 💬
+
+Klik na 💬 otvara `PrijedlogModal.svelte` (BS original, trenutni prijevod, prijedlog, komentar) → `submitPrijedlog()`.
+
+- **Tabela:** `prijevod_prijedlozi` (migracija 033 + 034) — `termin_kljuc`, `izvor` (`'i18n'`/`'faza_ciklusa'`/`'vrsta_ptica'`), `izvor_id` (null za i18n, UUID reda za bazu), `jezik`, `trenutni_prijevod`, `prijedlog`, `komentar?`, `user_id`, `status`
 - **RLS:** korisnik INSERT/SELECT samo vlastite; admin FOR ALL preko fiksnog admin UUID-a (isti pattern kao `genetika_polja_i18n`, migracija 032)
-- **UI:** `TranslatableLabel.svelte` (key + value) prikazuje 💬 ikonu na hover ulogovanom korisniku → otvara `PrijedlogModal.svelte`. Trenutno ožičeno samo na naslovu `/ptice` stranice kao demo — nije retrofitovano na ostatak aplikacije
-- **Prihvatanje mijenja fajl na disku:** admin klik na "Prihvati" zove `POST /admin/prijevod-prijedlozi` (`+server.ts`), koji preko `i18nFileUpdater.ts` upisuje novu vrijednost direktno u `src/lib/i18n/<jezik>.ts`, pa tek onda ažurira status u bazi
-  - **Radi samo lokalno (`npm run dev`)** — endpoint provjerava `dev` iz `$app/environment` i vraća 503 na produkciji, jer je Vercel (`adapter-vercel`) fajl-sistem read-only/efemeran
-  - Workflow: pokreni app lokalno → prihvati prijedlog → `git diff` pokaže izmjenu u i18n fajlu → commit + push kao i inače
+- **Admin prihvatanje grana se po `izvor`u** (`prihvatiPrijedlog()` u `prijevodPrijedlozi.ts`):
+  - `'i18n'` → `POST /admin/prijevod-prijedlozi` (`+server.ts`) → `i18nFileUpdater.ts` upisuje direktno u `src/lib/i18n/<jezik>.ts`. **Radi samo lokalno (`npm run dev`)** — endpoint provjerava `dev` iz `$app/environment`, vraća 503 na produkciji (Vercel fajl-sistem je read-only/efemeran). Workflow: pokreni lokalno → prihvati → `git diff` pokaže izmjenu → commit + push
+  - `'faza_ciklusa'` → `updateFazaNazivJezik()` (admin.ts) — merge-update jednog jezika u `nazivi_jezicima` JSONB preko Supabase, **radi svugdje** (i na Vercelu), nema fajl-write
+  - `'vrsta_ptica'` → `updateVrstaNazivJezik()` (admin.ts) — isto, `vrsta_ptica.nazivi_jezicima`
 - **Auth za file-write endpoint:** klijent šalje `Authorization: Bearer <access_token>`; server verifikuje preko `supabase.auth.getUser(token)` + `isAdmin(email)` (nema service-role ključa, ne treba)

@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { submitPrijedlog } from '$lib/stores/prijevodPrijedlozi';
 	import type { LangCode } from '$lib/i18n/locale';
+	import type { PrijevodIzvor } from '$lib/db/schema';
 
 	export let terminKljuc: string;
+	export let bsOriginal: string;
 	export let trenutniPrijevod: string;
 	export let jezik: LangCode;
+	export let izvor: PrijevodIzvor;
+	export let izvorId: string | null = null;
 	export let userId: string;
 	export let onClose: () => void;
 
@@ -24,6 +28,8 @@
 		try {
 			await submitPrijedlog({
 				termin_kljuc: terminKljuc,
+				izvor,
+				izvor_id: izvorId,
 				jezik,
 				trenutni_prijevod: trenutniPrijevod,
 				prijedlog: prijedlog.trim(),
@@ -51,10 +57,15 @@
 			<button class="btn variant-filled-primary w-full" on:click={onClose}>Zatvori</button>
 		{:else}
 			<form class="space-y-3" on:submit|preventDefault={handleSubmit}>
-				<div class="text-xs text-surface-500 font-mono break-all">{terminKljuc} ({jezik})</div>
+				<div class="text-xs text-surface-500 font-mono break-all">{terminKljuc}</div>
 
 				<label class="label">
-					<span class="text-xs font-medium">Trenutni prijevod</span>
+					<span class="text-xs font-medium">Termin (BS original)</span>
+					<input class="input input-sm" type="text" value={bsOriginal} disabled />
+				</label>
+
+				<label class="label">
+					<span class="text-xs font-medium">Trenutni prijevod ({jezik})</span>
 					<input class="input input-sm" type="text" value={trenutniPrijevod} disabled />
 				</label>
 
