@@ -14,6 +14,7 @@
 	import NovaPticaModal from '$lib/components/NovaPticaModal.svelte';
 	import RodovnikModal from '$lib/components/RodovnikModal.svelte';
 	import MasovniTretmanModal from '$lib/components/MasovniTretmanModal.svelte';
+	import TranslatableLabel from '$lib/components/TranslatableLabel.svelte';
 	import { t } from '$lib/i18n';
 	import { locale } from '$lib/i18n/locale';
 	import { loadZdravlje as loadZdravlje_, createZdravlje, deleteZdravlje, TIP_OPCIJE } from '$lib/stores/zdravlje';
@@ -275,7 +276,7 @@
 
 	<!-- Header -->
 	<div class="flex items-center justify-between">
-		<h2 class="h3 font-bold">{$t.ptice.title}</h2>
+		<h2 class="h3 font-bold"><TranslatableLabel key="ptice.title" value={$t.ptice.title} /></h2>
 		<div class="flex gap-2 items-center flex-wrap justify-end">
 			{#if $aktivneSekcije.length > 0}
 				<button

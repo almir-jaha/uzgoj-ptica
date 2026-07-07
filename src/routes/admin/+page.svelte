@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { user } from '$lib/stores/auth';
+	import { user, session } from '$lib/stores/auth';
 	import {
 		isAdmin, vrstePtica, adminLoading,
 		loadVrstePtica, createVrstaPtica, updateVrstaPtica, deleteVrstaPtica,
@@ -10,10 +10,13 @@
 		updateVrstaGenetikaPolja,
 		genetikaPoljaI18n, loadSvaGenetikaPolja, deleteGenetikaPoljeI18n, createGenetikaPoljeI18n
 	} from '$lib/stores/admin';
+	import {
+		sviPrijedloziPending, loadSviPrijedlozi, prihvatiPrijedlog, odbijPrijedlog
+	} from '$lib/stores/prijevodPrijedlozi';
 	import { TIER_LIMITS } from '$lib/stores/userTier';
 	import type { Tier } from '$lib/stores/userTier';
 	import { goto } from '$app/navigation';
-	import type { VrstaPtica, FazaCiklusa, GenetikaPoljaI18n } from '$lib/db/schema';
+	import type { VrstaPtica, FazaCiklusa, GenetikaPoljaI18n, PrijevodPrijedlog } from '$lib/db/schema';
 	import NovoGenetikaPoljeModal from '$lib/components/NovoGenetikaPoljeModal.svelte';
 	import {
 		getSchemaForVrsta, type GenetikaPolje, type PoljeTip,
@@ -98,6 +101,40 @@
 	let odabranaGrupa: 'kanarinac_finke' | 'golubovi' | 'papagaji' | 'ostalo' = 'kanarinac_finke';
 	let brisiPoljeId: string | null = null;
 
+	// Prijedlozi prijevoda state
+	let prijedlogActionLoadingId: string | null = null;
+	let prijedlogError = '';
+
+	async function handlePrihvatiPrijedlog(prijedlog: PrijevodPrijedlog) {
+		const accessToken = $session?.access_token;
+		if (!accessToken) {
+			prijedlogError = 'Nema aktivne sesije';
+			return;
+		}
+		prijedlogActionLoadingId = prijedlog.id;
+		prijedlogError = '';
+		try {
+			await prihvatiPrijedlog(prijedlog, accessToken);
+		} catch (e) {
+			prijedlogError = e instanceof Error ? e.message : 'Greška pri prihvatanju prijedloga';
+		} finally {
+			prijedlogActionLoadingId = null;
+		}
+	}
+
+	async function handleOdbijPrijedlog(id: string) {
+		if (!confirm('Odbiti ovaj prijedlog prijevoda?')) return;
+		prijedlogActionLoadingId = id;
+		prijedlogError = '';
+		try {
+			await odbijPrijedlog(id);
+		} catch (e) {
+			prijedlogError = e instanceof Error ? e.message : 'Greška pri odbijanju prijedloga';
+		} finally {
+			prijedlogActionLoadingId = null;
+		}
+	}
+
 	async function handleSetTier(userId: string, tier: Tier) {
 		tierLoading = true;
 		tierError = '';
@@ -172,7 +209,8 @@
 			loadVrstePtica(),
 			loadAllUserTiers(),
 			loadAdminUzgajivacnice(),
-			loadSvaGenetikaPolja()
+			loadSvaGenetikaPolja(),
+			loadSviPrijedlozi()
 		]);
 		// Popuni app_url edit stanja
 		$adminUzgajivacnice.forEach((u) => { appUrlEdit[u.id] = u.app_url ?? ''; });
@@ -1097,4 +1135,61 @@
 			}}
 		/>
 	{/if}
+
+	<!-- ── Prijedlozi prijevoda (community) ────────────────────── -->
+	<section class="space-y-3">
+		<h3 class="h4 font-bold">💬 Prijedlozi prijevoda</h3>
+		<p class="text-sm text-surface-500">
+			Prihvatanje odmah upisuje novi prijevod u i18n fajl — radi samo lokalno (npm run dev).
+			Nakon prihvatanja potrebno je commitovati i deployovati izmjenu.
+		</p>
+
+		{#if prijedlogError}
+			<aside class="alert variant-filled-error py-2 px-3 text-sm"><p>{prijedlogError}</p></aside>
+		{/if}
+
+		{#if $sviPrijedloziPending.length === 0}
+			<p class="text-sm text-surface-400 italic px-3 py-2">Nema prijedloga na čekanju.</p>
+		{:else}
+			<div class="space-y-2">
+				{#each $sviPrijedloziPending as p (p.id)}
+					<div class="card p-3 space-y-2">
+						<div class="flex items-center justify-between gap-2">
+							<span class="font-mono text-xs text-surface-500 break-all">{p.termin_kljuc}</span>
+							<span class="badge variant-soft text-xs">{p.jezik}</span>
+						</div>
+						<div class="grid grid-cols-2 gap-2 text-sm">
+							<div>
+								<p class="text-xs text-surface-500">Trenutni prijevod</p>
+								<p>{p.trenutni_prijevod}</p>
+							</div>
+							<div>
+								<p class="text-xs text-surface-500">Prijedlog</p>
+								<p class="font-medium">{p.prijedlog}</p>
+							</div>
+						</div>
+						{#if p.komentar}
+							<p class="text-xs text-surface-500 italic">"{p.komentar}"</p>
+						{/if}
+						<div class="flex gap-2 pt-1">
+							<button
+								class="btn btn-sm variant-filled-success flex-1"
+								disabled={prijedlogActionLoadingId === p.id}
+								on:click={() => handlePrihvatiPrijedlog(p)}
+							>
+								{prijedlogActionLoadingId === p.id ? '...' : '✓ Prihvati'}
+							</button>
+							<button
+								class="btn btn-sm variant-ghost-error flex-1"
+								disabled={prijedlogActionLoadingId === p.id}
+								on:click={() => handleOdbijPrijedlog(p.id)}
+							>
+								✕ Odbij
+							</button>
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</section>
 </div>

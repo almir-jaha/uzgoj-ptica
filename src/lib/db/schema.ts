@@ -249,3 +249,18 @@ export interface GenetikaPoljaI18n {
   created_at: string;
   updated_at: string;
 }
+
+// Community prijevodi — korisnici predlažu bolje prijevode i18n termina, admin ih pregleda
+export type PrijevodStatus = 'pending' | 'prihvaćen' | 'odbijen';
+
+export interface PrijevodPrijedlog {
+  id: string;
+  termin_kljuc: string;         // dot-path ključ iz i18n strukture, npr. 'nav.sezone'
+  jezik: string;                // LangCode iz src/lib/i18n/locale.ts
+  trenutni_prijevod: string;
+  prijedlog: string;
+  komentar?: string;
+  user_id: string;
+  status: PrijevodStatus;
+  created_at: string;
+}
