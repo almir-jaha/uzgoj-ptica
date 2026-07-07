@@ -74,7 +74,7 @@ SvelteKit PWA za upravljanje uzgojem ptica (kavezi, parovi, ciklusi, zdravlje, g
 - `src/lib/i18n/` — BS (referentni), HR, EN, DE, ES, FR, IT, NL, PL, BG, HU, RO, PT, SL, SR, TR, ZH
 - `$t` derived store — automatski osvježava pri promjeni jezika
 - `JezikSelector.svelte` — integrisan u layout (desktop + mobile)
-- BS i HR imaju pune prevode; ostali jezici koriste EN kao fallback za `genetikaPolja` sekciju
+- **Svih 17 jezika su potpuno prevedena** (potvrđeno 2026-07-07) — nema više EN-placeholder tekstova ni u jednom jeziku. Preostala poklapanja sa EN vrijednošću (npr. "Total", "Cage(s)", "Pedigree", "Mutation") su legitimne jezičke koincidencije, ne propusti
 
 ### i18n za DB zapise (DJELIMIČNO)
 
@@ -119,7 +119,7 @@ Komponente:
 
 **Napomena:** prvobitni pokušaj (💬 ikona ožičena inline po cijeloj aplikaciji preko `TranslatableLabel.svelte`) je napušten — previše mjesta gdje `$t.xxx` strukturalno ne može nositi komponentu (`<svelte:head><title>`, HTML atributi, JS dodjele, data nizovi, nav traka) i previše rizika od loma layouta. Zamijenjeno centralnom `/prijevodi` stranicom.
 
-Ruta `/prijevodi` — 3 sekcije za korisnikov trenutni jezik (`$locale`):
+Ruta `/prijevodi` — pretraga na vrhu (filtrira sve 3 sekcije uživo po ključu/BS originalu/trenutnom prijevodu, prikazuje broj rezultata i "no results" stanje) + 3 sekcije za korisnikov trenutni jezik (`$locale`):
 1. **UI termini** — `flattenTranslations()` (`src/lib/i18n/flatten.ts`) pretvara `$t` (trenutni jezik) i `bs` (original) u ravne dot-path mape (`{ 'ptice.title': 'Ptice' }`); tabela: ključ | trenutni prijevod | 💬
 2. **Faze ciklusa** — direktan `supabase.from('faze_ciklusa').select('*')`; tabela: naziv (BS) | `nazivi_jezicima[locale] ?? naziv` | 💬
 3. **Vrste ptica** — direktan `supabase.from('vrsta_ptica').select('*')`; tabela: naziv (BS) | `nazivi_jezicima[locale] ?? naziv` | 💬
