@@ -66,7 +66,7 @@ export class SyncEngine {
           await this.syncTable(table, actions);
           // Samo ako je cijela tabela uspješna, dodaj ID-eve
           actions.forEach((a) => {
-            if (a.id !== undefined) successfulIds.push(a.id as number);
+            if (a.id !== undefined) successfulIds.push(a.id);
           });
         } catch (err) {
           console.error(`Greška pri sinhronizaciji tabele ${table}:`, err);

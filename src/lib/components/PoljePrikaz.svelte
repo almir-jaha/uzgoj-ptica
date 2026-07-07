@@ -37,11 +37,12 @@
 	}
 
 	$: starValue = Number(genetika[polje.kljuc] || 0);
+	$: poljaPrijevodi = $t.genetikaPolja.polja as Record<string, string>;
 </script>
 
 {#if polje.tip === 'select'}
 	<label class="label">
-		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? poljaPrijevodi[polje.kljuc] ?? polje.naziv}</span>
 		<select
 			class="select select-sm"
 			value={String(genetika[polje.kljuc] ?? '')}
@@ -56,7 +57,7 @@
 
 {:else if polje.tip === 'text'}
 	<label class="label">
-		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? poljaPrijevodi[polje.kljuc] ?? polje.naziv}</span>
 		<input
 			class="input input-sm"
 			type="text"
@@ -77,7 +78,7 @@
 
 {:else if polje.tip === 'tags'}
 	<div class="space-y-1.5">
-		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? poljaPrijevodi[polje.kljuc] ?? polje.naziv}</span>
 		{#if getTags().length > 0}
 			<div class="flex flex-wrap gap-1">
 				{#each getTags() as tag}
@@ -116,7 +117,7 @@
 
 {:else if polje.tip === 'number'}
 	<label class="label">
-		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? poljaPrijevodi[polje.kljuc] ?? polje.naziv}</span>
 		<input
 			class="input input-sm"
 			type="number"
@@ -131,7 +132,7 @@
 
 {:else if polje.tip === 'stars'}
 	<div class="space-y-1">
-		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? $t.genetikaPolja.polja[polje.kljuc] ?? polje.naziv}</span>
+		<span class="text-sm">{$genetikaLabels[polje.kljuc] ?? poljaPrijevodi[polje.kljuc] ?? polje.naziv}</span>
 		<div class="flex gap-1 items-center">
 			{#each [1, 2, 3, 4, 5] as n}
 				<button

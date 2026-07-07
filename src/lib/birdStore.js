@@ -1,8 +1,19 @@
 import { writable } from 'svelte/store';
 
+/**
+ * @typedef {{ datumPrvogJajeta: string; provjeraJaja: string; izlijeganje: string; prstenovanje: string; odvajanje: string }} CiklusInfo
+ * @typedef {{ id: number; oznaka: string; status: string; tura: number; ciklus: CiklusInfo | null; vrsta: string; tempVrsta: string; datum_arhiva?: string }} Kavez
+ * @typedef {{ kavezi: Kavez[]; istorija: Kavez[] }} BirdState
+ */
+
+/** @param {string} datum */
 const izracunajTermine = (datum) => {
     if (!datum) return null;
     let start = new Date(datum);
+    /**
+     * @param {Date} d
+     * @param {number} n
+     */
     const dodaj = (d, n) => {
         let res = new Date(d);
         res.setDate(res.getDate() + n);
@@ -19,6 +30,7 @@ const izracunajTermine = (datum) => {
 
 const ISSERVER = typeof window === 'undefined';
 
+/** @returns {Kavez[]} */
 const kreirajPocetneKaveze = () => {
     let kavezi = [];
     for (let i = 1; i <= 20; i++) {
@@ -27,6 +39,7 @@ const kreirajPocetneKaveze = () => {
     return kavezi;
 };
 
+/** @type {BirdState} */
 let pocetnoStanje = { kavezi: kreirajPocetneKaveze(), istorija: [] };
 
 if (!ISSERVER) {
@@ -46,12 +59,18 @@ if (!ISSERVER) {
 }
 
 export const akcije = {
+    /**
+     * @param {number} id
+     * @param {string} datum
+     * @param {string} vrsta
+     */
     zapocniCiklus: (id, datum, vrsta) => {
         store.update(s => {
             s.kavezi = s.kavezi.map(k => k.id === id ? { ...k, status: 'jaja', vrsta: vrsta || k.tempVrsta, ciklus: izracunajTermine(datum) } : k);
             return s;
         });
     },
+    /** @param {number} id */
     zavrsiTuru: (id) => {
         if (!confirm("Arhivirati i završiti turu?")) return;
         store.update(s => {
@@ -84,13 +103,15 @@ export const akcije = {
         a.download = `backup_ptica.json`;
         a.click();
     },
+    /** @param {Event} e */
     importPodataka: (e) => {
-        const file = e.target.files[0];
+        const file = (/** @type {HTMLInputElement} */ (e.target)).files?.[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
             try {
-                const p = JSON.parse(ev.target.result);
+                const result = /** @type {string} */ (ev.target?.result);
+                const p = JSON.parse(result);
                 if (p.kavezi) store.set(p);
             } catch (err) { alert("Greška!"); }
         };

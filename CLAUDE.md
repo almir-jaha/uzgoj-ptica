@@ -108,18 +108,6 @@ Komponente:
 - `NovoGenetikaPoljeModal.svelte` — create/edit genetičkog polja
 - `GenetikaPoljeI18nForm.svelte` — forma za 17 jezičnih prevoda (naziv, opis, placeholder, opcije)
 
-## Aktivne greške / Pending zadaci
+## Pending zadaci
 
-### RIJEŠENO — Snimanje prijevoda genetičkih polja
-- Migration 032 (`auth.uid()` RLS policy) potvrđena na remote bazi 2026-07-06
-- `updateGenetikaPoljeI18n` u `admin.ts` baca vidljivu grešku ako RLS blokira (`.select('id')` check)
-- Korisnik potvrdio da je funkcionalnost radila već od 2026-07-02 (četvrtak)
-
-### RIJEŠENO — GenetikaPoljeI18nForm gubio unos prije submit-a
-- `$:` blok u `GenetikaPoljeI18nForm.svelte` resetovao `nazivi`/`opisi`/`placeholderi`/`opcijeStr` na svaki parent re-render, brišući otkucane vrijednosti prije nego što bi `getJSONBData()` bio pozvan pri submit-u
-- Fix: `onMount(() => {...})` umjesto `$:` bloka (sigurno jer se forma potpuno unmount/remount-uje kroz `{#if novoGenetikaPoljeOpen}` u `admin/+page.svelte`)
-- Potvrđeno lokalnim testom 2026-07-06; izmjene nekomitovane (korisnik želi commit kasnije)
-
-### Ostali pending zadaci
-- Public store (`genetikaI18n.ts`) ne sinhronizira se automatski kad admin izmijeni polje — treba reload stranice
-- 42 pre-existing TypeScript greške u `sezone`, `statistike`, `PoljePrikaz` — nisu naše, ne blokira build
+- `genetikaI18n.ts` store ne sinhronizira automatski kad admin izmijeni polje — treba reload stranice

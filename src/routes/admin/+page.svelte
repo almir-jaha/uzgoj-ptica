@@ -55,6 +55,13 @@
 		{ value: 'papagaji',        label: '🦜 Papagaji' }
 	];
 
+	const GENETIKA_GRUPA_TABOVI = [
+		{ value: 'kanarinac_finke', label: '🐦 Kanarinac / Finke' },
+		{ value: 'golubovi', label: '🕊️ Golubovi' },
+		{ value: 'papagaji', label: '🦜 Papagaji' },
+		{ value: 'ostalo', label: '❓ Ostalo' }
+	] as const;
+
 	// Nova/uredi faza forma (inline, per species)
 	let novaFazaZaVrstu: string | null = null;
 	let editFaza: FazaCiklusa | null = null;
@@ -101,6 +108,10 @@
 		} finally {
 			tierLoading = false;
 		}
+	}
+
+	function onTierSelectChange(userId: string, e: Event & { currentTarget: EventTarget & HTMLSelectElement }) {
+		handleSetTier(userId, e.currentTarget.value as Tier);
 	}
 
 	async function handleSaveAppUrl(uzId: string) {
@@ -537,7 +548,7 @@
 									class="select select-sm text-xs py-0.5"
 									value={row.tier}
 									disabled={tierLoading}
-									on:change={(e) => handleSetTier(row.user_id, /** @type {Tier} */ (e.currentTarget.value))}
+									on:change={(e) => onTierSelectChange(row.user_id, e)}
 								>
 									{#each TIER_OPTIONS as t}
 										<option value={t}>{TIER_LIMITS[t].label}</option>
@@ -942,12 +953,7 @@
 
 		<!-- Tab-ovi za grupu -->
 		<div class="flex gap-2 flex-wrap">
-			{#each [
-				{ value: 'kanarinac_finke', label: '🐦 Kanarinac / Finke' },
-				{ value: 'golubovi', label: '🕊️ Golubovi' },
-				{ value: 'papagaji', label: '🦜 Papagaji' },
-				{ value: 'ostalo', label: '❓ Ostalo' }
-			] as grupa}
+			{#each GENETIKA_GRUPA_TABOVI as grupa}
 				<button
 					class="btn btn-sm"
 					class:variant-filled-primary={odabranaGrupa === grupa.value}

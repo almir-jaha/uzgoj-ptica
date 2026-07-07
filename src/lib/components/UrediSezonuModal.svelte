@@ -2,7 +2,6 @@
 	import { updateSezona, createKavez, deleteKavez, deleteSezona, kavezi as kaveziStore } from '$lib/stores/sezona';
 	import type { Sezona, Kavez, Sekcija } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
-	import { get } from 'svelte/store';
 
 	export let sezona: Sezona;
 	export let sekcije: Sekcija[] = [];
@@ -39,7 +38,6 @@
 	}
 
 	// ── Kavezi tab ──
-	$: trenutniKavezi = get(kaveziStore).filter((k) => k.sezona_id === sezona.id).sort((a, b) => a.oznaka - b.oznaka);
 	// Reaktivno pratimo store
 	$: _storeKavezi = $kaveziStore; // trigger reaktivnost
 	$: trenutniKavezi = $kaveziStore.filter((k) => k.sezona_id === sezona.id).sort((a, b) => a.oznaka - b.oznaka);

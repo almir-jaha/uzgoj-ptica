@@ -110,7 +110,7 @@
 				.sort((a, b) => a.redoslijed - b.redoslijed)
 				.find((f) => {
 					// Provjeri je li ciklus još u ovoj fazi
-					const start = new Date(c.datum_prvog_jajeta);
+					const start = new Date(c.datum_prvog_jajeta as string);
 					const danas = new Date();
 					const diff = Math.floor((danas.getTime() - start.getTime()) / 86400000);
 					return diff < f.redoslijed * (f.broj_dana || 1);

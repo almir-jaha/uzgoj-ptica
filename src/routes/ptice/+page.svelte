@@ -3,7 +3,7 @@
 	import { get } from 'svelte/store';
 
 	import { user } from '$lib/stores/auth';
-	import { ptice, filtriranePtice, pticeMuzjaci, pticeSenke, pticaLoading, loadPtice } from '$lib/stores/ptice';
+	import { ptice, filtriranePtice, pticeMuzjaci, pticeSenke, pticaLoading, loadPtice, updatePtica } from '$lib/stores/ptice';
 	import { aktivnaSezona } from '$lib/stores/sezona';
 	import { aktivnaUzgajivacnica } from '$lib/stores/uzgajivacnica';
 	import { tierLimits, jeNaLimitPtica } from '$lib/stores/userTier';
@@ -257,6 +257,14 @@
 	}
 
 	function postaviFilter(val: string) { filter = val as Filter; }
+
+	$: filterTabovi = [
+		['sve',        $t.ptice.filtar.sve,           $ptice.length],
+		['muzjaci',    $t.ptice.filtar.muzjaci,        $pticeMuzjaci.length],
+		['zenke',      $t.ptice.filtar.zenke,          $pticeSenke.length],
+		['ovaSezone',  `🐣 ${tekucaGodina}`,          pticeOveSezone.length],
+		['ostale',     $t.ptice.filtar.ostale,         pticeOstale.length]
+	] as [Filter, string, number][];
 </script>
 
 <svelte:head>
@@ -294,13 +302,7 @@
 	<!-- Filter tabovi -->
 	{#if !loading && $ptice.length > 0}
 		<div class="flex gap-2 flex-wrap">
-			{#each [
-				['sve',        $t.ptice.filtar.sve,           $ptice.length],
-				['muzjaci',    $t.ptice.filtar.muzjaci,        $pticeMuzjaci.length],
-				['zenke',      $t.ptice.filtar.zenke,          $pticeSenke.length],
-				['ovaSezone',  `🐣 ${tekucaGodina}`,          pticeOveSezone.length],
-				['ostale',     $t.ptice.filtar.ostale,         pticeOstale.length]
-			] as [val, label, count] (val)}
+			{#each filterTabovi as [val, label, count] (val)}
 				<button
 					class="btn btn-sm {filter === val ? 'variant-filled-primary' : 'variant-soft'}"
 					on:click={() => postaviFilter(val)}

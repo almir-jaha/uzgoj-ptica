@@ -160,7 +160,9 @@ export async function createCiklus(ciklusData: Omit<Ciklus, 'id' | 'created_at' 
     const { error: aError } = await supabase.from('aktivnosti_ciklusa').insert(aktivnostiArray);
     if (aError && !isMreznaGreska(aError)) {
       // Aktivnosti ne mogu biti snimljene (stale faza IDs ili drug FK) — rollback svega
-      await supabase.from('ciklusi').delete().eq('id', newCiklus.id).catch(() => {});
+      try {
+        await supabase.from('ciklusi').delete().eq('id', newCiklus.id);
+      } catch {}
       await db.ciklusi.delete(newCiklus.id).catch(() => {});
       await db.aktivnosti_ciklusa.where('ciklus_id').equals(newCiklus.id).delete().catch(() => {});
       ciklusi.update((c) => c.filter((ck) => ck.id !== newCiklus.id));
@@ -320,7 +322,7 @@ export function getCurrentPhase(
     .filter((f) => f.vrsta_ptica_id === ciklus.vrsta_ptica_id)
     .sort((a, b) => a.redoslijed - b.redoslijed);
 
-  const startDate = new Date(ciklus.datum_prvog_jajeta);
+  const startDate = new Date(ciklus.datum_prvog_jajeta as string);
   let akumuliranoDana = 0;
 
   for (const faza of fazeZaOvuVrstu) {
@@ -351,7 +353,7 @@ export function getDaysUntilNextPhase(
     .filter((f) => f.vrsta_ptica_id === ciklus.vrsta_ptica_id)
     .sort((a, b) => a.redoslijed - b.redoslijed);
 
-  const startDate = new Date(ciklus.datum_prvog_jajeta);
+  const startDate = new Date(ciklus.datum_prvog_jajeta as string);
   let akumuliranoDana = 0;
 
   for (const faza of fazeZaOvuVrstu) {

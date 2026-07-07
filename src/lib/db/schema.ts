@@ -149,7 +149,7 @@ export interface Ciklus {
   vrsta_ptica_id: string;
   datum_prvog_jajeta: string | null;
   status: 'aktivan' | 'završen' | 'neuspješan';
-  napomena_paznje?: string; // vanredna pažnja na kavezu (bolest, liječenje...)
+  napomena_paznje?: string | null; // vanredna pažnja na kavezu (bolest, liječenje...)
   broj_jaja?: number;
   broj_izlijegljenih?: number;
   napomena?: string;
@@ -184,7 +184,7 @@ export interface Istorija {
 
 // Offline queue
 export interface OfflineAction {
-  id?: string;
+  id?: number;
   timestamp: number;
   action: 'create' | 'update' | 'delete';
   table: string;

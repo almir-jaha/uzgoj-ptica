@@ -12,7 +12,8 @@ import type {
   OfflineAction,
   UserSettings,
   Uzgajivacnica,
-  Sekcija
+  Sekcija,
+  KavezWithDetails
 } from './schema';
 
 export class UzgojPticaDB extends Dexie {
@@ -25,7 +26,7 @@ export class UzgojPticaDB extends Dexie {
   ciklusi!: Table<Ciklus>;
   aktivnosti_ciklusa!: Table<AktivnostCiklusa>;
   istorija!: Table<Istorija>;
-  offlineQueue!: Table<OfflineAction & { id?: number }>;
+  offlineQueue!: Table<OfflineAction>;
   user_settings!: Table<UserSettings>;
   uzgajivacnice!: Table<Uzgajivacnica>;
   sekcije!: Table<Sekcija>;
@@ -89,7 +90,7 @@ export async function getPticaWithRodovnik(pticaId: string) {
 }
 
 // FIX: getKavezWithDetails sada traži AKTIVNI ciklus, ne bilo koji
-export async function getKavezWithDetails(kavezId: string) {
+export async function getKavezWithDetails(kavezId: string): Promise<KavezWithDetails | null> {
   const kavez = await db.kavezi.get(kavezId);
   if (!kavez) return null;
 
