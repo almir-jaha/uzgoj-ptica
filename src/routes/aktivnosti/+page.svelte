@@ -271,7 +271,7 @@
 	{:else}
 		<p class="text-xs text-surface-400 px-1">{dnevnik.length} {dnevnik.length === 1 ? 'kavez zahtijeva pažnju' : 'kaveza zahtijevaju pažnju'}</p>
 
-		<div class="space-y-2">
+		<div class="space-y-2" data-tour="aktivnosti-lista">
 			{#each dnevnik as s (s.aktivnostId)}
 				{@const jeChecked = checked.has(s.aktivnostId)}
 				<div class="card p-4 flex items-center gap-4 transition-opacity {jeChecked ? 'opacity-40' : ''}">

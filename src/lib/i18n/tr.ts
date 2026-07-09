@@ -587,5 +587,57 @@ export const tr: Translations = {
 		dugmeNazad: 'Geri',
 		dugmeZavrsi: 'Bitir',
 		dugmePreskoci: 'Atla'
+	},
+
+	tours: {
+		pomocTitle: 'Yardım — rehberli turlar',
+		meniNaslov: 'Turlar',
+		meniOpis: 'Temel özellikler için kısa interaktif turlar.',
+		redirectTekst: 'Bu rehber "{stranica}" sayfasında çalışır. Seni oraya götürmemi ister misin?',
+		redirectDa: 'Evet, beni götür',
+		redirectOdustani: 'İptal',
+		onboardingNaziv: 'Karşılama turu',
+		onboardingOpis: 'Uygulamaya temel bakış — sezon, kafesler, çevrimdışı mod.',
+
+		ciklus: {
+			naziv: 'İlk döngü',
+			opis: 'Bir döngü nasıl başlatılır — çift, kafes, yumurta tarihi ve evre takibi.',
+			naslov1: 'Bir çift seç',
+			tekst1: 'Bir döngü başlatmadan önce aktif bir çifte ihtiyacın var. Burada mevcut çiftleri görürsün ya da yeni bir tane oluşturursun.',
+			naslov2: 'Bir kafes seç',
+			tekst2: 'Formu açmak ve çiftini atamak için boş (gri) bir kafese tıkla.',
+			naslov3: 'İlk yumurta tarihini gir',
+			tekst3: 'Çift yumurtlamaya başladığında kafese tıkla ve ilk yumurta tarihini gir — tüm evreler bu tarihten itibaren hesaplanır.',
+			naslov4: 'Otomatik etkinlikler',
+			tekst4: 'Tarihi girer girmez, uygulama otomatik olarak kesin tarihlerle bir etkinlik takvimi oluşturur (örn. çıkım kontrolü) — hepsini burada görürsün.',
+			naslov5: 'Evre renkleri',
+			tekst5: 'Kafesteki çubuk tüm döngü evrelerini gösterir — vurgulanan renk mevcut evredir, diğerleri soluktur.'
+		},
+
+		rodovnik: {
+			naziv: 'Soy ağacı',
+			opis: 'Ebeveynler nasıl bağlanır, soy nasıl görüntülenir ve PDF soy ağacı nasıl oluşturulur.',
+			naslov1: 'Kuş detayları',
+			tekst1: 'Herhangi bir kuşun tüm bilgilerini açmak ve düzenlemek için ✏️ Düzenle\'ye tıkla.',
+			naslov2: 'Baba ve anneyi bağla',
+			tekst2: 'Düzenleme formunda kuş listenden Baba ve Anne\'yi seç — bu otomatik olarak soy ağacını oluşturur.',
+			naslov3: 'Soy ağacını görüntüle',
+			tekst3: 'Kuşun soy ağacını açmak için 🌳 Soy ağacı\'na tıkla — başkalarının giriş yapmadan soyu görebilmesi için genel bağlantıyı (📤) da paylaşabilirsin.',
+			naslov4: 'PDF oluştur',
+			tekst4: '5 şablondan birini seç ve QR kodlu, yazdırılabilir bir soy ağacı indirmek için "PDF Oluştur"a tıkla.'
+		},
+
+		zdravlje: {
+			naziv: 'Sağlık günlüğü',
+			opis: 'Her kuşun hastalıklarını, tedavilerini ve sağlık geçmişini nasıl takip edeceğin.',
+			naslov1: 'Günlüğü aç',
+			tekst1: 'Herhangi bir kuşun sağlık günlüğünü açmak için 💊 simgesine tıkla.',
+			naslov2: 'Yeni kayıt',
+			tekst2: '"+ Yeni kayıt" bir form açar — türü (hastalık, önleme, aşılama...), tarihi, adı, ilacı ve notu seç.',
+			naslov3: 'Geçmiş',
+			tekst3: 'Önceki tüm kayıtlar aşağıda kronolojik sırayla gösterilir — en yeni ilk sırada.',
+			naslov4: 'Tarihe göre sıralı',
+			tekst4: 'Liste her zaman tarihe göre sıralanır (en yeni ilk sırada), böylece son geçmişi hızlıca görebilirsin. Özel bir tarih aralığı filtresi henüz mevcut değil.'
+		}
 	}
 } as const satisfies Translations;

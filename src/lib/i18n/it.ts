@@ -587,5 +587,57 @@ export const it: Translations = {
 		dugmeNazad: 'Indietro',
 		dugmeZavrsi: 'Fine',
 		dugmePreskoci: 'Salta'
+	},
+
+	tours: {
+		pomocTitle: 'Aiuto — tour guidati',
+		meniNaslov: 'Tour',
+		meniOpis: 'Brevi tour interattivi delle funzioni principali.',
+		redirectTekst: 'Questo tour funziona nella pagina "{stranica}". Vuoi che ti ci porti?',
+		redirectDa: 'Sì, portami lì',
+		redirectOdustani: 'Annulla',
+		onboardingNaziv: 'Tour di benvenuto',
+		onboardingOpis: 'Una panoramica di base dell\'app — stagione, gabbie, modalità offline.',
+
+		ciklus: {
+			naziv: 'Primo ciclo',
+			opis: 'Come avviare un ciclo — coppia, gabbia, data dell\'uovo e monitoraggio delle fasi.',
+			naslov1: 'Scegli una coppia',
+			tekst1: 'Prima di avviare un ciclo serve una coppia attiva. Qui vedi le coppie esistenti o ne crei una nuova.',
+			naslov2: 'Scegli una gabbia',
+			tekst2: 'Clicca su una gabbia vuota (grigia) per aprire il modulo e assegnarle la coppia.',
+			naslov3: 'Inserisci la data del primo uovo',
+			tekst3: 'Quando la coppia inizia a deporre le uova, clicca sulla gabbia e inserisci la data del primo uovo — tutte le fasi si calcolano da questa data.',
+			naslov4: 'Attività automatiche',
+			tekst4: 'Non appena inserisci la data, l\'app genera automaticamente un calendario di attività (es. controllo della schiusa) con date precise — le vedi tutte qui.',
+			naslov5: 'Colori delle fasi',
+			tekst5: 'La barra sulla gabbia mostra tutte le fasi del ciclo — il colore evidenziato è la fase attuale, gli altri sono sbiaditi.'
+		},
+
+		rodovnik: {
+			naziv: 'Pedigree',
+			opis: 'Come collegare i genitori, visualizzare il lignaggio e generare un pedigree PDF.',
+			naslov1: 'Dettagli dell\'uccello',
+			tekst1: 'Clicca su ✏️ Modifica su qualsiasi uccello per aprire e modificare tutti i suoi dati.',
+			naslov2: 'Collega padre e madre',
+			tekst2: 'Nel modulo di modifica, scegli Padre e Madre dalla tua lista di uccelli — questo costruisce automaticamente il pedigree.',
+			naslov3: 'Visualizza il pedigree',
+			tekst3: 'Clicca su 🌳 Pedigree per aprire il pedigree dell\'uccello — puoi anche condividere il link pubblico (📤) così altri vedono il lignaggio senza accedere.',
+			naslov4: 'Genera un PDF',
+			tekst4: 'Scegli uno dei 5 modelli e clicca su "Genera PDF" per scaricare un pedigree stampabile con codice QR.'
+		},
+
+		zdravlje: {
+			naziv: 'Diario sanitario',
+			opis: 'Come monitorare malattie, terapie e storico sanitario di ogni uccello.',
+			naslov1: 'Apri il diario',
+			tekst1: 'Clicca su 💊 su qualsiasi uccello per aprire il suo diario sanitario.',
+			naslov2: 'Nuova voce',
+			tekst2: '"+ Nuova voce" apre un modulo — scegli il tipo (malattia, prevenzione, vaccinazione...), data, nome, farmaco e nota.',
+			naslov3: 'Cronologia',
+			tekst3: 'Tutte le voci precedenti sono mostrate sotto, in ordine cronologico — la più recente per prima.',
+			naslov4: 'Ordinato per data',
+			tekst4: 'L\'elenco è sempre ordinato per data (più recente per primo), così puoi scorrere rapidamente la cronologia recente. Un filtro dedicato per intervallo di date non esiste ancora.'
+		}
 	}
 } as const satisfies Translations;

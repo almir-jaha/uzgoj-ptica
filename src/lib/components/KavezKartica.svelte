@@ -84,6 +84,7 @@
 	role={readonly ? undefined : 'button'}
 	tabindex={readonly ? undefined : 0}
 	on:click={() => !readonly && dispatch('kliknut')}
+	data-tour={details.status === 'prazan' ? 'kavez-prazan' : undefined}
 >
 	<!-- Header -->
 	<div class="flex items-start justify-between gap-1">
@@ -127,7 +128,7 @@
 
 		<!-- Traka faza -->
 		{#if fazeZaVrstu.length > 0}
-			<div class="flex gap-0.5 rounded overflow-hidden" title={fazaNaziv}>
+			<div class="flex gap-0.5 rounded overflow-hidden" title={fazaNaziv} data-tour="faze-boje">
 				{#each fazeZaVrstu as faza (faza.id)}
 					<div
 						class="h-2 flex-1 transition-opacity"
@@ -139,7 +140,7 @@
 
 		<!-- Trenutna faza + dani -->
 		{#if !details.aktivni_ciklus?.datum_prvog_jajeta}
-			<p class="text-xs font-medium" style="color:#6366f1">{$t.kavezi.cekaDatumPrvogJajeta}</p>
+			<p class="text-xs font-medium" style="color:#6366f1" data-tour="kavez-ceka-jaje">{$t.kavezi.cekaDatumPrvogJajeta}</p>
 		{:else if trenutnaFaza}
 			<div class="flex items-center justify-between gap-1">
 				<span

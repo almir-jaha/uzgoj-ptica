@@ -587,5 +587,57 @@ export const sl: Translations = {
 		dugmeNazad: 'Nazaj',
 		dugmeZavrsi: 'Zaključi',
 		dugmePreskoci: 'Preskoči'
+	},
+
+	tours: {
+		pomocTitle: 'Pomoč — vodniki po aplikaciji',
+		meniNaslov: 'Vodniki',
+		meniOpis: 'Kratki interaktivni vodniki po najpomembnejših funkcijah.',
+		redirectTekst: 'Ta vodnik deluje na strani "{stranica}". Ali te želim popeljati tja?',
+		redirectDa: 'Da, popelji me',
+		redirectOdustani: 'Prekliči',
+		onboardingNaziv: 'Uvodni vodnik',
+		onboardingOpis: 'Osnovni pregled aplikacije — sezona, kletke, delo brez povezave.',
+
+		ciklus: {
+			naziv: 'Prvi cikel',
+			opis: 'Kako začeti cikel — par, kletka, datum jajca in spremljanje faz.',
+			naslov1: 'Izberi par',
+			tekst1: 'Preden začneš cikel, potrebuješ aktiven par. Tukaj vidiš obstoječe pare ali ustvariš novega.',
+			naslov2: 'Izberi kletko',
+			tekst2: 'Klikni na prazno (sivo) kletko, da odpreš obrazec in ji dodeliš izbrani par.',
+			naslov3: 'Vnos datuma prvega jajca',
+			tekst3: 'Ko par začne valiti jajca, klikni na kletko in vnesi datum prvega jajca — od tega datuma se štejejo vse faze.',
+			naslov4: 'Samodejne aktivnosti',
+			tekst4: 'Takoj ko vneseš datum, aplikacija samodejno ustvari razpored aktivnosti (npr. preverjanje valjenja) z natančnimi datumi — vse jih vidiš tukaj.',
+			naslov5: 'Barve faz',
+			tekst5: 'Trak na kletki prikazuje vse faze cikla — poudarjena barva je trenutna faza, ostale so bledejše.'
+		},
+
+		rodovnik: {
+			naziv: 'Rodovnik',
+			opis: 'Kako povezati starše, si ogledati poreklo in izdelati PDF rodovnik.',
+			naslov1: 'Podrobnosti ptice',
+			tekst1: 'Klikni ✏️ Uredi na kateri koli ptici, da odpreš in urediš vse njene podatke.',
+			naslov2: 'Poveži očeta in mater',
+			tekst2: 'V obrazcu za urejanje izberi Očeta in Mater s seznama svojih ptic — to samodejno zgradi rodovnik.',
+			naslov3: 'Ogled rodovnika',
+			tekst3: 'Klikni 🌳 Pedigre, da odpreš rodovnik ptice — lahko deliš tudi javno povezavo (📤), da drugi vidijo poreklo brez prijave.',
+			naslov4: 'Ustvari PDF',
+			tekst4: 'Izberi enega od 5 predlog in klikni "Generiraj PDF", da prenesete natisljiv rodovnik s QR kodo.'
+		},
+
+		zdravlje: {
+			naziv: 'Zdravstveni dnevnik',
+			opis: 'Kako spremljati bolezni, terapije in zdravstveno zgodovino vsake ptice.',
+			naslov1: 'Odpri dnevnik',
+			tekst1: 'Klikni 💊 na kateri koli ptici, da odpreš njen zdravstveni dnevnik.',
+			naslov2: 'Nov vnos',
+			tekst2: '"+ Nov vnos" odpre obrazec — izberi vrsto (bolezen, preventiva, cepljenje...), datum, naziv, zdravilo in opombo.',
+			naslov3: 'Zgodovina',
+			tekst3: 'Vsi predhodni vnosi so prikazani spodaj, razvrščeni kronološko — najnovejši najprej.',
+			naslov4: 'Pregled po datumu',
+			tekst4: 'Seznam je vedno razvrščen po datumu (najnovejši najprej), tako da hitro vidiš nedavno zgodovino. Poseben filter po datumskem razponu trenutno ne obstaja.'
+		}
 	}
 } as const satisfies Translations;

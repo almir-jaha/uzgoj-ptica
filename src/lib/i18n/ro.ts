@@ -587,5 +587,57 @@ export const ro: Translations = {
 		dugmeNazad: 'Înapoi',
 		dugmeZavrsi: 'Finalizează',
 		dugmePreskoci: 'Sari peste'
+	},
+
+	tours: {
+		pomocTitle: 'Ajutor — tururi ghidate',
+		meniNaslov: 'Tururi',
+		meniOpis: 'Tururi interactive scurte prin funcțiile cheie.',
+		redirectTekst: 'Acest tur funcționează pe pagina "{stranica}". Vrei să te duc acolo?',
+		redirectDa: 'Da, du-mă acolo',
+		redirectOdustani: 'Anulează',
+		onboardingNaziv: 'Tur de bun venit',
+		onboardingOpis: 'O prezentare de bază a aplicației — sezon, colivii, mod offline.',
+
+		ciklus: {
+			naziv: 'Primul ciclu',
+			opis: 'Cum să pornești un ciclu — pereche, colivie, data oului și urmărirea fazelor.',
+			naslov1: 'Alege o pereche',
+			tekst1: 'Înainte de a porni un ciclu ai nevoie de o pereche activă. Aici vezi perechile existente sau creezi una nouă.',
+			naslov2: 'Alege o colivie',
+			tekst2: 'Apasă pe o colivie goală (gri) pentru a deschide formularul și a atribui perechea.',
+			naslov3: 'Introdu data primului ou',
+			tekst3: 'Când perechea începe să ouă, apasă pe colivie și introdu data primului ou — toate fazele se calculează de la această dată.',
+			naslov4: 'Activități automate',
+			tekst4: 'De îndată ce introduci data, aplicația generează automat un program de activități (ex. verificarea ecloziunii) cu date exacte — le vezi pe toate aici.',
+			naslov5: 'Culorile fazelor',
+			tekst5: 'Bara de pe colivie arată toate fazele ciclului — culoarea evidențiată este faza curentă, restul sunt estompate.'
+		},
+
+		rodovnik: {
+			naziv: 'Pedigree',
+			opis: 'Cum să legi părinții, să vezi descendența și să generezi un pedigree PDF.',
+			naslov1: 'Detaliile păsării',
+			tekst1: 'Apasă ✏️ Editează pe orice pasăre pentru a deschide și modifica toate datele acesteia.',
+			naslov2: 'Leagă tatăl și mama',
+			tekst2: 'În formularul de editare, alege Tatăl și Mama din lista ta de păsări — acest lucru construiește automat pedigree-ul.',
+			naslov3: 'Vizualizează pedigree-ul',
+			tekst3: 'Apasă 🌳 Pedigree pentru a deschide pedigree-ul păsării — poți partaja și linkul public (📤) ca alții să vadă descendența fără autentificare.',
+			naslov4: 'Generează un PDF',
+			tekst4: 'Alege unul dintre cele 5 șabloane și apasă „Generează PDF" pentru a descărca un pedigree imprimabil cu cod QR.'
+		},
+
+		zdravlje: {
+			naziv: 'Jurnal de sănătate',
+			opis: 'Cum să urmărești bolile, tratamentele și istoricul de sănătate al fiecărei păsări.',
+			naslov1: 'Deschide jurnalul',
+			tekst1: 'Apasă 💊 pe orice pasăre pentru a-i deschide jurnalul de sănătate.',
+			naslov2: 'Intrare nouă',
+			tekst2: '„+ Intrare nouă" deschide un formular — alege tipul (boală, prevenție, vaccinare...), data, numele, medicamentul și nota.',
+			naslov3: 'Istoric',
+			tekst3: 'Toate intrările anterioare sunt afișate mai jos, în ordine cronologică — cele mai noi primele.',
+			naslov4: 'Sortat după dată',
+			tekst4: 'Lista este întotdeauna sortată după dată (cele mai noi primele), astfel încât să poți parcurge rapid istoricul recent. Un filtru dedicat pe interval de date nu există încă.'
+		}
 	}
 } as const satisfies Translations;

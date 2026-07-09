@@ -587,5 +587,57 @@ export const pt: Translations = {
 		dugmeNazad: 'Voltar',
 		dugmeZavrsi: 'Concluir',
 		dugmePreskoci: 'Saltar'
+	},
+
+	tours: {
+		pomocTitle: 'Ajuda — visitas guiadas',
+		meniNaslov: 'Visitas',
+		meniOpis: 'Curtas visitas interativas pelas principais funcionalidades.',
+		redirectTekst: 'Esta visita funciona na página "{stranica}". Queres que te leve até lá?',
+		redirectDa: 'Sim, leva-me até lá',
+		redirectOdustani: 'Cancelar',
+		onboardingNaziv: 'Visita de boas-vindas',
+		onboardingOpis: 'Uma visão geral básica da aplicação — época, gaiolas, modo offline.',
+
+		ciklus: {
+			naziv: 'Primeiro ciclo',
+			opis: 'Como iniciar um ciclo — casal, gaiola, data do ovo e acompanhamento das fases.',
+			naslov1: 'Escolhe um casal',
+			tekst1: 'Antes de iniciar um ciclo precisas de um casal ativo. Aqui vês os casais existentes ou crias um novo.',
+			naslov2: 'Escolhe uma gaiola',
+			tekst2: 'Clica numa gaiola vazia (cinzenta) para abrir o formulário e atribuir o casal.',
+			naslov3: 'Insere a data do primeiro ovo',
+			tekst3: 'Quando o casal começar a pôr ovos, clica na gaiola e insere a data do primeiro ovo — todas as fases são calculadas a partir dessa data.',
+			naslov4: 'Atividades automáticas',
+			tekst4: 'Assim que inseres a data, a aplicação gera automaticamente um calendário de atividades (ex. verificação da eclosão) com datas exatas — vês tudo aqui.',
+			naslov5: 'Cores das fases',
+			tekst5: 'A barra na gaiola mostra todas as fases do ciclo — a cor destacada é a fase atual, as restantes estão esbatidas.'
+		},
+
+		rodovnik: {
+			naziv: 'Pedigree',
+			opis: 'Como associar os pais, ver a linhagem e gerar um pedigree em PDF.',
+			naslov1: 'Detalhes da ave',
+			tekst1: 'Clica em ✏️ Editar em qualquer ave para abrir e alterar todos os seus dados.',
+			naslov2: 'Associa pai e mãe',
+			tekst2: 'No formulário de edição, escolhe Pai e Mãe da tua lista de aves — isto constrói automaticamente o pedigree.',
+			naslov3: 'Ver o pedigree',
+			tekst3: 'Clica em 🌳 Pedigree para abrir o pedigree da ave — também podes partilhar o link público (📤) para que outros vejam a linhagem sem iniciar sessão.',
+			naslov4: 'Gera um PDF',
+			tekst4: 'Escolhe um dos 5 modelos e clica em "Gerar PDF" para descarregar um pedigree imprimível com código QR.'
+		},
+
+		zdravlje: {
+			naziv: 'Diário de saúde',
+			opis: 'Como acompanhar doenças, tratamentos e histórico de saúde de cada ave.',
+			naslov1: 'Abre o diário',
+			tekst1: 'Clica em 💊 em qualquer ave para abrir o seu diário de saúde.',
+			naslov2: 'Novo registo',
+			tekst2: '"+ Novo registo" abre um formulário — escolhe o tipo (doença, prevenção, vacinação...), data, nome, medicamento e nota.',
+			naslov3: 'Histórico',
+			tekst3: 'Todos os registos anteriores são apresentados abaixo, por ordem cronológica — o mais recente primeiro.',
+			naslov4: 'Ordenado por data',
+			tekst4: 'A lista está sempre ordenada por data (mais recente primeiro), para que possas rever rapidamente o histórico recente. Ainda não existe um filtro dedicado por intervalo de datas.'
+		}
 	}
 } as const satisfies Translations;

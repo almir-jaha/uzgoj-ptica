@@ -466,10 +466,10 @@
 
 					<!-- Red 3: Akcije -->
 					<div class="flex gap-1 mt-2 pt-2 border-t border-surface-300-600-token">
-						<button class="btn btn-sm variant-ghost-surface flex-1" on:click={() => otvoriUredi(ptica)}>
+						<button class="btn btn-sm variant-ghost-surface flex-1" on:click={() => otvoriUredi(ptica)} data-tour="ptica-uredi-btn">
 							✏️ {$t.ptice.uredi}
 						</button>
-						<button class="btn btn-sm variant-ghost-tertiary flex-1" on:click={() => otvoriRodovnik(ptica)}>
+						<button class="btn btn-sm variant-ghost-tertiary flex-1" on:click={() => otvoriRodovnik(ptica)} data-tour="ptica-rodovnik-btn">
 							🌳 Pedigre
 						</button>
 						<button
@@ -486,6 +486,7 @@
 							class="btn btn-sm variant-ghost-surface"
 							on:click={() => otvoriZdravlje(ptica)}
 							title={$t.zdravlje.naslov}
+							data-tour="ptica-zdravlje-btn"
 						>💊</button>
 					</div>
 				</div>
@@ -583,7 +584,7 @@
 
 			<!-- Forma za novi unos -->
 			{#if !zdravljeForm}
-				<button class="btn variant-filled-primary w-full shrink-0" on:click={() => { zdravljeForm = true; zNaziv = ''; zOpis = ''; zLijek = ''; zTrajanje = ''; zTip = 'bolest'; zDatum = new Date().toISOString().split('T')[0]; }}>
+				<button class="btn variant-filled-primary w-full shrink-0" on:click={() => { zdravljeForm = true; zNaziv = ''; zOpis = ''; zLijek = ''; zTrajanje = ''; zTip = 'bolest'; zDatum = new Date().toISOString().split('T')[0]; }} data-tour="zdravlje-novi-unos-btn">
 					{$t.zdravlje.noviUnosBtn}
 				</button>
 			{:else}
@@ -631,7 +632,7 @@
 			{/if}
 
 			<!-- Lista zapisa -->
-			<div class="overflow-y-auto flex-1 space-y-2">
+			<div class="overflow-y-auto flex-1 space-y-2" data-tour="zdravlje-lista">
 				{#if zdravljeLoading}
 					<p class="text-center text-surface-400 py-4">↻ {$t.common.ucitavanje}</p>
 				{:else if zdravljeRekordList.length === 0}

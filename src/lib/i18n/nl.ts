@@ -587,5 +587,57 @@ export const nl: Translations = {
 		dugmeNazad: 'Terug',
 		dugmeZavrsi: 'Voltooien',
 		dugmePreskoci: 'Overslaan'
+	},
+
+	tours: {
+		pomocTitle: 'Hulp — rondleidingen',
+		meniNaslov: 'Rondleidingen',
+		meniOpis: 'Korte interactieve rondleidingen langs de belangrijkste functies.',
+		redirectTekst: 'Deze rondleiding werkt op de pagina "{stranica}". Wil je dat ik je daarheen breng?',
+		redirectDa: 'Ja, breng me erheen',
+		redirectOdustani: 'Annuleren',
+		onboardingNaziv: 'Introductierondleiding',
+		onboardingOpis: 'Een basisoverzicht van de app — seizoen, kooien, offline modus.',
+
+		ciklus: {
+			naziv: 'Eerste cyclus',
+			opis: 'Hoe start je een cyclus — paar, kooi, eidatum en fasetracking.',
+			naslov1: 'Kies een paar',
+			tekst1: 'Voordat je een cyclus start heb je een actief paar nodig. Hier zie je bestaande paren of maak je een nieuw paar aan.',
+			naslov2: 'Kies een kooi',
+			tekst2: 'Klik op een lege (grijze) kooi om het formulier te openen en je paar toe te wijzen.',
+			naslov3: 'Voer de datum van het eerste ei in',
+			tekst3: 'Zodra het paar begint te leggen, klik je op de kooi en voer je de datum van het eerste ei in — alle fasen worden vanaf deze datum berekend.',
+			naslov4: 'Automatische activiteiten',
+			tekst4: 'Zodra je de datum invoert, genereert de app automatisch een schema van activiteiten (bijv. uitkomstcontrole) met exacte data — je ziet ze hier allemaal.',
+			naslov5: 'Fasekleuren',
+			tekst5: 'De balk op de kooi toont alle cyclusfasen — de gemarkeerde kleur is de huidige fase, de rest is vervaagd.'
+		},
+
+		rodovnik: {
+			naziv: 'Stamboom',
+			opis: 'Hoe je ouders koppelt, de afstamming bekijkt en een PDF-stamboom genereert.',
+			naslov1: 'Vogeldetails',
+			tekst1: 'Klik op ✏️ Bewerken bij een vogel om alle gegevens te openen en te wijzigen.',
+			naslov2: 'Koppel vader en moeder',
+			tekst2: 'Kies in het bewerkingsformulier Vader en Moeder uit je vogellijst — dit bouwt automatisch de stamboom op.',
+			naslov3: 'Stamboom bekijken',
+			tekst3: 'Klik op 🌳 Stamboom om de stamboom van de vogel te openen — je kunt ook de openbare link (📤) delen zodat anderen de afstamming kunnen zien zonder in te loggen.',
+			naslov4: 'Genereer een PDF',
+			tekst4: 'Kies een van de 5 sjablonen en klik op "Genereer PDF" om een afdrukbare stamboom met QR-code te downloaden.'
+		},
+
+		zdravlje: {
+			naziv: 'Gezondheidsdagboek',
+			opis: 'Hoe je ziektes, behandelingen en gezondheidsgeschiedenis van elke vogel bijhoudt.',
+			naslov1: 'Open het dagboek',
+			tekst1: 'Klik op 💊 bij een vogel om het gezondheidsdagboek te openen.',
+			naslov2: 'Nieuwe invoer',
+			tekst2: '"+ Nieuwe invoer" opent een formulier — kies het type (ziekte, preventie, vaccinatie...), datum, naam, medicatie en notitie.',
+			naslov3: 'Geschiedenis',
+			tekst3: 'Alle eerdere invoeren worden hieronder chronologisch getoond — nieuwste eerst.',
+			naslov4: 'Gesorteerd op datum',
+			tekst4: 'De lijst is altijd gesorteerd op datum (nieuwste eerst), zodat je snel de recente geschiedenis kunt bekijken. Een aparte datumbereikfilter bestaat nog niet.'
+		}
 	}
 } as const satisfies Translations;

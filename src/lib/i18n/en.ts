@@ -576,5 +576,57 @@ export const en: Translations = {
 		dugmeNazad: 'Back',
 		dugmeZavrsi: 'Finish',
 		dugmePreskoci: 'Skip'
+	},
+
+	tours: {
+		pomocTitle: 'Help — guided tours',
+		meniNaslov: 'Guides',
+		meniOpis: 'Short interactive walkthroughs of the key features.',
+		redirectTekst: 'This guide works on the "{stranica}" page. Want me to take you there?',
+		redirectDa: 'Yes, take me there',
+		redirectOdustani: 'Cancel',
+		onboardingNaziv: 'Welcome tour',
+		onboardingOpis: 'A basic overview of the app — season, cages, offline mode.',
+
+		ciklus: {
+			naziv: 'First cycle',
+			opis: 'How to start a cycle — pair, cage, egg date and phase tracking.',
+			naslov1: 'Choose a pair',
+			tekst1: 'Before starting a cycle you need an active pair. Here you see existing pairs or create a new one.',
+			naslov2: 'Choose a cage',
+			tekst2: 'Click an empty (grey) cage to open the form and assign your pair to it.',
+			naslov3: 'Enter the first egg date',
+			tekst3: 'Once the pair starts laying eggs, click the cage and enter the first egg date — all phases are calculated from this date.',
+			naslov4: 'Automatic activities',
+			tekst4: 'As soon as you enter the date, the app automatically generates a schedule of activities (e.g. hatch checks) with exact dates — you see them all here.',
+			naslov5: 'Phase colors',
+			tekst5: 'The bar on the cage shows all cycle phases — the highlighted color is the current phase, the rest are faded.'
+		},
+
+		rodovnik: {
+			naziv: 'Pedigree',
+			opis: 'How to link parents, view lineage and generate a PDF pedigree.',
+			naslov1: 'Bird details',
+			tekst1: 'Click ✏️ Edit on any bird to open and edit all its details.',
+			naslov2: 'Link father and mother',
+			tekst2: 'In the edit form, choose Father and Mother from your list of birds — this automatically builds the pedigree.',
+			naslov3: 'View the pedigree',
+			tekst3: 'Click 🌳 Pedigree to open the bird\'s pedigree — you can also share the public link (📤) so others can see the lineage without logging in.',
+			naslov4: 'Generate a PDF',
+			tekst4: 'Pick one of the 5 templates and click "Generate PDF" to download a printable pedigree with a QR code.'
+		},
+
+		zdravlje: {
+			naziv: 'Health journal',
+			opis: 'How to track illnesses, treatments and health history for each bird.',
+			naslov1: 'Open the journal',
+			tekst1: 'Click 💊 on any bird to open its health journal.',
+			naslov2: 'New entry',
+			tekst2: '"+ New entry" opens a form — choose the type (illness, prevention, vaccination...), date, name, medication and note.',
+			naslov3: 'History',
+			tekst3: 'All previous entries are shown below, in chronological order — newest first.',
+			naslov4: 'Sorted by date',
+			tekst4: 'The list is always sorted by date (newest first), so you can quickly scan recent history. A dedicated date-range filter doesn\'t exist yet.'
+		}
 	}
 } as const satisfies Translations;

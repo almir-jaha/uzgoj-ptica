@@ -588,5 +588,57 @@ export const de: Translations = {
 		dugmeNazad: 'Zurück',
 		dugmeZavrsi: 'Fertig',
 		dugmePreskoci: 'Überspringen'
+	},
+
+	tours: {
+		pomocTitle: 'Hilfe — Touren durch die App',
+		meniNaslov: 'Touren',
+		meniOpis: 'Kurze interaktive Touren durch die wichtigsten Funktionen.',
+		redirectTekst: 'Diese Tour funktioniert auf der Seite "{stranica}". Soll ich dich dorthin bringen?',
+		redirectDa: 'Ja, bring mich hin',
+		redirectOdustani: 'Abbrechen',
+		onboardingNaziv: 'Einführungstour',
+		onboardingOpis: 'Ein grundlegender Überblick über die App — Saison, Käfige, Offline-Modus.',
+
+		ciklus: {
+			naziv: 'Erster Zyklus',
+			opis: 'Wie man einen Zyklus startet — Paar, Käfig, Eidatum und Phasenverfolgung.',
+			naslov1: 'Paar auswählen',
+			tekst1: 'Bevor du einen Zyklus startest, brauchst du ein aktives Paar. Hier siehst du bestehende Paare oder erstellst ein neues.',
+			naslov2: 'Käfig auswählen',
+			tekst2: 'Klicke auf einen leeren (grauen) Käfig, um das Formular zu öffnen und dein Paar zuzuweisen.',
+			naslov3: 'Datum des ersten Eies eingeben',
+			tekst3: 'Sobald das Paar mit dem Legen beginnt, klicke auf den Käfig und gib das Datum des ersten Eies ein — alle Phasen werden ab diesem Datum berechnet.',
+			naslov4: 'Automatische Aktivitäten',
+			tekst4: 'Sobald du das Datum eingibst, erstellt die App automatisch einen Zeitplan mit Aktivitäten (z. B. Schlupfkontrolle) mit genauen Daten — alle hier sichtbar.',
+			naslov5: 'Phasenfarben',
+			tekst5: 'Der Balken am Käfig zeigt alle Zyklusphasen — die hervorgehobene Farbe ist die aktuelle Phase, der Rest ist blasser.'
+		},
+
+		rodovnik: {
+			naziv: 'Stammbaum',
+			opis: 'Wie man Eltern verknüpft, die Abstammung ansieht und einen PDF-Stammbaum erstellt.',
+			naslov1: 'Vogeldetails',
+			tekst1: 'Klicke bei jedem Vogel auf ✏️ Bearbeiten, um alle seine Daten zu öffnen und zu ändern.',
+			naslov2: 'Vater und Mutter verknüpfen',
+			tekst2: 'Wähle im Bearbeitungsformular Vater und Mutter aus deiner Vogelliste — dies erstellt automatisch den Stammbaum.',
+			naslov3: 'Stammbaum ansehen',
+			tekst3: 'Klicke auf 🌳 Pedigree, um den Stammbaum des Vogels zu öffnen — du kannst auch den öffentlichen Link (📤) teilen, damit andere die Abstammung ohne Anmeldung sehen können.',
+			naslov4: 'PDF erstellen',
+			tekst4: 'Wähle eine der 5 Vorlagen und klicke auf „PDF erstellen", um einen druckbaren Stammbaum mit QR-Code herunterzuladen.'
+		},
+
+		zdravlje: {
+			naziv: 'Gesundheitstagebuch',
+			opis: 'Wie man Krankheiten, Behandlungen und die Gesundheitshistorie jedes Vogels verfolgt.',
+			naslov1: 'Tagebuch öffnen',
+			tekst1: 'Klicke bei jedem Vogel auf 💊, um sein Gesundheitstagebuch zu öffnen.',
+			naslov2: 'Neuer Eintrag',
+			tekst2: '„+ Neuer Eintrag" öffnet ein Formular — wähle Typ (Krankheit, Prävention, Impfung...), Datum, Name, Medikament und Notiz.',
+			naslov3: 'Verlauf',
+			tekst3: 'Alle bisherigen Einträge werden unten chronologisch angezeigt — neueste zuerst.',
+			naslov4: 'Sortiert nach Datum',
+			tekst4: 'Die Liste ist immer nach Datum sortiert (neueste zuerst), sodass du die letzte Historie schnell überblickst. Einen eigenen Datumsbereich-Filter gibt es derzeit noch nicht.'
+		}
 	}
 } as const satisfies Translations;

@@ -587,5 +587,57 @@ export const pl: Translations = {
 		dugmeNazad: 'Wstecz',
 		dugmeZavrsi: 'Zakończ',
 		dugmePreskoci: 'Pomiń'
+	},
+
+	tours: {
+		pomocTitle: 'Pomoc — przewodniki po aplikacji',
+		meniNaslov: 'Przewodniki',
+		meniOpis: 'Krótkie interaktywne przewodniki po najważniejszych funkcjach.',
+		redirectTekst: 'Ten przewodnik działa na stronie "{stranica}". Czy chcesz, żebym Cię tam zabrał?',
+		redirectDa: 'Tak, zabierz mnie',
+		redirectOdustani: 'Anuluj',
+		onboardingNaziv: 'Wprowadzenie',
+		onboardingOpis: 'Podstawowy przegląd aplikacji — sezon, klatki, tryb offline.',
+
+		ciklus: {
+			naziv: 'Pierwszy cykl',
+			opis: 'Jak rozpocząć cykl — para, klatka, data jaja i śledzenie faz.',
+			naslov1: 'Wybierz parę',
+			tekst1: 'Zanim rozpoczniesz cykl, potrzebujesz aktywnej pary. Tutaj widzisz istniejące pary lub tworzysz nową.',
+			naslov2: 'Wybierz klatkę',
+			tekst2: 'Kliknij pustą (szarą) klatkę, aby otworzyć formularz i przypisać do niej parę.',
+			naslov3: 'Wprowadź datę pierwszego jaja',
+			tekst3: 'Gdy para zacznie znosić jaja, kliknij klatkę i wprowadź datę pierwszego jaja — wszystkie fazy liczone są od tej daty.',
+			naslov4: 'Automatyczne czynności',
+			tekst4: 'Gdy tylko wprowadzisz datę, aplikacja automatycznie generuje harmonogram czynności (np. kontrola wyklucia) z dokładnymi datami — widzisz je wszystkie tutaj.',
+			naslov5: 'Kolory faz',
+			tekst5: 'Pasek na klatce pokazuje wszystkie fazy cyklu — wyróżniony kolor to bieżąca faza, pozostałe są przygaszone.'
+		},
+
+		rodovnik: {
+			naziv: 'Rodowód',
+			opis: 'Jak powiązać rodziców, przeglądać rodowód i wygenerować rodowód PDF.',
+			naslov1: 'Szczegóły ptaka',
+			tekst1: 'Kliknij ✏️ Edytuj przy dowolnym ptaku, aby otworzyć i zmienić wszystkie jego dane.',
+			naslov2: 'Połącz ojca i matkę',
+			tekst2: 'W formularzu edycji wybierz Ojca i Matkę z listy swoich ptaków — to automatycznie buduje rodowód.',
+			naslov3: 'Przegląd rodowodu',
+			tekst3: 'Kliknij 🌳 Rodowód, aby otworzyć rodowód ptaka — możesz też udostępnić publiczny link (📤), aby inni zobaczyli rodowód bez logowania.',
+			naslov4: 'Wygeneruj PDF',
+			tekst4: 'Wybierz jeden z 5 szablonów i kliknij "Generuj PDF", aby pobrać rodowód do druku z kodem QR.'
+		},
+
+		zdravlje: {
+			naziv: 'Dziennik zdrowia',
+			opis: 'Jak śledzić choroby, terapie i historię zdrowia każdego ptaka.',
+			naslov1: 'Otwórz dziennik',
+			tekst1: 'Kliknij 💊 przy dowolnym ptaku, aby otworzyć jego dziennik zdrowia.',
+			naslov2: 'Nowy wpis',
+			tekst2: '"+ Nowy wpis" otwiera formularz — wybierz typ (choroba, profilaktyka, szczepienie...), datę, nazwę, lek i notatkę.',
+			naslov3: 'Historia',
+			tekst3: 'Wszystkie poprzednie wpisy są widoczne poniżej, w kolejności chronologicznej — najnowsze na górze.',
+			naslov4: 'Sortowanie według daty',
+			tekst4: 'Lista jest zawsze posortowana według daty (najnowsze na górze), dzięki czemu szybko przejrzysz ostatnią historię. Dedykowany filtr zakresu dat jeszcze nie istnieje.'
+		}
 	}
 } as const satisfies Translations;

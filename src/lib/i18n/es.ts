@@ -588,5 +588,57 @@ export const es: Translations = {
 		dugmeNazad: 'Atrás',
 		dugmeZavrsi: 'Finalizar',
 		dugmePreskoci: 'Omitir'
+	},
+
+	tours: {
+		pomocTitle: 'Ayuda — recorridos guiados',
+		meniNaslov: 'Guías',
+		meniOpis: 'Breves recorridos interactivos por las funciones clave.',
+		redirectTekst: 'Esta guía funciona en la página "{stranica}". ¿Quieres que te lleve allí?',
+		redirectDa: 'Sí, llévame',
+		redirectOdustani: 'Cancelar',
+		onboardingNaziv: 'Recorrido de bienvenida',
+		onboardingOpis: 'Una descripción básica de la aplicación — temporada, jaulas, modo sin conexión.',
+
+		ciklus: {
+			naziv: 'Primer ciclo',
+			opis: 'Cómo iniciar un ciclo — pareja, jaula, fecha del huevo y seguimiento de fases.',
+			naslov1: 'Elige una pareja',
+			tekst1: 'Antes de iniciar un ciclo necesitas una pareja activa. Aquí ves las parejas existentes o creas una nueva.',
+			naslov2: 'Elige una jaula',
+			tekst2: 'Haz clic en una jaula vacía (gris) para abrir el formulario y asignarle tu pareja.',
+			naslov3: 'Introduce la fecha del primer huevo',
+			tekst3: 'Cuando la pareja empiece a poner huevos, haz clic en la jaula e introduce la fecha del primer huevo — todas las fases se calculan desde esa fecha.',
+			naslov4: 'Actividades automáticas',
+			tekst4: 'En cuanto introduces la fecha, la aplicación genera automáticamente un calendario de actividades (p. ej. control de eclosión) con fechas exactas — las ves todas aquí.',
+			naslov5: 'Colores de fase',
+			tekst5: 'La barra en la jaula muestra todas las fases del ciclo — el color resaltado es la fase actual, el resto están desvanecidas.'
+		},
+
+		rodovnik: {
+			naziv: 'Pedigrí',
+			opis: 'Cómo vincular padres, ver el linaje y generar un pedigrí en PDF.',
+			naslov1: 'Detalles del ave',
+			tekst1: 'Haz clic en ✏️ Editar en cualquier ave para abrir y modificar todos sus datos.',
+			naslov2: 'Vincula padre y madre',
+			tekst2: 'En el formulario de edición, elige Padre y Madre de tu lista de aves — esto construye el pedigrí automáticamente.',
+			naslov3: 'Ver el pedigrí',
+			tekst3: 'Haz clic en 🌳 Pedigrí para abrir el pedigrí del ave — también puedes compartir el enlace público (📤) para que otros vean el linaje sin iniciar sesión.',
+			naslov4: 'Genera un PDF',
+			tekst4: 'Elige una de las 5 plantillas y haz clic en "Generar PDF" para descargar un pedigrí imprimible con código QR.'
+		},
+
+		zdravlje: {
+			naziv: 'Diario de salud',
+			opis: 'Cómo hacer seguimiento de enfermedades, tratamientos e historial de salud de cada ave.',
+			naslov1: 'Abre el diario',
+			tekst1: 'Haz clic en 💊 en cualquier ave para abrir su diario de salud.',
+			naslov2: 'Nueva entrada',
+			tekst2: '"+ Nueva entrada" abre un formulario — elige el tipo (enfermedad, prevención, vacunación...), fecha, nombre, medicamento y nota.',
+			naslov3: 'Historial',
+			tekst3: 'Todas las entradas anteriores se muestran abajo, en orden cronológico — la más reciente primero.',
+			naslov4: 'Ordenado por fecha',
+			tekst4: 'La lista siempre está ordenada por fecha (la más reciente primero), para que puedas revisar rápidamente el historial reciente. Todavía no existe un filtro dedicado por rango de fechas.'
+		}
 	}
 } as const satisfies Translations;

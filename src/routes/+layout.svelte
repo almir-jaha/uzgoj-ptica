@@ -11,6 +11,7 @@
 	import { isAdmin } from '$lib/stores/admin';
 	import { t } from '$lib/i18n';
 	import JezikSelector from '$lib/components/JezikSelector.svelte';
+	import HelpMenu from '$lib/components/HelpMenu.svelte';
 	import { uzgajivacnice, aktivnaUzgajivacnica, loadUzgajivacnice, setAktivnaUzgajivacnica, clearUzgajivacniceStore } from '$lib/stores/uzgajivacnica';
 	import { loadUserTier, userTier } from '$lib/stores/userTier';
 	import { ptice } from '$lib/stores/ptice';
@@ -168,12 +169,14 @@
 						{#if isAdmin($user?.email)}
 							<a href="/admin" class="btn btn-sm {$page.url.pathname.startsWith('/admin') ? 'variant-filled-warning' : 'variant-ghost-warning'}" title={$t.nav.administracija}>🔧</a>
 						{/if}
+						<HelpMenu />
 						<JezikSelector />
 						<button class="btn btn-sm variant-ghost-surface ml-1" on:click={auth.signOut} title={$t.nav.odjavaTitle}>⎋</button>
 					</nav>
 
 					<!-- Mobile: uzgajivačnica switcher + izlaz, admin, sign out -->
 					<div class="flex sm:hidden items-center gap-1">
+						<HelpMenu />
 						<JezikSelector />
 						{#if $uzgajivacnice.length > 1}
 							<select

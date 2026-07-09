@@ -587,5 +587,57 @@ export const fr: Translations = {
 		dugmeNazad: 'Précédent',
 		dugmeZavrsi: 'Terminer',
 		dugmePreskoci: 'Passer'
+	},
+
+	tours: {
+		pomocTitle: 'Aide — visites guidées',
+		meniNaslov: 'Visites',
+		meniOpis: 'Courtes visites interactives des fonctionnalités clés.',
+		redirectTekst: 'Ce guide fonctionne sur la page « {stranica} ». Veux-tu que je t\'y emmène ?',
+		redirectDa: 'Oui, emmène-moi',
+		redirectOdustani: 'Annuler',
+		onboardingNaziv: 'Visite de bienvenue',
+		onboardingOpis: 'Un aperçu de base de l\'application — saison, cages, mode hors ligne.',
+
+		ciklus: {
+			naziv: 'Premier cycle',
+			opis: 'Comment démarrer un cycle — couple, cage, date de l\'œuf et suivi des phases.',
+			naslov1: 'Choisis un couple',
+			tekst1: 'Avant de démarrer un cycle, il te faut un couple actif. Ici tu vois les couples existants ou en crées un nouveau.',
+			naslov2: 'Choisis une cage',
+			tekst2: 'Clique sur une cage vide (grise) pour ouvrir le formulaire et lui assigner ton couple.',
+			naslov3: 'Saisir la date du premier œuf',
+			tekst3: 'Quand le couple commence à pondre, clique sur la cage et saisis la date du premier œuf — toutes les phases sont calculées à partir de cette date.',
+			naslov4: 'Activités automatiques',
+			tekst4: 'Dès que tu saisis la date, l\'application génère automatiquement un calendrier d\'activités (ex. contrôle d\'éclosion) avec des dates précises — tu les vois toutes ici.',
+			naslov5: 'Couleurs des phases',
+			tekst5: 'La barre sur la cage affiche toutes les phases du cycle — la couleur en surbrillance est la phase actuelle, les autres sont estompées.'
+		},
+
+		rodovnik: {
+			naziv: 'Pedigree',
+			opis: 'Comment lier les parents, consulter la lignée et générer un pedigree PDF.',
+			naslov1: 'Détails de l\'oiseau',
+			tekst1: 'Clique sur ✏️ Modifier sur n\'importe quel oiseau pour ouvrir et modifier toutes ses données.',
+			naslov2: 'Relier le père et la mère',
+			tekst2: 'Dans le formulaire d\'édition, choisis le Père et la Mère dans ta liste d\'oiseaux — cela construit automatiquement le pedigree.',
+			naslov3: 'Consulter le pedigree',
+			tekst3: 'Clique sur 🌳 Pedigree pour ouvrir le pedigree de l\'oiseau — tu peux aussi partager le lien public (📤) pour que d\'autres voient la lignée sans se connecter.',
+			naslov4: 'Générer un PDF',
+			tekst4: 'Choisis l\'un des 5 modèles et clique sur « Générer un PDF » pour télécharger un pedigree imprimable avec un code QR.'
+		},
+
+		zdravlje: {
+			naziv: 'Journal de santé',
+			opis: 'Comment suivre les maladies, traitements et l\'historique de santé de chaque oiseau.',
+			naslov1: 'Ouvrir le journal',
+			tekst1: 'Clique sur 💊 sur n\'importe quel oiseau pour ouvrir son journal de santé.',
+			naslov2: 'Nouvelle entrée',
+			tekst2: '« + Nouvelle entrée » ouvre un formulaire — choisis le type (maladie, prévention, vaccination...), la date, le nom, le médicament et une note.',
+			naslov3: 'Historique',
+			tekst3: 'Toutes les entrées précédentes sont affichées ci-dessous, par ordre chronologique — la plus récente en premier.',
+			naslov4: 'Trié par date',
+			tekst4: 'La liste est toujours triée par date (la plus récente en premier), pour parcourir rapidement l\'historique récent. Un filtre dédié par plage de dates n\'existe pas encore.'
+		}
 	}
 } as const satisfies Translations;

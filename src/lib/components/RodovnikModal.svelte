@@ -210,7 +210,7 @@
 			<button class="btn variant-ghost flex-1" on:click={onClose} disabled={loading}>
 				Odustani
 			</button>
-			<button class="btn variant-filled-primary flex-1" on:click={generiraj} disabled={loading}>
+			<button class="btn variant-filled-primary flex-1" on:click={generiraj} disabled={loading} data-tour="rodovnik-generiraj-btn">
 				{#if loading}
 					<span class="animate-spin mr-2">↻</span> Generiranje...
 				{:else}

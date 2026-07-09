@@ -273,7 +273,7 @@
 				</label>
 
 				<!-- Otac + Majka (direktno u formi) -->
-				<div class="grid grid-cols-2 gap-3">
+				<div class="grid grid-cols-2 gap-3" data-tour="otac-majka-select">
 					<label class="label">
 						<span class="text-sm font-medium">{$t.ptice.otac}</span>
 						<select class="select select-sm" bind:value={otacId} disabled={loading}>

@@ -587,5 +587,57 @@ export const hu: Translations = {
 		dugmeNazad: 'Vissza',
 		dugmeZavrsi: 'Befejezés',
 		dugmePreskoci: 'Kihagyás'
+	},
+
+	tours: {
+		pomocTitle: 'Súgó — bemutató túrák',
+		meniNaslov: 'Túrák',
+		meniOpis: 'Rövid interaktív bemutatók a legfontosabb funkciókról.',
+		redirectTekst: 'Ez a túra a(z) "{stranica}" oldalon működik. Odavigyalak?',
+		redirectDa: 'Igen, vigyél oda',
+		redirectOdustani: 'Mégse',
+		onboardingNaziv: 'Bevezető túra',
+		onboardingOpis: 'Az alkalmazás alapvető áttekintése — szezon, ketrecek, offline mód.',
+
+		ciklus: {
+			naziv: 'Első ciklus',
+			opis: 'Hogyan indíts egy ciklust — pár, ketrec, tojás dátuma és fázisok követése.',
+			naslov1: 'Válassz párt',
+			tekst1: 'Ciklus indítása előtt aktív párra van szükséged. Itt láthatod a meglévő párokat, vagy létrehozhatsz újat.',
+			naslov2: 'Válassz ketrecet',
+			tekst2: 'Kattints egy üres (szürke) ketrecre az űrlap megnyitásához és a pár hozzárendeléséhez.',
+			naslov3: 'Add meg az első tojás dátumát',
+			tekst3: 'Amint a pár tojni kezd, kattints a ketrecre és add meg az első tojás dátumát — minden fázist ettől a dátumtól számolunk.',
+			naslov4: 'Automatikus tevékenységek',
+			tekst4: 'Amint megadod a dátumot, az alkalmazás automatikusan létrehoz egy tevékenység-ütemtervet (pl. kelés ellenőrzése) pontos dátumokkal — mindegyiket itt látod.',
+			naslov5: 'Fázisszínek',
+			tekst5: 'A ketrecen lévő sáv az összes ciklusfázist mutatja — a kiemelt szín az aktuális fázis, a többi halványabb.'
+		},
+
+		rodovnik: {
+			naziv: 'Törzskönyv',
+			opis: 'Hogyan kapcsold össze a szülőket, tekintsd meg a származást és készíts PDF törzskönyvet.',
+			naslov1: 'Madár adatai',
+			tekst1: 'Kattints bármelyik madárnál a ✏️ Szerkesztés gombra az összes adat megnyitásához és módosításához.',
+			naslov2: 'Kapcsold össze az apát és az anyát',
+			tekst2: 'A szerkesztő űrlapon válaszd ki az Apát és az Anyát a madaraid listájából — ez automatikusan felépíti a törzskönyvet.',
+			naslov3: 'Törzskönyv megtekintése',
+			tekst3: 'Kattints a 🌳 Törzskönyv gombra a madár törzskönyvének megnyitásához — a nyilvános linket (📤) is megoszthatod, hogy mások bejelentkezés nélkül is láthassák a származást.',
+			naslov4: 'PDF létrehozása',
+			tekst4: 'Válassz az 5 sablon közül, majd kattints a "PDF létrehozása" gombra a nyomtatható, QR-kóddal ellátott törzskönyv letöltéséhez.'
+		},
+
+		zdravlje: {
+			naziv: 'Egészségügyi napló',
+			opis: 'Hogyan kövesd nyomon minden madár betegségeit, kezeléseit és egészségtörténetét.',
+			naslov1: 'Napló megnyitása',
+			tekst1: 'Kattints bármelyik madárnál a 💊 ikonra az egészségügyi napló megnyitásához.',
+			naslov2: 'Új bejegyzés',
+			tekst2: 'A "+ Új bejegyzés" megnyit egy űrlapot — válaszd ki a típust (betegség, megelőzés, oltás...), a dátumot, a nevet, a gyógyszert és a megjegyzést.',
+			naslov3: 'Előzmények',
+			tekst3: 'Az összes korábbi bejegyzés alul jelenik meg, időrendben — a legújabb elöl.',
+			naslov4: 'Dátum szerint rendezve',
+			tekst4: 'A lista mindig dátum szerint van rendezve (a legújabb elöl), így gyorsan áttekintheted a friss előzményeket. Külön dátumtartomány-szűrő még nem létezik.'
+		}
 	}
 } as const satisfies Translations;

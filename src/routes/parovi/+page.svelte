@@ -118,7 +118,7 @@
 			{/if}
 		</div>
 		{#if $prikazanaSezona && !loading}
-			<button class="btn variant-filled-primary btn-sm" on:click={() => (novParOpen = true)}>
+			<button class="btn variant-filled-primary btn-sm" on:click={() => (novParOpen = true)} data-tour="novi-par-btn">
 				{$t.parovi.noviPar}
 			</button>
 		{/if}
@@ -158,7 +158,7 @@
 
 		<!-- Aktivni parovi -->
 		{#if aktivniParovi.length > 0}
-			<section class="space-y-2">
+			<section class="space-y-2" data-tour="parovi-lista">
 				<h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wider px-1">
 					{$t.parovi.aktivniParovi} ({aktivniParovi.length})
 				</h3>
