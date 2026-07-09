@@ -126,7 +126,7 @@
 			<p style="color:#94a3b8; font-size:0.85rem; letter-spacing:0.08em; font-weight:500">HatchPlan</p>
 		</div>
 	</div>
-{:else if $isAuthenticated}
+{:else if $isAuthenticated && !$page.url.pathname.startsWith('/ptica/')}
 	<AppShell slotPageContent="pb-20 sm:pb-0">
 		<svelte:fragment slot="header">
 			<AppBar padding="px-4 py-2" background="bg-surface-100-800-token">

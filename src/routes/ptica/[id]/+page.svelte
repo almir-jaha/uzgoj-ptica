@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PedigreeNode from '$lib/components/PedigreeNode.svelte';
+	import JezikSelector from '$lib/components/JezikSelector.svelte';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import { t } from '$lib/i18n';
 
@@ -128,10 +129,13 @@
 			<img src="/app-logo.png" alt="HatchPlan" class="w-7 h-7 rounded-md" />
 			<span class="font-bold text-indigo-900 text-sm tracking-tight">HatchPlan</span>
 			<span class="text-xs text-gray-400 hidden sm:block mr-auto">{$t.pticaJavno.headerSubtitle}</span>
+			<div class="ml-auto sm:ml-0">
+				<JezikSelector />
+			</div>
 			{#if tree}
 			<button
 				type="button"
-				class="btn btn-sm variant-soft-primary ml-auto sm:ml-0"
+				class="btn btn-sm variant-soft-primary"
 				on:click={podijeli}
 			>
 				📤 <span class="hidden sm:inline">{$t.pticaJavno.podijeliBtn}</span>
