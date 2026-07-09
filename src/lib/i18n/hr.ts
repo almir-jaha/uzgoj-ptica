@@ -70,7 +70,8 @@ export const hr: Translations = {
 		pregledMladih: 'Pregled mladih', prazan: 'Prazan',
 		sveRazePravrsene: 'Sve faze završene', danas: 'Danas', sutra: 'Sutra',
 		brziUnosMlade: 'Nova mlada ptica', nemaMladih: 'Nema unesenih mladih za ovaj par.',
-		roditelji: 'Roditelji', ukupnoMladih: 'mlad.'
+		roditelji: 'Roditelji', ukupnoMladih: 'mlad.',
+		cekaDatumPrvogJajeta: '🥚 Čeka datum prvog jajeta'
 	},
 	parovi: {
 		title: 'Parovi', pageTitle: 'Parovi – HatchPlan', noviPar: '+ Novi par',

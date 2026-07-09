@@ -124,7 +124,8 @@ export const de: Translations = {
 		brziUnosMlade: 'Neuer Jungvogel',
 		nemaMladih: 'Für dieses Paar keine Küken erfasst.',
 		roditelji: 'Eltern',
-		ukupnoMladih: 'Küken'
+		ukupnoMladih: 'Küken',
+		cekaDatumPrvogJajeta: '🥚 Wartet auf Datum des ersten Eies'
 	},
 
 	parovi: {

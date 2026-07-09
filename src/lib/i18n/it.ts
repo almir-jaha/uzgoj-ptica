@@ -124,7 +124,8 @@ export const it: Translations = {
 		brziUnosMlade: 'Nuovo uccellino',
 		nemaMladih: 'Nessun pulcino registrato per questa coppia.',
 		roditelji: 'Genitori',
-		ukupnoMladih: 'pulcino/i'
+		ukupnoMladih: 'pulcino/i',
+		cekaDatumPrvogJajeta: '🥚 In attesa della data del primo uovo'
 	},
 
 	parovi: {

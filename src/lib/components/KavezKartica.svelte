@@ -139,7 +139,7 @@
 
 		<!-- Trenutna faza + dani -->
 		{#if !details.aktivni_ciklus?.datum_prvog_jajeta}
-			<p class="text-xs font-medium" style="color:#6366f1">🥚 Čeka datum prvog jajeta</p>
+			<p class="text-xs font-medium" style="color:#6366f1">{$t.kavezi.cekaDatumPrvogJajeta}</p>
 		{:else if trenutnaFaza}
 			<div class="flex items-center justify-between gap-1">
 				<span

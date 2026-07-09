@@ -124,7 +124,8 @@ export const hu: Translations = {
 		brziUnosMlade: 'Új fiatal madár',
 		nemaMladih: 'Ehhez a párhoz nincs rögzített fióka.',
 		roditelji: 'Szülők',
-		ukupnoMladih: 'fióka'
+		ukupnoMladih: 'fióka',
+		cekaDatumPrvogJajeta: '🥚 Az első tojás dátumára vár'
 	},
 
 	parovi: {

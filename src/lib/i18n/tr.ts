@@ -124,7 +124,8 @@ export const tr: Translations = {
 		brziUnosMlade: 'Yeni genç kuş',
 		nemaMladih: 'Bu çift için kayıtlı civciv yok.',
 		roditelji: 'Ebeveynler',
-		ukupnoMladih: 'civciv'
+		ukupnoMladih: 'civciv',
+		cekaDatumPrvogJajeta: '🥚 İlk yumurta tarihi bekleniyor'
 	},
 
 	parovi: {

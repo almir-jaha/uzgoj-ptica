@@ -124,7 +124,8 @@ export const pl: Translations = {
 		brziUnosMlade: 'Nowy młody ptak',
 		nemaMladih: 'Brak zarejestrowanych piskląt dla tej pary.',
 		roditelji: 'Rodzice',
-		ukupnoMladih: 'pisklę(ta)'
+		ukupnoMladih: 'pisklę(ta)',
+		cekaDatumPrvogJajeta: '🥚 Oczekiwanie na datę pierwszego jaja'
 	},
 
 	parovi: {

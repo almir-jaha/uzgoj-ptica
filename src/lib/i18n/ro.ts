@@ -124,7 +124,8 @@ export const ro: Translations = {
 		brziUnosMlade: 'Pasăre tânără nouă',
 		nemaMladih: 'Niciun pui înregistrat pentru această pereche.',
 		roditelji: 'Părinți',
-		ukupnoMladih: 'pui'
+		ukupnoMladih: 'pui',
+		cekaDatumPrvogJajeta: '🥚 Se așteaptă data primului ou'
 	},
 
 	parovi: {

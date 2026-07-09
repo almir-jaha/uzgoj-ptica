@@ -124,7 +124,8 @@ export const nl: Translations = {
 		brziUnosMlade: 'Nieuwe jonge vogel',
 		nemaMladih: 'Geen kuikens geregistreerd voor dit broedpaar.',
 		roditelji: 'Ouders',
-		ukupnoMladih: 'kuiken(s)'
+		ukupnoMladih: 'kuiken(s)',
+		cekaDatumPrvogJajeta: '🥚 Wachten op datum eerste ei'
 	},
 
 	parovi: {

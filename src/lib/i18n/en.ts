@@ -119,7 +119,8 @@ export const en: Translations = {
 		brziUnosMlade: 'New young bird',
 		nemaMladih: 'No chicks recorded for this pair.',
 		roditelji: 'Parents',
-		ukupnoMladih: 'chick(s)'
+		ukupnoMladih: 'chick(s)',
+		cekaDatumPrvogJajeta: '🥚 Waiting for first egg date'
 	},
 	parovi: {
 		title: 'Pairs',

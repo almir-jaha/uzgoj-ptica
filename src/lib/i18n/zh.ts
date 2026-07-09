@@ -124,7 +124,8 @@ export const zh: Translations = {
 		brziUnosMlade: '新幼鸟',
 		nemaMladih: '该繁殖对没有录入的雏鸟。',
 		roditelji: '亲鸟',
-		ukupnoMladih: '只雏鸟'
+		ukupnoMladih: '只雏鸟',
+		cekaDatumPrvogJajeta: '🥚 等待第一枚蛋的日期'
 	},
 
 	parovi: {
