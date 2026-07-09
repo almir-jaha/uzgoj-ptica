@@ -4,7 +4,8 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { Tour } from 'shepherd.js';
+	import Shepherd from 'shepherd.js';
+	import type { Tour } from 'shepherd.js';
 	import 'shepherd.js/dist/css/shepherd.css';
 	import { isAuthenticated } from '$lib/stores/auth';
 	import { t } from '$lib/i18n';
@@ -44,7 +45,7 @@
 
 	function buildTour(): Tour {
 		const tt = get(t);
-		const newTour = new Tour({
+		const newTour = new Shepherd.Tour({
 			useModalOverlay: true,
 			defaultStepOptions: {
 				scrollTo: { behavior: 'smooth', block: 'center' },
