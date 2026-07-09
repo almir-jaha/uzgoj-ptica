@@ -44,7 +44,10 @@ async function fetchBird(id: string, depth: number): Promise<BirdNode | null> {
 		.eq('id', id)
 		.maybeSingle();
 
-	if (error || !data) return null;
+	if (error || !data) {
+		console.error('[ptica/[id]] fetchBird nije uspio', { id, depth, error, data });
+		return null;
+	}
 
 	const node: BirdNode = {
 		id: data.id,
@@ -97,7 +100,8 @@ export async function load({ params }: { params: { id: string } }) {
 			.maybeSingle();
 
 		return { tree, breeder: breeder as BreederInfo | null, error: null };
-	} catch {
+	} catch (err) {
+		console.error('[ptica/[id]] load() je bacio grešku', err);
 		return { tree: null, breeder: null, error: get(t).pticaJavno.greskaUcitavanja };
 	}
 }
