@@ -120,6 +120,14 @@ Dva sistema (oba u upotrebi):
 
 Svi templati u `src/lib/pdf/`. Jezici: BS/HR/EN. Paketi: `pdfmake`, `qrcode`.
 
+## Javna stranica ptice — `/ptica/[id]` (ZAVRŠENO)
+
+Samostalna, potpuno prevedena (17 jezika, `pticaJavno` i18n namespace) javna stranica dostupna preko QR koda iz rodovnik PDF-a (`buildQrUrl()` u `rodovnik-shared.ts`) i preko 📤 Podijeli dugmeta na `/ptice` i na samoj stranici. `ssr = false`, RLS: anon SELECT na `ptice`/`uzgajivacnice` (migracije 009, 011). `+layout.svelte` isključuje `/ptica/` rute iz AppShell-a bez obzira na auth stanje (spriječava dupli header) i ima svoj `JezikSelector`.
+
+### Bug: Service Worker keš zaključavao neuspješne odgovore (RIJEŠENO 2026-07-09)
+
+`src/sw.ts` — `NetworkFirst` keš za `*.supabase.co` je uključivao status `0` (opaque/CORS-blokiran/prekinut request) u `CacheableResponsePlugin` statuse. Ako se to jednom desi (npr. u Firefoxu), keširan je kao "uspješan" na 24h — svi naredni posjetioci su dobijali prazan/pogrešan odgovor umjesto svježeg iz baze, iako je RLS ispravan (potvrđeno direktnim REST pozivom mimo browsera). Fix: uklonjen status `0`, keš prihvata samo prave `200` odgovore. Ako se ovakav bug ikad ponovi za bilo koju stranicu — prvo posumnjaj na `sw.ts` keš, ne na RLS/bazu; deblokada za pogođenog korisnika: DevTools → Application → Service Workers → Unregister + Clear site data.
+
 ## Admin panel
 
 Rute: `/admin`. Dostupan samo za `almir.jaha@gmail.com`.
