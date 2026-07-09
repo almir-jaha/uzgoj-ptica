@@ -497,7 +497,14 @@ export const tr: Translations = {
 		nemaZapisa: 'Sağlık kaydı yok',
 		obrisiTitle: 'Sil',
 		potvrdaBrisanja: 'Bu sağlık kaydı silinsin mi? Bu işlem geri alınamaz.',
-		masovniBadge: 'toplu'
+		masovniBadge: 'toplu',
+		tip: {
+			bolest: 'Hastalık',
+			preventiva: 'Önleme',
+			vakcinacija: 'Aşılama',
+			zapazanje: 'Gözlem',
+			ostalo: 'Diğer',
+		}
 	},
 
 	prijevodi: {

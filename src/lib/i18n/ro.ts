@@ -497,7 +497,14 @@ export const ro: Translations = {
 		nemaZapisa: 'Niciun registru de sănătate',
 		obrisiTitle: 'Șterge',
 		potvrdaBrisanja: 'Ștergeți acest registru de sănătate? Această acțiune nu poate fi anulată.',
-		masovniBadge: 'grupat'
+		masovniBadge: 'grupat',
+		tip: {
+			bolest: 'Boală',
+			preventiva: 'Prevenție',
+			vakcinacija: 'Vaccinare',
+			zapazanje: 'Observație',
+			ostalo: 'Altele',
+		}
 	},
 
 	prijevodi: {

@@ -486,7 +486,14 @@ export const en: Translations = {
 		nemaZapisa: 'No health records',
 		obrisiTitle: 'Delete',
 		potvrdaBrisanja: 'Delete this health record? This action cannot be undone.',
-		masovniBadge: 'mass'
+		masovniBadge: 'mass',
+		tip: {
+			bolest: 'Illness',
+			preventiva: 'Prevention',
+			vakcinacija: 'Vaccination',
+			zapazanje: 'Observation',
+			ostalo: 'Other',
+		}
 	},
 
 	prijevodi: {

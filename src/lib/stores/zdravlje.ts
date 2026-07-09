@@ -1,16 +1,17 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { supabase } from '$lib/supabase/client';
+import { t } from '$lib/i18n';
 import type { Zdravlje, ZdravljeTip } from '$lib/db/schema';
 
 export const zdravlje = writable<Zdravlje[]>([]);
 
-export const TIP_OPCIJE: { value: ZdravljeTip; label: string; ikona: string }[] = [
-	{ value: 'bolest',     label: 'Bolest',         ikona: '🤒' },
-	{ value: 'preventiva', label: 'Preventiva',      ikona: '💉' },
-	{ value: 'vakcinacija',label: 'Vakcinacija',     ikona: '🛡️' },
-	{ value: 'zapazanje',  label: 'Zapažanje',       ikona: '📝' },
-	{ value: 'ostalo',     label: 'Ostalo',          ikona: '📋' },
-];
+export const tipOpcije = derived(t, ($t): { value: ZdravljeTip; label: string; ikona: string }[] => [
+	{ value: 'bolest',      label: $t.zdravlje.tip.bolest,      ikona: '🤒' },
+	{ value: 'preventiva',  label: $t.zdravlje.tip.preventiva,  ikona: '💉' },
+	{ value: 'vakcinacija', label: $t.zdravlje.tip.vakcinacija, ikona: '🛡️' },
+	{ value: 'zapazanje',   label: $t.zdravlje.tip.zapazanje,   ikona: '📝' },
+	{ value: 'ostalo',      label: $t.zdravlje.tip.ostalo,      ikona: '📋' },
+]);
 
 export async function loadZdravlje(userId: string, pticaId?: string): Promise<void> {
 	let query = supabase

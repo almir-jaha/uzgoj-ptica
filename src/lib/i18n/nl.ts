@@ -497,7 +497,14 @@ export const nl: Translations = {
 		nemaZapisa: 'Geen gezondheidsgegevens',
 		obrisiTitle: 'Verwijderen',
 		potvrdaBrisanja: 'Dit gezondheidsrecord verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
-		masovniBadge: 'groep'
+		masovniBadge: 'groep',
+		tip: {
+			bolest: 'Ziekte',
+			preventiva: 'Preventie',
+			vakcinacija: 'Vaccinatie',
+			zapazanje: 'Waarneming',
+			ostalo: 'Overig',
+		}
 	},
 
 	prijevodi: {

@@ -498,7 +498,14 @@ export const es: Translations = {
 		nemaZapisa: 'No hay registros de salud',
 		obrisiTitle: 'Eliminar',
 		potvrdaBrisanja: '¿Eliminar este registro de salud? Esta acción no se puede deshacer.',
-		masovniBadge: 'grupal'
+		masovniBadge: 'grupal',
+		tip: {
+			bolest: 'Enfermedad',
+			preventiva: 'Prevención',
+			vakcinacija: 'Vacunación',
+			zapazanje: 'Observación',
+			ostalo: 'Otro',
+		}
 	},
 
 	prijevodi: {

@@ -497,7 +497,14 @@ export const fr: Translations = {
 		nemaZapisa: 'Aucun dossier de santé',
 		obrisiTitle: 'Supprimer',
 		potvrdaBrisanja: 'Supprimer ce dossier de santé ? Cette action est irréversible.',
-		masovniBadge: 'groupé'
+		masovniBadge: 'groupé',
+		tip: {
+			bolest: 'Maladie',
+			preventiva: 'Prévention',
+			vakcinacija: 'Vaccination',
+			zapazanje: 'Observation',
+			ostalo: 'Autre',
+		}
 	},
 
 	prijevodi: {

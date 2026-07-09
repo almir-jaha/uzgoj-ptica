@@ -497,7 +497,14 @@ export const it: Translations = {
 		nemaZapisa: 'Nessun registro sanitario',
 		obrisiTitle: 'Elimina',
 		potvrdaBrisanja: 'Eliminare questo registro sanitario? Questa azione non può essere annullata.',
-		masovniBadge: 'collettivo'
+		masovniBadge: 'collettivo',
+		tip: {
+			bolest: 'Malattia',
+			preventiva: 'Prevenzione',
+			vakcinacija: 'Vaccinazione',
+			zapazanje: 'Osservazione',
+			ostalo: 'Altro',
+		}
 	},
 
 	prijevodi: {

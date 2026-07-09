@@ -16,7 +16,7 @@
 	import MasovniTretmanModal from '$lib/components/MasovniTretmanModal.svelte';
 	import { t } from '$lib/i18n';
 	import { locale } from '$lib/i18n/locale';
-	import { loadZdravlje as loadZdravlje_, createZdravlje, deleteZdravlje, TIP_OPCIJE } from '$lib/stores/zdravlje';
+	import { loadZdravlje as loadZdravlje_, createZdravlje, deleteZdravlje, tipOpcije } from '$lib/stores/zdravlje';
 	import type { Zdravlje, ZdravljeTip } from '$lib/db/schema';
 	import { aktivneSekcije, loadSekcije } from '$lib/stores/sekcija';
 
@@ -553,7 +553,7 @@
 						<label class="label">
 							<span class="text-sm font-medium">{$t.zdravlje.vrstaLabel}</span>
 							<select class="select" bind:value={zTip} disabled={zSaving}>
-								{#each TIP_OPCIJE as op}
+								{#each $tipOpcije as op}
 									<option value={op.value}>{op.ikona} {op.label}</option>
 								{/each}
 							</select>
@@ -599,7 +599,7 @@
 					<p class="text-center text-surface-400 py-8 text-sm">{$t.zdravlje.nemaZapisa}</p>
 				{:else}
 					{#each zdravljeRekordList as z (z.id)}
-						{@const tip = TIP_OPCIJE.find(o => o.value === z.tip)}
+						{@const tip = $tipOpcije.find(o => o.value === z.tip)}
 						{@const jeMasovni = !z.ptica_id}
 						<div class="card p-3 space-y-1">
 							<div class="flex items-start justify-between gap-2">

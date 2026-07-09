@@ -497,7 +497,14 @@ export const hu: Translations = {
 		nemaZapisa: 'Nincsenek egészségügyi bejegyzések',
 		obrisiTitle: 'Törlés',
 		potvrdaBrisanja: 'Törli ezt az egészségügyi bejegyzést? Ez a művelet nem vonható vissza.',
-		masovniBadge: 'csoportos'
+		masovniBadge: 'csoportos',
+		tip: {
+			bolest: 'Betegség',
+			preventiva: 'Megelőzés',
+			vakcinacija: 'Oltás',
+			zapazanje: 'Megfigyelés',
+			ostalo: 'Egyéb',
+		}
 	},
 
 	prijevodi: {

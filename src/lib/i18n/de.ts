@@ -498,7 +498,14 @@ export const de: Translations = {
 		nemaZapisa: 'Keine Gesundheitseinträge',
 		obrisiTitle: 'Löschen',
 		potvrdaBrisanja: 'Diesen Gesundheitseintrag löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
-		masovniBadge: 'Massenbehandlung'
+		masovniBadge: 'Massenbehandlung',
+		tip: {
+			bolest: 'Krankheit',
+			preventiva: 'Prävention',
+			vakcinacija: 'Impfung',
+			zapazanje: 'Beobachtung',
+			ostalo: 'Sonstiges',
+		}
 	},
 
 	prijevodi: {

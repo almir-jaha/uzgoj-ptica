@@ -497,7 +497,14 @@ export const pt: Translations = {
 		nemaZapisa: 'Sem registos de saúde',
 		obrisiTitle: 'Eliminar',
 		potvrdaBrisanja: 'Eliminar este registo de saúde? Esta ação não pode ser anulada.',
-		masovniBadge: 'coletivo'
+		masovniBadge: 'coletivo',
+		tip: {
+			bolest: 'Doença',
+			preventiva: 'Prevenção',
+			vakcinacija: 'Vacinação',
+			zapazanje: 'Observação',
+			ostalo: 'Outro',
+		}
 	},
 
 	prijevodi: {

@@ -497,7 +497,14 @@ export const pl: Translations = {
 		nemaZapisa: 'Brak wpisów zdrowotnych',
 		obrisiTitle: 'Usuń',
 		potvrdaBrisanja: 'Usunąć ten wpis zdrowotny? Tej czynności nie można cofnąć.',
-		masovniBadge: 'grupowy'
+		masovniBadge: 'grupowy',
+		tip: {
+			bolest: 'Choroba',
+			preventiva: 'Profilaktyka',
+			vakcinacija: 'Szczepienie',
+			zapazanje: 'Obserwacja',
+			ostalo: 'Inne',
+		}
 	},
 
 	prijevodi: {

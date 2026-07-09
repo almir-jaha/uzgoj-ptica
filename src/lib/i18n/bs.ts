@@ -496,7 +496,14 @@ export const bs = {
 		nemaZapisa: 'Nema zdravstvenih zapisa',
 		obrisiTitle: 'Obriši',
 		potvrdaBrisanja: 'Obrisati ovaj zdravstveni zapis? Ova radnja se ne može poništiti.',
-		masovniBadge: 'masovni'
+		masovniBadge: 'masovni',
+		tip: {
+			bolest: 'Bolest',
+			preventiva: 'Preventiva',
+			vakcinacija: 'Vakcinacija',
+			zapazanje: 'Zapažanje',
+			ostalo: 'Ostalo',
+		}
 	},
 
 	prijevodi: {

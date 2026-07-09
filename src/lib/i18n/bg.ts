@@ -497,7 +497,14 @@ export const bg: Translations = {
 		nemaZapisa: 'Няма здравни записи',
 		obrisiTitle: 'Изтрий',
 		potvrdaBrisanja: 'Да се изтрие ли този здравен запис? Това действие не може да бъде отменено.',
-		masovniBadge: 'групово'
+		masovniBadge: 'групово',
+		tip: {
+			bolest: 'Болест',
+			preventiva: 'Профилактика',
+			vakcinacija: 'Ваксинация',
+			zapazanje: 'Наблюдение',
+			ostalo: 'Друго',
+		}
 	},
 
 	prijevodi: {

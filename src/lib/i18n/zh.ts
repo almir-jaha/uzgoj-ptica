@@ -497,7 +497,14 @@ export const zh: Translations = {
 		nemaZapisa: '没有健康记录',
 		obrisiTitle: '删除',
 		potvrdaBrisanja: '删除此健康记录？此操作无法撤销。',
-		masovniBadge: '批量'
+		masovniBadge: '批量',
+		tip: {
+			bolest: '疾病',
+			preventiva: '预防',
+			vakcinacija: '疫苗接种',
+			zapazanje: '观察',
+			ostalo: '其他',
+		}
 	},
 
 	prijevodi: {

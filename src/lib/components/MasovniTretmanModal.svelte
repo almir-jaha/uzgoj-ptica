@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { supabase } from '$lib/supabase/client';
-	import { createZdravlje, TIP_OPCIJE } from '$lib/stores/zdravlje';
+	import { createZdravlje, tipOpcije } from '$lib/stores/zdravlje';
 	import type { Ptica, Sekcija, ZdravljeTip } from '$lib/db/schema';
 	import { t } from '$lib/i18n';
 
@@ -186,7 +186,7 @@
 			<div class="space-y-1">
 				<span class="text-sm font-medium">{$t.masovniTretman.tipTretmana}</span>
 				<div class="flex flex-wrap gap-2">
-					{#each TIP_OPCIJE as opt (opt.value)}
+					{#each $tipOpcije as opt (opt.value)}
 						<button
 							type="button"
 							class="btn btn-sm {tip === opt.value ? 'variant-filled-primary' : 'variant-ghost-surface'}"

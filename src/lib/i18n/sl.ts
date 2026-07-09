@@ -497,7 +497,14 @@ export const sl: Translations = {
 		nemaZapisa: 'Ni zdravstvenih zapisov',
 		obrisiTitle: 'Izbriši',
 		potvrdaBrisanja: 'Izbrišem ta zdravstveni zapis? Tega dejanja ni mogoče razveljaviti.',
-		masovniBadge: 'skupinsko'
+		masovniBadge: 'skupinsko',
+		tip: {
+			bolest: 'Bolezen',
+			preventiva: 'Preventiva',
+			vakcinacija: 'Cepljenje',
+			zapazanje: 'Opažanje',
+			ostalo: 'Drugo',
+		}
 	},
 
 	prijevodi: {
