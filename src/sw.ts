@@ -18,13 +18,17 @@ precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
 // Supabase API — NetworkFirst s 8s timeout-om
+// Status 0 (opaque/neuspješan odgovor, npr. CORS-blokiran ili prekinut request)
+// namjerno izbačen iz cacheable statusa — keširanje takvog odgovora kao da je
+// uspješan zna "zaključati" prazan/pogrešan rezultat na 24h za sve naredne
+// posjetioce (uzrok Firefox bug-a na /ptica/[id] — riješeno 2026-07-09).
 registerRoute(
 	({ url }) => url.hostname.includes('.supabase.co'),
 	new NetworkFirst({
 		cacheName: 'supabase-api',
 		networkTimeoutSeconds: 8,
 		plugins: [
-			new CacheableResponsePlugin({ statuses: [0, 200] }),
+			new CacheableResponsePlugin({ statuses: [200] }),
 			new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 })
 		]
 	})
