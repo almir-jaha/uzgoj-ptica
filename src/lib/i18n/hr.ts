@@ -414,5 +414,22 @@ export const hr: Translations = {
 		pradjed: 'Pradjed',
 		prabaka: 'Prabaka',
 		nepoznatoPorijeklo: 'Nepoznato porijeklo'
+	},
+
+	onboarding: {
+		naslov1: 'Dobrodošli u HatchPlan! 👋',
+		tekst1: 'Ovaj kratki vodič će ti pokazati osnovne dijelove aplikacije. Traje samo par sekundi.',
+		naslov2: 'Stvori sezonu',
+		tekst2: 'Sve počinje sa sezonom uzgoja — ovdje stvaraš novu sezonu i određuješ broj kaveza.',
+		naslov3: 'Tvoji kavezi',
+		tekst3: 'Svaki kavez prati status para, fazu ciklusa i mladunčad — klikni na kavez za detalje i radnje.',
+		naslov4: 'Radi i offline',
+		tekst4: 'Aplikacija radi i bez interneta — ovaj indikator se pojavi kad nemaš mrežu, a podaci se automatski sinkroniziraju čim se vratiš online.',
+		naslov5: 'Spreman/na si! 🎉',
+		tekst5: 'Istraži ostatak aplikacije — Parovi, Ptice, Aktivnosti i više. Sretno s uzgojem!',
+		dugmeDalje: 'Dalje',
+		dugmeNazad: 'Natrag',
+		dugmeZavrsi: 'Završi',
+		dugmePreskoci: 'Preskoči'
 	}
 } as const satisfies Translations;

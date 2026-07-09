@@ -570,5 +570,22 @@ export const fr: Translations = {
 		pradjed: 'Arrière-grand-père',
 		prabaka: 'Arrière-grand-mère',
 		nepoznatoPorijeklo: 'Origine inconnue'
+	},
+
+	onboarding: {
+		naslov1: 'Bienvenue sur HatchPlan ! 👋',
+		tekst1: 'Cette courte visite vous montrera les principales parties de l\'application. Cela ne prend que quelques secondes.',
+		naslov2: 'Créer une saison',
+		tekst2: 'Tout commence par une saison d\'élevage — vous créez ici une nouvelle saison et définissez le nombre de cages.',
+		naslov3: 'Vos cages',
+		tekst3: 'Chaque cage suit le statut du couple, la phase du cycle et les oisillons — cliquez sur une cage pour les détails et actions.',
+		naslov4: 'Fonctionne aussi hors ligne',
+		tekst4: 'L\'application fonctionne sans internet — cet indicateur apparaît en cas de perte de connexion, et les données se synchronisent automatiquement dès le retour en ligne.',
+		naslov5: 'Vous êtes prêt(e) ! 🎉',
+		tekst5: 'Explorez le reste de l\'application — Couples, Oiseaux, Activités et plus. Bon élevage !',
+		dugmeDalje: 'Suivant',
+		dugmeNazad: 'Précédent',
+		dugmeZavrsi: 'Terminer',
+		dugmePreskoci: 'Passer'
 	}
 } as const satisfies Translations;

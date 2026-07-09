@@ -16,6 +16,7 @@
 	import { ptice } from '$lib/stores/ptice';
 	import { sezone } from '$lib/stores/sezona';
 	import { loadGenetikaPolja } from '$lib/stores/genetikaI18n';
+	import OnboardingTour from '$lib/components/OnboardingTour.svelte';
 
 	initializeStores();
 	const toastStore = getToastStore();
@@ -131,7 +132,7 @@
 		<svelte:fragment slot="header">
 			<AppBar padding="px-4 py-2" background="bg-surface-100-800-token">
 				<svelte:fragment slot="lead">
-					<img src="/app-logo.png" alt="HatchPlan" class="h-10 w-auto" />
+					<img src="/app-logo.png" alt="HatchPlan" class="h-10 w-auto" data-onboarding="sync-status" />
 					<span class="hidden sm:block text-xl font-bold tracking-tight ml-1">HatchPlan</span>
 					{#if !$isOnline}
 						<span class="badge variant-filled-warning text-xs ml-2" title={$t.app.offlineTitle}>
@@ -241,6 +242,8 @@
 			</a>
 		{/each}
 	</nav>
+
+	<OnboardingTour />
 {:else}
 	<slot />
 {/if}

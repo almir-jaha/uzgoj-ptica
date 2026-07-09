@@ -570,5 +570,22 @@ export const tr: Translations = {
 		pradjed: 'Büyük büyükbaba',
 		prabaka: 'Büyük büyükanne',
 		nepoznatoPorijeklo: 'Bilinmeyen köken'
+	},
+
+	onboarding: {
+		naslov1: 'HatchPlan\'a hoş geldin! 👋',
+		tekst1: 'Bu kısa tur, uygulamanın ana bölümlerini gösterecek. Sadece birkaç saniye sürer.',
+		naslov2: 'Bir sezon oluştur',
+		tekst2: 'Her şey bir üreme sezonuyla başlar — burada yeni bir sezon oluşturur ve kafes sayısını belirlersin.',
+		naslov3: 'Kafeslerin',
+		tekst3: 'Her kafes, çiftin durumunu, döngü aşamasını ve yavruları gösterir — detaylar ve işlemler için bir kafese tıkla.',
+		naslov4: 'Çevrimdışı da çalışır',
+		tekst4: 'Uygulama internetsiz de çalışır — bu gösterge bağlantın kesildiğinde belirir ve tekrar çevrimiçi olduğunda veriler otomatik olarak senkronize edilir.',
+		naslov5: 'Hazırsın! 🎉',
+		tekst5: 'Uygulamanın geri kalanını keşfet — Çiftler, Kuşlar, Etkinlikler ve daha fazlası. Üretimde başarılar!',
+		dugmeDalje: 'İleri',
+		dugmeNazad: 'Geri',
+		dugmeZavrsi: 'Bitir',
+		dugmePreskoci: 'Atla'
 	}
 } as const satisfies Translations;

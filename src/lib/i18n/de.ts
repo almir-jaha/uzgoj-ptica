@@ -571,5 +571,22 @@ export const de: Translations = {
 		pradjed: 'Urgroßvater',
 		prabaka: 'Urgroßmutter',
 		nepoznatoPorijeklo: 'Unbekannte Abstammung'
+	},
+
+	onboarding: {
+		naslov1: 'Willkommen bei HatchPlan! 👋',
+		tekst1: 'Diese kurze Tour zeigt dir die wichtigsten Teile der App. Dauert nur ein paar Sekunden.',
+		naslov2: 'Saison erstellen',
+		tekst2: 'Alles beginnt mit einer Zuchtsaison — hier erstellst du eine neue Saison und legst die Anzahl der Käfige fest.',
+		naslov3: 'Deine Käfige',
+		tekst3: 'Jeder Käfig zeigt den Status des Paares, die Zyklusphase und die Küken — klicke auf einen Käfig für Details und Aktionen.',
+		naslov4: 'Funktioniert auch offline',
+		tekst4: 'Die App funktioniert auch ohne Internet — diese Anzeige erscheint, wenn du keine Verbindung hast, und die Daten werden automatisch synchronisiert, sobald du wieder online bist.',
+		naslov5: 'Du bist bereit! 🎉',
+		tekst5: 'Entdecke den Rest der App — Paare, Vögel, Aktivitäten und mehr. Viel Erfolg bei der Zucht!',
+		dugmeDalje: 'Weiter',
+		dugmeNazad: 'Zurück',
+		dugmeZavrsi: 'Fertig',
+		dugmePreskoci: 'Überspringen'
 	}
 } as const satisfies Translations;

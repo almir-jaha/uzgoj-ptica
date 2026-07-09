@@ -570,5 +570,22 @@ export const pt: Translations = {
 		pradjed: 'Bisavô',
 		prabaka: 'Bisavó',
 		nepoznatoPorijeklo: 'Origem desconhecida'
+	},
+
+	onboarding: {
+		naslov1: 'Bem-vindo(a) ao HatchPlan! 👋',
+		tekst1: 'Este breve tour vai mostrar-te as principais partes da aplicação. Demora apenas alguns segundos.',
+		naslov2: 'Cria uma época',
+		tekst2: 'Tudo começa com uma época de reprodução — aqui crias uma nova época e defines o número de gaiolas.',
+		naslov3: 'As tuas gaiolas',
+		tekst3: 'Cada gaiola mostra o estado do casal, a fase do ciclo e as crias — clica numa gaiola para detalhes e ações.',
+		naslov4: 'Funciona também offline',
+		tekst4: 'A aplicação funciona sem internet — este indicador aparece quando perdes a ligação, e os dados sincronizam automaticamente assim que voltares a estar online.',
+		naslov5: 'Estás pronto(a)! 🎉',
+		tekst5: 'Explora o resto da aplicação — Casais, Aves, Atividades e mais. Boa sorte com a criação!',
+		dugmeDalje: 'Seguinte',
+		dugmeNazad: 'Voltar',
+		dugmeZavrsi: 'Concluir',
+		dugmePreskoci: 'Saltar'
 	}
 } as const satisfies Translations;

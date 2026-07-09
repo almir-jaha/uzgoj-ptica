@@ -570,5 +570,22 @@ export const ro: Translations = {
 		pradjed: 'Străbunic',
 		prabaka: 'Străbunică',
 		nepoznatoPorijeklo: 'Origine necunoscută'
+	},
+
+	onboarding: {
+		naslov1: 'Bine ai venit în HatchPlan! 👋',
+		tekst1: 'Acest scurt tur îți va arăta principalele părți ale aplicației. Durează doar câteva secunde.',
+		naslov2: 'Creează un sezon',
+		tekst2: 'Totul începe cu un sezon de reproducere — aici creezi un sezon nou și stabilești numărul de colivii.',
+		naslov3: 'Coliviile tale',
+		tekst3: 'Fiecare colivie arată starea perechii, faza ciclului și puii — apasă pe o colivie pentru detalii și acțiuni.',
+		naslov4: 'Funcționează și offline',
+		tekst4: 'Aplicația funcționează și fără internet — acest indicator apare când pierzi conexiunea, iar datele se sincronizează automat imediat ce revii online.',
+		naslov5: 'Ești gata! 🎉',
+		tekst5: 'Explorează restul aplicației — Perechi, Păsări, Activități și altele. Spor la reproducere!',
+		dugmeDalje: 'Înainte',
+		dugmeNazad: 'Înapoi',
+		dugmeZavrsi: 'Finalizează',
+		dugmePreskoci: 'Sari peste'
 	}
 } as const satisfies Translations;

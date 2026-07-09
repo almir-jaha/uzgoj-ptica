@@ -571,5 +571,22 @@ export const es: Translations = {
 		pradjed: 'Bisabuelo',
 		prabaka: 'Bisabuela',
 		nepoznatoPorijeklo: 'Origen desconocido'
+	},
+
+	onboarding: {
+		naslov1: '¡Bienvenido/a a HatchPlan! 👋',
+		tekst1: 'Este breve recorrido te mostrará las partes principales de la aplicación. Solo toma unos segundos.',
+		naslov2: 'Crea una temporada',
+		tekst2: 'Todo empieza con una temporada de cría — aquí creas una nueva temporada y defines el número de jaulas.',
+		naslov3: 'Tus jaulas',
+		tekst3: 'Cada jaula muestra el estado de la pareja, la fase del ciclo y las crías — haz clic en una jaula para ver detalles y acciones.',
+		naslov4: 'Funciona sin conexión',
+		tekst4: 'La aplicación funciona sin internet — este indicador aparece cuando pierdes la conexión, y los datos se sincronizan automáticamente al volver a estar en línea.',
+		naslov5: '¡Todo listo! 🎉',
+		tekst5: 'Explora el resto de la aplicación — Parejas, Aves, Actividades y más. ¡Buena suerte con la cría!',
+		dugmeDalje: 'Siguiente',
+		dugmeNazad: 'Atrás',
+		dugmeZavrsi: 'Finalizar',
+		dugmePreskoci: 'Omitir'
 	}
 } as const satisfies Translations;

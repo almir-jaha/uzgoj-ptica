@@ -559,5 +559,22 @@ export const en: Translations = {
 		pradjed: 'Great-grandfather',
 		prabaka: 'Great-grandmother',
 		nepoznatoPorijeklo: 'Unknown origin'
+	},
+
+	onboarding: {
+		naslov1: 'Welcome to HatchPlan! 👋',
+		tekst1: 'This short tour will show you the app\'s main parts. It only takes a few seconds.',
+		naslov2: 'Create a season',
+		tekst2: 'Everything starts with a breeding season — here you create a new season and set the number of cages.',
+		naslov3: 'Your cages',
+		tekst3: 'Each cage tracks the pair status, cycle phase and chicks — click a cage for details and actions.',
+		naslov4: 'Works offline too',
+		tekst4: 'The app works without internet — this indicator appears when you lose connection, and data syncs automatically once you\'re back online.',
+		naslov5: 'You\'re all set! 🎉',
+		tekst5: 'Explore the rest of the app — Pairs, Birds, Activities and more. Happy breeding!',
+		dugmeDalje: 'Next',
+		dugmeNazad: 'Back',
+		dugmeZavrsi: 'Finish',
+		dugmePreskoci: 'Skip'
 	}
 } as const satisfies Translations;

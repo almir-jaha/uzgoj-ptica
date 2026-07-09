@@ -316,6 +316,7 @@
 						class="btn btn-sm variant-filled-primary"
 						on:click={() => (novaSezonaOpen = true)}
 						title={$t.sezona.novaSezona}
+						data-onboarding="nova-sezona-btn"
 					>
 						{$t.sezona.novaSezonaBtn}
 					</button>
@@ -369,7 +370,7 @@
 			<span class="text-6xl">🪹</span>
 			<p class="h4 text-center">{$t.kavezi.nemaSezone}</p>
 			<p class="text-surface-500 text-center text-sm">{$t.sezona.nemaSezoneOpis}</p>
-			<button class="btn variant-filled-primary" on:click={() => (novaSezonaOpen = true)}>
+			<button class="btn variant-filled-primary" on:click={() => (novaSezonaOpen = true)} data-onboarding="nova-sezona-btn">
 				{$t.sezona.kreirajSezonu}
 			</button>
 		</div>
@@ -377,7 +378,7 @@
 	{:else if kaveziDetails.length > 0}
 		{#if imaSekcija && kaveziPoSekciji.length > 0}
 			<!-- Grupirani view po sekcijama -->
-			<div class="space-y-5">
+			<div class="space-y-5" data-onboarding="kavezi-grid">
 				{#each kaveziPoSekciji as grupa (grupa.sekcija?.id ?? '__bez_sekcije__')}
 					<div class="space-y-2">
 						<div class="flex items-center gap-2">
@@ -406,7 +407,7 @@
 			</div>
 		{:else}
 			<!-- Flat view (nema sekcija) -->
-			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3" data-onboarding="kavezi-grid">
 				{#each kaveziDetails as details (details.id)}
 					<KavezKartica
 						{details}

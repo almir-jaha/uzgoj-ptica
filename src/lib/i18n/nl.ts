@@ -570,5 +570,22 @@ export const nl: Translations = {
 		pradjed: 'Overgrootvader',
 		prabaka: 'Overgrootmoeder',
 		nepoznatoPorijeklo: 'Onbekende afkomst'
+	},
+
+	onboarding: {
+		naslov1: 'Welkom bij HatchPlan! 👋',
+		tekst1: 'Deze korte rondleiding laat je de belangrijkste onderdelen van de app zien. Het duurt maar een paar seconden.',
+		naslov2: 'Maak een seizoen aan',
+		tekst2: 'Alles begint met een broedseizoen — hier maak je een nieuw seizoen aan en stel je het aantal kooien in.',
+		naslov3: 'Jouw kooien',
+		tekst3: 'Elke kooi toont de status van het paar, de cyclusfase en de kuikens — klik op een kooi voor details en acties.',
+		naslov4: 'Werkt ook offline',
+		tekst4: 'De app werkt ook zonder internet — deze indicator verschijnt als je geen verbinding hebt, en gegevens worden automatisch gesynchroniseerd zodra je weer online bent.',
+		naslov5: 'Je bent klaar! 🎉',
+		tekst5: 'Verken de rest van de app — Paren, Vogels, Activiteiten en meer. Veel succes met fokken!',
+		dugmeDalje: 'Volgende',
+		dugmeNazad: 'Terug',
+		dugmeZavrsi: 'Voltooien',
+		dugmePreskoci: 'Overslaan'
 	}
 } as const satisfies Translations;

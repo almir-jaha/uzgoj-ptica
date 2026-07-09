@@ -570,5 +570,22 @@ export const sl: Translations = {
 		pradjed: 'Praded',
 		prabaka: 'Prababica',
 		nepoznatoPorijeklo: 'Neznano poreklo'
+	},
+
+	onboarding: {
+		naslov1: 'Dobrodošli v HatchPlan! 👋',
+		tekst1: 'Ta kratek vodnik ti bo pokazal glavne dele aplikacije. Traja le nekaj sekund.',
+		naslov2: 'Ustvari sezono',
+		tekst2: 'Vse se začne s sezono vzreje — tukaj ustvariš novo sezono in določiš število kletk.',
+		naslov3: 'Tvoje kletke',
+		tekst3: 'Vsaka kletka sledi statusu para, fazi cikla in mladičem — klikni na kletko za podrobnosti in dejanja.',
+		naslov4: 'Deluje tudi brez povezave',
+		tekst4: 'Aplikacija deluje tudi brez interneta — ta indikator se prikaže, ko izgubiš povezavo, podatki pa se samodejno sinhronizirajo, ko se povežeš nazaj.',
+		naslov5: 'Pripravljen/a si! 🎉',
+		tekst5: 'Razišči preostanek aplikacije — Pari, Ptice, Aktivnosti in več. Srečno pri vzreji!',
+		dugmeDalje: 'Naprej',
+		dugmeNazad: 'Nazaj',
+		dugmeZavrsi: 'Zaključi',
+		dugmePreskoci: 'Preskoči'
 	}
 } as const satisfies Translations;

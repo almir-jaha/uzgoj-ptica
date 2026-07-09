@@ -570,5 +570,22 @@ export const it: Translations = {
 		pradjed: 'Bisnonno',
 		prabaka: 'Bisnonna',
 		nepoznatoPorijeklo: 'Origine sconosciuta'
+	},
+
+	onboarding: {
+		naslov1: 'Benvenuto/a su HatchPlan! 👋',
+		tekst1: 'Questo breve tour ti mostrerà le parti principali dell\'app. Richiede solo pochi secondi.',
+		naslov2: 'Crea una stagione',
+		tekst2: 'Tutto inizia con una stagione di allevamento — qui crei una nuova stagione e definisci il numero di gabbie.',
+		naslov3: 'Le tue gabbie',
+		tekst3: 'Ogni gabbia mostra lo stato della coppia, la fase del ciclo e i piccoli — clicca su una gabbia per dettagli e azioni.',
+		naslov4: 'Funziona anche offline',
+		tekst4: 'L\'app funziona anche senza internet — questo indicatore appare quando perdi la connessione, e i dati si sincronizzano automaticamente al ritorno online.',
+		naslov5: 'Sei pronto/a! 🎉',
+		tekst5: 'Esplora il resto dell\'app — Coppie, Uccelli, Attività e altro. Buon allevamento!',
+		dugmeDalje: 'Avanti',
+		dugmeNazad: 'Indietro',
+		dugmeZavrsi: 'Fine',
+		dugmePreskoci: 'Salta'
 	}
 } as const satisfies Translations;

@@ -570,5 +570,22 @@ export const hu: Translations = {
 		pradjed: 'Dédapa',
 		prabaka: 'Dédmama',
 		nepoznatoPorijeklo: 'Ismeretlen származás'
+	},
+
+	onboarding: {
+		naslov1: 'Üdvözlünk a HatchPlan-ben! 👋',
+		tekst1: 'Ez a rövid túra bemutatja az alkalmazás fő részeit. Csak néhány másodpercig tart.',
+		naslov2: 'Hozz létre egy szezont',
+		tekst2: 'Minden egy tenyészidőszakkal kezdődik — itt hozol létre új szezont, és adod meg a ketrecek számát.',
+		naslov3: 'A ketreceid',
+		tekst3: 'Minden ketrec nyomon követi a pár állapotát, a ciklus fázisát és a fiókákat — kattints egy ketrecre a részletekért és műveletekért.',
+		naslov4: 'Offline is működik',
+		tekst4: 'Az alkalmazás internet nélkül is működik — ez a jelző akkor jelenik meg, ha elveszíted a kapcsolatot, az adatok pedig automatikusan szinkronizálódnak, amint újra online vagy.',
+		naslov5: 'Készen állsz! 🎉',
+		tekst5: 'Fedezd fel az alkalmazás többi részét — Párok, Madarak, Tevékenységek és több. Sok sikert a tenyésztéshez!',
+		dugmeDalje: 'Tovább',
+		dugmeNazad: 'Vissza',
+		dugmeZavrsi: 'Befejezés',
+		dugmePreskoci: 'Kihagyás'
 	}
 } as const satisfies Translations;

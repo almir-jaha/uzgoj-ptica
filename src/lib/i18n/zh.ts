@@ -570,5 +570,22 @@ export const zh: Translations = {
 		pradjed: '曾祖父',
 		prabaka: '曾祖母',
 		nepoznatoPorijeklo: '血统不明'
+	},
+
+	onboarding: {
+		naslov1: '欢迎使用 HatchPlan！👋',
+		tekst1: '这个简短的导览将向你展示应用的主要功能。只需几秒钟。',
+		naslov2: '创建一个繁殖季',
+		tekst2: '一切从繁殖季开始——在这里创建新的繁殖季并设置笼子数量。',
+		naslov3: '你的笼子',
+		tekst3: '每个笼子都会显示配对状态、周期阶段和雏鸟——点击笼子查看详情和操作。',
+		naslov4: '离线也能使用',
+		tekst4: '该应用在没有网络的情况下也能使用——失去连接时会显示此提示，重新联网后数据会自动同步。',
+		naslov5: '一切准备就绪！🎉',
+		tekst5: '探索应用的其余部分——配对、鸟类、活动等更多内容。祝你繁殖顺利！',
+		dugmeDalje: '下一步',
+		dugmeNazad: '上一步',
+		dugmeZavrsi: '完成',
+		dugmePreskoci: '跳过'
 	}
 } as const satisfies Translations;

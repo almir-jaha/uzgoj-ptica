@@ -570,5 +570,22 @@ export const pl: Translations = {
 		pradjed: 'Pradziadek',
 		prabaka: 'Prababcia',
 		nepoznatoPorijeklo: 'Nieznane pochodzenie'
+	},
+
+	onboarding: {
+		naslov1: 'Witamy w HatchPlan! 👋',
+		tekst1: 'Ta krótka wycieczka pokaże Ci główne części aplikacji. Zajmie to tylko kilka sekund.',
+		naslov2: 'Utwórz sezon',
+		tekst2: 'Wszystko zaczyna się od sezonu hodowlanego — tutaj tworzysz nowy sezon i określasz liczbę klatek.',
+		naslov3: 'Twoje klatki',
+		tekst3: 'Każda klatka pokazuje status pary, fazę cyklu i pisklęta — kliknij klatkę, aby zobaczyć szczegóły i akcje.',
+		naslov4: 'Działa też offline',
+		tekst4: 'Aplikacja działa również bez internetu — ten wskaźnik pojawia się, gdy stracisz połączenie, a dane synchronizują się automatycznie po powrocie online.',
+		naslov5: 'Wszystko gotowe! 🎉',
+		tekst5: 'Poznaj resztę aplikacji — Pary, Ptaki, Aktywności i więcej. Powodzenia w hodowli!',
+		dugmeDalje: 'Dalej',
+		dugmeNazad: 'Wstecz',
+		dugmeZavrsi: 'Zakończ',
+		dugmePreskoci: 'Pomiń'
 	}
 } as const satisfies Translations;
