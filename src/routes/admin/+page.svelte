@@ -18,11 +18,14 @@
 	import { goto } from '$app/navigation';
 	import type { VrstaPtica, FazaCiklusa, GenetikaPoljaI18n, PrijevodPrijedlog } from '$lib/db/schema';
 	import NovoGenetikaPoljeModal from '$lib/components/NovoGenetikaPoljeModal.svelte';
+	import PregledPrijedlogaModal from '$lib/components/PregledPrijedlogaModal.svelte';
 	import {
 		getSchemaForVrsta, type GenetikaPolje, type PoljeTip,
 		GENETIKA_SHEME, type VrstaGrupa
 	} from '$lib/utils/genetika-schema';
 	import { LANGUAGES, type LangCode } from '$lib/i18n/locale';
+	import { bs } from '$lib/i18n/bs';
+	import { flattenTranslations } from '$lib/i18n/flatten';
 
 	// Redirect if not admin
 	$: if ($user !== undefined && !isAdmin($user?.email)) goto('/kavezi');
@@ -104,6 +107,12 @@
 	// Prijedlozi prijevoda state
 	let prijedlogActionLoadingId: string | null = null;
 	let prijedlogError = '';
+	let aktivniPregledPrijedlog: PrijevodPrijedlog | null = null;
+
+	$: bsFlatAdmin = flattenTranslations(bs as unknown as Record<string, unknown>);
+	function bsOriginalZaPrijedlog(p: PrijevodPrijedlog): string {
+		return p.izvor === 'i18n' ? (bsFlatAdmin[p.termin_kljuc] ?? p.termin_kljuc) : p.termin_kljuc;
+	}
 
 	async function handlePrihvatiPrijedlog(prijedlog: PrijevodPrijedlog) {
 		const accessToken = $session?.access_token;
@@ -115,6 +124,7 @@
 		prijedlogError = '';
 		try {
 			await prihvatiPrijedlog(prijedlog, accessToken);
+			if (aktivniPregledPrijedlog?.id === prijedlog.id) aktivniPregledPrijedlog = null;
 		} catch (e) {
 			prijedlogError = e instanceof Error ? e.message : 'Greška pri prihvatanju prijedloga';
 		} finally {
@@ -128,6 +138,7 @@
 		prijedlogError = '';
 		try {
 			await odbijPrijedlog(id);
+			if (aktivniPregledPrijedlog?.id === id) aktivniPregledPrijedlog = null;
 		} catch (e) {
 			prijedlogError = e instanceof Error ? e.message : 'Greška pri odbijanju prijedloga';
 		} finally {
@@ -1177,6 +1188,13 @@
 						{/if}
 						<div class="flex gap-2 pt-1">
 							<button
+								class="btn btn-sm variant-ghost flex-1"
+								disabled={prijedlogActionLoadingId === p.id}
+								on:click={() => (aktivniPregledPrijedlog = p)}
+							>
+								🔍 Pregledaj
+							</button>
+							<button
 								class="btn btn-sm variant-filled-success flex-1"
 								disabled={prijedlogActionLoadingId === p.id}
 								on:click={() => handlePrihvatiPrijedlog(p)}
@@ -1197,3 +1215,14 @@
 		{/if}
 	</section>
 </div>
+
+{#if aktivniPregledPrijedlog}
+	<PregledPrijedlogaModal
+		prijedlog={aktivniPregledPrijedlog}
+		bsOriginal={bsOriginalZaPrijedlog(aktivniPregledPrijedlog)}
+		loading={prijedlogActionLoadingId === aktivniPregledPrijedlog.id}
+		onPrihvati={() => aktivniPregledPrijedlog && handlePrihvatiPrijedlog(aktivniPregledPrijedlog)}
+		onOdbij={() => aktivniPregledPrijedlog && handleOdbijPrijedlog(aktivniPregledPrijedlog.id)}
+		onClose={() => (aktivniPregledPrijedlog = null)}
+	/>
+{/if}
