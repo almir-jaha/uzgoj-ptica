@@ -78,8 +78,8 @@
 
 	$: pageTitle = tree ? `${displayName(tree)} — HatchPlan` : 'HatchPlan';
 	$: pageDesc = tree
-		? `${tree.vrsta_naziv || 'Ptica'} · ${isMale ? 'Mužjak' : isFemale ? 'Ženka' : '?'} · ${prstenStr(tree) || 'bez prstena'}`
-		: 'Profil ptice';
+		? `${tree.vrsta_naziv || $t.pticaJavno.pticaFallbackNaziv} · ${isMale ? $t.pticaJavno.muzjak : isFemale ? $t.pticaJavno.zenka : '?'} · ${prstenStr(tree) || $t.pticaJavno.bezPrstena}`
+		: $t.pticaJavno.profilPtice;
 
 	async function podijeli(): Promise<void> {
 		const url = window.location.href;
@@ -127,7 +127,7 @@
 		<div class="max-w-2xl mx-auto px-4 py-2.5 flex items-center gap-2.5">
 			<img src="/app-logo.png" alt="HatchPlan" class="w-7 h-7 rounded-md" />
 			<span class="font-bold text-indigo-900 text-sm tracking-tight">HatchPlan</span>
-			<span class="text-xs text-gray-400 hidden sm:block mr-auto">Registar uzgojnih ptica</span>
+			<span class="text-xs text-gray-400 hidden sm:block mr-auto">{$t.pticaJavno.headerSubtitle}</span>
 			{#if tree}
 			<button
 				type="button"
@@ -138,7 +138,7 @@
 			</button>
 			{/if}
 			<a href="/" class="sm:ml-2 text-xs text-indigo-600 font-medium hover:text-indigo-800 transition-colors border border-indigo-200 rounded-full px-3 py-1 hover:bg-indigo-50">
-				Otvori app →
+				{$t.pticaJavno.otvoriApp}
 			</a>
 		</div>
 	</header>
@@ -149,9 +149,9 @@
 		{#if error && !tree}
 		<div class="bg-white rounded-2xl shadow-sm border border-red-100 p-8 text-center">
 			<div class="text-5xl mb-3">🔍</div>
-			<h1 class="text-lg font-bold text-gray-800 mb-1">Ptica nije pronađena</h1>
+			<h1 class="text-lg font-bold text-gray-800 mb-1">{$t.pticaJavno.naslovNijePronadjena}</h1>
 			<p class="text-sm text-gray-500">{error}</p>
-			<p class="text-xs text-gray-400 mt-3">Provjerite QR kod ili se obratite uzgajivaču.</p>
+			<p class="text-xs text-gray-400 mt-3">{$t.pticaJavno.errorHint}</p>
 		</div>
 
 		<!-- Bird hero card -->
@@ -183,7 +183,7 @@
 							<!-- Verified badge -->
 							<div class="shrink-0 flex items-center gap-1 bg-emerald-50 border border-emerald-200 rounded-full px-2.5 py-0.5">
 								<span class="text-emerald-600 text-xs font-black">✓</span>
-								<span class="text-emerald-700 text-[11px] font-semibold">Verified</span>
+								<span class="text-emerald-700 text-[11px] font-semibold">{$t.pticaJavno.verified}</span>
 							</div>
 						</div>
 
@@ -198,7 +198,7 @@
 							<span class="text-sm text-gray-500">{tree.boja}</span>
 							{/if}
 							{#if tree.godina}
-							<span class="text-sm text-gray-400">Godište {tree.godina}</span>
+							<span class="text-sm text-gray-400">{$t.pticaJavno.godiste} {tree.godina}</span>
 							{/if}
 							{#if tree.status_ptica}
 							<span class="text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5">{tree.status_ptica}</span>
@@ -209,7 +209,7 @@
 
 				{#if tree.rezultati}
 				<div class="mt-4 rounded-xl bg-amber-50 border border-amber-100 p-3">
-					<p class="text-[11px] font-bold uppercase tracking-widest text-amber-600 mb-1">Rezultati / Nagrade</p>
+					<p class="text-[11px] font-bold uppercase tracking-widest text-amber-600 mb-1">{$t.pticaJavno.rezultatiNagrade}</p>
 					<p class="text-sm text-amber-900">{tree.rezultati}</p>
 				</div>
 				{/if}
@@ -224,19 +224,19 @@
 				<div class="mt-4 pt-4 border-t border-gray-100 flex flex-wrap gap-4 text-center">
 					<div>
 						<p class="text-lg font-bold text-indigo-700">{pedigreeStats?.known ?? 0}</p>
-						<p class="text-[11px] text-gray-400">Poznati preci</p>
+						<p class="text-[11px] text-gray-400">{$t.pticaJavno.poznatiPreci}</p>
 					</div>
 					{#if tree.otac || tree.majka}
 					<div>
 						<p class="text-lg font-bold text-indigo-700">
 							{[tree.otac, tree.majka].filter(Boolean).length}/2
 						</p>
-						<p class="text-[11px] text-gray-400">Roditelja</p>
+						<p class="text-[11px] text-gray-400">{$t.pticaJavno.roditelja}</p>
 					</div>
 					{/if}
 					<div>
 						<p class="text-lg font-bold text-indigo-700">{tree.godina ?? '—'}</p>
-						<p class="text-[11px] text-gray-400">Godište</p>
+						<p class="text-[11px] text-gray-400">{$t.pticaJavno.godiste}</p>
 					</div>
 				</div>
 			</div>
@@ -245,12 +245,12 @@
 		<!-- Breeder card -->
 		{#if breeder && (breeder.naziv || breeder.ime_prezime)}
 		<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-			<p class="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-3">Uzgajivač</p>
+			<p class="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-3">{$t.pticaJavno.uzgajivac}</p>
 			<div class="flex gap-3 items-start">
 				{#if breeder.slika_url}
 				<img
 					src={breeder.slika_url}
-					alt="Uzgajivačnica"
+					alt={$t.pticaJavno.uzgajivac}
 					class="w-14 h-14 rounded-xl object-cover border border-gray-100 shrink-0"
 				/>
 				{:else}
@@ -286,18 +286,18 @@
 		{#if tree.otac || tree.majka}
 		<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
 			<div class="flex items-center justify-between mb-4">
-				<p class="text-[11px] font-bold uppercase tracking-widest text-indigo-400">Rodovnik</p>
-				<p class="text-xs text-gray-400">Tapni za više generacija</p>
+				<p class="text-[11px] font-bold uppercase tracking-widest text-indigo-400">{$t.pticaJavno.rodovnik}</p>
+				<p class="text-xs text-gray-400">{$t.pticaJavno.tapniZaVise}</p>
 			</div>
 			<div class="space-y-2">
-				<PedigreeNode node={tree.otac} level={1} roleLabel="Otac" />
-				<PedigreeNode node={tree.majka} level={1} roleLabel="Majka" />
+				<PedigreeNode node={tree.otac} level={1} roleLabel={$t.pticaJavno.otac} />
+				<PedigreeNode node={tree.majka} level={1} roleLabel={$t.pticaJavno.majka} />
 			</div>
 		</div>
 		{:else}
 		<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-			<p class="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-2">Rodovnik</p>
-			<p class="text-sm text-gray-400 italic text-center py-4">Podaci o porijeklu nisu uneseni.</p>
+			<p class="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-2">{$t.pticaJavno.rodovnik}</p>
+			<p class="text-sm text-gray-400 italic text-center py-4">{$t.pticaJavno.porijekloNijeUneseno}</p>
 		</div>
 		{/if}
 
@@ -308,10 +308,9 @@
 					<span class="text-xl">✅</span>
 				</div>
 				<div>
-					<p class="font-semibold text-gray-800 text-sm">Registrirana ptica</p>
+					<p class="font-semibold text-gray-800 text-sm">{$t.pticaJavno.registriranaPtica}</p>
 					<p class="text-xs text-gray-500 mt-0.5">
-						Ova ptica je registrirana u sistemu HatchPlan.
-						Datum registracije: {formatDate(tree.created_at)}.
+						{$t.pticaJavno.certifikatOpis.replace('{datum}', formatDate(tree.created_at))}
 					</p>
 				</div>
 			</div>
@@ -323,7 +322,7 @@
 				<img src="/app-logo.png" alt="" class="w-5 h-5 rounded opacity-50" />
 				<p class="text-xs text-gray-400 font-medium">HatchPlan</p>
 			</div>
-			<p class="text-xs text-gray-300">Aplikacija za upravljanje uzgojem ptica</p>
+			<p class="text-xs text-gray-300">{$t.pticaJavno.footerTagline}</p>
 		</div>
 
 		{/if}

@@ -19,6 +19,10 @@
 	import { loadZdravlje as loadZdravlje_, createZdravlje, deleteZdravlje, tipOpcije } from '$lib/stores/zdravlje';
 	import type { Zdravlje, ZdravljeTip } from '$lib/db/schema';
 	import { aktivneSekcije, loadSekcije } from '$lib/stores/sekcija';
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	import { buildQrUrl } from '$lib/utils/rodovnik-shared';
+
+	const toastStore = getToastStore();
 
 	type Filter = 'sve' | 'muzjaci' | 'zenke' | 'ovaSezone' | 'ostale';
 
@@ -78,6 +82,36 @@
 	function otvoriRodovnik(ptica: Ptica) {
 		rodovnikPtica = ptica;
 		rodovnikModalOtvoren = true;
+	}
+
+	async function podijeliPticu(ptica: Ptica): Promise<void> {
+		const url = buildQrUrl($aktivnaUzgajivacnica, ptica.id);
+		const naslov = ptica.naziv || ptica.prstena_oznaka || $t.pticaJavno.pticaFallbackNaziv;
+		const opis = vrstaLabel(ptica.vrsta_ptica_id);
+
+		if (navigator.share) {
+			try {
+				await navigator.share({ title: naslov, text: opis, url });
+			} catch (err) {
+				if (err instanceof Error && err.name === 'AbortError') return;
+			}
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(url);
+			toastStore.trigger({
+				message: $t.pticaJavno.linkKopiran,
+				background: 'variant-filled-success',
+				timeout: 3000
+			});
+		} catch {
+			toastStore.trigger({
+				message: $t.pticaJavno.greskaKopiranja,
+				background: 'variant-filled-error',
+				timeout: 3000
+			});
+		}
 	}
 
 	function otvoriNova() {
@@ -438,6 +472,11 @@
 						<button class="btn btn-sm variant-ghost-tertiary flex-1" on:click={() => otvoriRodovnik(ptica)}>
 							🌳 Pedigre
 						</button>
+						<button
+							class="btn btn-sm variant-ghost-surface"
+							on:click={() => podijeliPticu(ptica)}
+							title={$t.pticaJavno.podijeliBtn}
+						>📤</button>
 						<button
 							class="btn btn-sm {ptica.status_evidencije && ptica.status_evidencije !== 'aktivna' ? 'variant-soft-error' : 'variant-ghost-surface'}"
 							on:click={() => otvoriStatus(ptica)}

@@ -1,4 +1,6 @@
+import { get } from 'svelte/store';
 import { supabase } from '$lib/supabase/client';
+import { t } from '$lib/i18n';
 
 export const ssr = false;
 
@@ -83,7 +85,7 @@ export async function load({ params }: { params: { id: string } }) {
 		const tree = await fetchBird(id, 1);
 
 		if (!tree) {
-			return { tree: null, breeder: null, error: 'Ptica nije pronađena' };
+			return { tree: null, breeder: null, error: get(t).pticaJavno.naslovNijePronadjena };
 		}
 
 		// Dohvati uzgajivačnicu ptice (via uzgajivacnica_id) ili prvu uzgajivačnicu vlasnika
@@ -96,6 +98,6 @@ export async function load({ params }: { params: { id: string } }) {
 
 		return { tree, breeder: breeder as BreederInfo | null, error: null };
 	} catch {
-		return { tree: null, breeder: null, error: 'Greška pri učitavanju podataka' };
+		return { tree: null, breeder: null, error: get(t).pticaJavno.greskaUcitavanja };
 	}
 }

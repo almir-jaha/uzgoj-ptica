@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { t } from '$lib/i18n';
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	export let node: any; // BirdNode
 	export let level: number = 1; // 1=otac/majka, 2=djed/baka, 3=pradjed/prabaka
@@ -24,8 +26,8 @@
 	}
 
 	function childRoles(level: number): [string, string] {
-		if (level === 1) return ['Djed', 'Baka'];
-		return ['Pradjed', 'Prabaka'];
+		if (level === 1) return [$t.pticaJavno.djed, $t.pticaJavno.baka];
+		return [$t.pticaJavno.pradjed, $t.pticaJavno.prabaka];
 	}
 </script>
 
@@ -99,6 +101,6 @@
 	{#if roleLabel}
 	<p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">{roleLabel}</p>
 	{/if}
-	<p class="text-sm text-gray-400 italic">Nepoznato porijeklo</p>
+	<p class="text-sm text-gray-400 italic">{$t.pticaJavno.nepoznatoPorijeklo}</p>
 </div>
 {/if}
