@@ -340,6 +340,15 @@ export const hu: Translations = {
 		prodata: '💰 Eladva',
 		poklonjena: '🎁 Ajándékba adva',
 		ostalo: '📝 Egyéb',
+		kratko: {
+			aktivna: '✅ Aktív',
+			mlada: '🐤 Fiatal madár',
+			vanjska: '🔗 Külső madár',
+			uginula: '💀 Elhullott',
+			prodata: '💰 Eladva',
+			poklonjena: '🎁 Ajándékba adva',
+			ostalo: '📝 Egyéb',
+		},
 	},
 
 	genetika: {

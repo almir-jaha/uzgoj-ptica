@@ -340,6 +340,15 @@ export const tr: Translations = {
 		prodata: '💰 Satıldı',
 		poklonjena: '🎁 Hediye edildi',
 		ostalo: '📝 Diğer',
+		kratko: {
+			aktivna: '✅ Aktif',
+			mlada: '🐤 Genç kuş',
+			vanjska: '🔗 Dış kuş',
+			uginula: '💀 Ölmüş',
+			prodata: '💰 Satıldı',
+			poklonjena: '🎁 Hediye edildi',
+			ostalo: '📝 Diğer',
+		},
 	},
 
 	genetika: {

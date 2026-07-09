@@ -340,6 +340,15 @@ export const ro: Translations = {
 		prodata: '💰 Vândută',
 		poklonjena: '🎁 Donată',
 		ostalo: '📝 Altele',
+		kratko: {
+			aktivna: '✅ Activă',
+			mlada: '🐤 Pasăre tânără',
+			vanjska: '🔗 Pasăre externă',
+			uginula: '💀 Decedată',
+			prodata: '💰 Vândută',
+			poklonjena: '🎁 Donată',
+			ostalo: '📝 Altele',
+		},
 	},
 
 	genetika: {

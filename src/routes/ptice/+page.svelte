@@ -86,14 +86,14 @@
 	}
 
 	// Status evidencije
-	const STATUS_OPCIJE = [
-		{ value: 'aktivna',    label: '✅ Aktivna' },
-		{ value: 'mlada',      label: '🐤 Mlada ptica' },
-		{ value: 'vanjska',    label: '🔗 Vanjska ptica' },
-		{ value: 'uginula',    label: '💀 Uginula' },
-		{ value: 'prodata',    label: '💰 Prodata' },
-		{ value: 'poklonjena', label: '🎁 Poklonjena' },
-		{ value: 'ostalo',     label: '📝 Ostalo' }
+	$: STATUS_OPCIJE = [
+		{ value: 'aktivna',    label: $t.statusPtica.kratko.aktivna },
+		{ value: 'mlada',      label: $t.statusPtica.kratko.mlada },
+		{ value: 'vanjska',    label: $t.statusPtica.kratko.vanjska },
+		{ value: 'uginula',    label: $t.statusPtica.kratko.uginula },
+		{ value: 'prodata',    label: $t.statusPtica.kratko.prodata },
+		{ value: 'poklonjena', label: $t.statusPtica.kratko.poklonjena },
+		{ value: 'ostalo',     label: $t.statusPtica.kratko.ostalo }
 	];
 
 	let statusPtica: Ptica | null = null;

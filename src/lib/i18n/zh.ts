@@ -340,6 +340,15 @@ export const zh: Translations = {
 		prodata: '💰 已售出',
 		poklonjena: '🎁 已赠出',
 		ostalo: '📝 其他',
+		kratko: {
+			aktivna: '✅ 活跃',
+			mlada: '🐤 幼鸟',
+			vanjska: '🔗 外部鸟',
+			uginula: '💀 已死亡',
+			prodata: '💰 已售出',
+			poklonjena: '🎁 已赠出',
+			ostalo: '📝 其他',
+		},
 	},
 
 	genetika: {

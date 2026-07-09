@@ -340,6 +340,15 @@ export const nl: Translations = {
 		prodata: '💰 Verkocht',
 		poklonjena: '🎁 Weggegeven',
 		ostalo: '📝 Overig',
+		kratko: {
+			aktivna: '✅ Actief',
+			mlada: '🐤 Jonge vogel',
+			vanjska: '🔗 Externe vogel',
+			uginula: '💀 Overleden',
+			prodata: '💰 Verkocht',
+			poklonjena: '🎁 Weggegeven',
+			ostalo: '📝 Overig',
+		},
 	},
 
 	genetika: {

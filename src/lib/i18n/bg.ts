@@ -340,6 +340,15 @@ export const bg: Translations = {
 		prodata: '💰 Продадена',
 		poklonjena: '🎁 Подарена',
 		ostalo: '📝 Друго',
+		kratko: {
+			aktivna: '✅ Активна',
+			mlada: '🐤 Млада птица',
+			vanjska: '🔗 Външна птица',
+			uginula: '💀 Умряла',
+			prodata: '💰 Продадена',
+			poklonjena: '🎁 Подарена',
+			ostalo: '📝 Друго',
+		},
 	},
 
 	genetika: {
