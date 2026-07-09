@@ -536,5 +536,11 @@ export const es: Translations = {
 		modalSaljemBtn: 'Enviando...',
 		greskaPrazanPrijedlog: 'Introduce una sugerencia de traducción',
 		greskaSlanja: 'Error al enviar la sugerencia'
+	},
+
+	pticaJavno: {
+		podijeliBtn: 'Compartir',
+		linkKopiran: '¡Enlace copiado!',
+		greskaKopiranja: 'Error al copiar el enlace'
 	}
 } as const satisfies Translations;

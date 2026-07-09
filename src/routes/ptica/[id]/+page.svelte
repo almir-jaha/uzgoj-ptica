@@ -1,5 +1,9 @@
 <script lang="ts">
 	import PedigreeNode from '$lib/components/PedigreeNode.svelte';
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	import { t } from '$lib/i18n';
+
+	const toastStore = getToastStore();
 
 	interface BirdNode {
 		id: string;
@@ -76,6 +80,34 @@
 	$: pageDesc = tree
 		? `${tree.vrsta_naziv || 'Ptica'} · ${isMale ? 'Mužjak' : isFemale ? 'Ženka' : '?'} · ${prstenStr(tree) || 'bez prstena'}`
 		: 'Profil ptice';
+
+	async function podijeli(): Promise<void> {
+		const url = window.location.href;
+
+		if (navigator.share) {
+			try {
+				await navigator.share({ title: pageTitle, text: pageDesc, url });
+			} catch (err) {
+				if (err instanceof Error && err.name === 'AbortError') return;
+			}
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(url);
+			toastStore.trigger({
+				message: $t.pticaJavno.linkKopiran,
+				background: 'variant-filled-success',
+				timeout: 3000
+			});
+		} catch {
+			toastStore.trigger({
+				message: $t.pticaJavno.greskaKopiranja,
+				background: 'variant-filled-error',
+				timeout: 3000
+			});
+		}
+	}
 </script>
 
 <svelte:head>
@@ -95,8 +127,17 @@
 		<div class="max-w-2xl mx-auto px-4 py-2.5 flex items-center gap-2.5">
 			<img src="/app-logo.png" alt="HatchPlan" class="w-7 h-7 rounded-md" />
 			<span class="font-bold text-indigo-900 text-sm tracking-tight">HatchPlan</span>
-			<span class="ml-auto text-xs text-gray-400 hidden sm:block">Registar uzgojnih ptica</span>
-			<a href="/" class="ml-auto sm:ml-2 text-xs text-indigo-600 font-medium hover:text-indigo-800 transition-colors border border-indigo-200 rounded-full px-3 py-1 hover:bg-indigo-50">
+			<span class="text-xs text-gray-400 hidden sm:block mr-auto">Registar uzgojnih ptica</span>
+			{#if tree}
+			<button
+				type="button"
+				class="btn btn-sm variant-soft-primary ml-auto sm:ml-0"
+				on:click={podijeli}
+			>
+				📤 <span class="hidden sm:inline">{$t.pticaJavno.podijeliBtn}</span>
+			</button>
+			{/if}
+			<a href="/" class="sm:ml-2 text-xs text-indigo-600 font-medium hover:text-indigo-800 transition-colors border border-indigo-200 rounded-full px-3 py-1 hover:bg-indigo-50">
 				Otvori app →
 			</a>
 		</div>

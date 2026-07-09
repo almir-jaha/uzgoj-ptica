@@ -535,5 +535,11 @@ export const zh: Translations = {
 		modalSaljemBtn: '发送中...',
 		greskaPrazanPrijedlog: '请输入翻译建议',
 		greskaSlanja: '发送建议时出错'
+	},
+
+	pticaJavno: {
+		podijeliBtn: '分享',
+		linkKopiran: '链接已复制！',
+		greskaKopiranja: '复制链接时出错'
 	}
 } as const satisfies Translations;

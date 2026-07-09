@@ -535,5 +535,11 @@ export const sr: Translations = {
 		modalSaljemBtn: 'Šaljem...',
 		greskaPrazanPrijedlog: 'Unesi predlog prevoda',
 		greskaSlanja: 'Greška pri slanju predloga'
+	},
+
+	pticaJavno: {
+		podijeliBtn: 'Podeli',
+		linkKopiran: 'Link kopiran!',
+		greskaKopiranja: 'Greška pri kopiranju linka'
 	}
 } as const satisfies Translations;

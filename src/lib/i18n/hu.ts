@@ -535,5 +535,11 @@ export const hu: Translations = {
 		modalSaljemBtn: 'Küldés...',
 		greskaPrazanPrijedlog: 'Adjon meg egy fordítási javaslatot',
 		greskaSlanja: 'Hiba a javaslat küldésekor'
+	},
+
+	pticaJavno: {
+		podijeliBtn: 'Megosztás',
+		linkKopiran: 'Link másolva!',
+		greskaKopiranja: 'Hiba a link másolása közben'
 	}
 } as const satisfies Translations;

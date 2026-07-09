@@ -535,5 +535,11 @@ export const nl: Translations = {
 		modalSaljemBtn: 'Versturen...',
 		greskaPrazanPrijedlog: 'Voer een vertaalvoorstel in',
 		greskaSlanja: 'Fout bij het versturen van het voorstel'
+	},
+
+	pticaJavno: {
+		podijeliBtn: 'Delen',
+		linkKopiran: 'Link gekopieerd!',
+		greskaKopiranja: 'Fout bij het kopiëren van de link'
 	}
 } as const satisfies Translations;

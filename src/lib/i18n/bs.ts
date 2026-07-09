@@ -534,6 +534,12 @@ export const bs = {
 		modalSaljemBtn: 'Šaljem...',
 		greskaPrazanPrijedlog: 'Unesi prijedlog prijevoda',
 		greskaSlanja: 'Greška pri slanju prijedloga'
+	},
+
+	pticaJavno: {
+		podijeliBtn: 'Podijeli',
+		linkKopiran: 'Link kopiran!',
+		greskaKopiranja: 'Greška pri kopiranju linka'
 	}
 } as const;
 

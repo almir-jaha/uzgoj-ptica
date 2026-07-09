@@ -535,5 +535,11 @@ export const tr: Translations = {
 		modalSaljemBtn: 'Gönderiliyor...',
 		greskaPrazanPrijedlog: 'Bir çeviri önerisi girin',
 		greskaSlanja: 'Öneri gönderilirken hata oluştu'
+	},
+
+	pticaJavno: {
+		podijeliBtn: 'Paylaş',
+		linkKopiran: 'Bağlantı kopyalandı!',
+		greskaKopiranja: 'Bağlantı kopyalanırken hata oluştu'
 	}
 } as const satisfies Translations;
