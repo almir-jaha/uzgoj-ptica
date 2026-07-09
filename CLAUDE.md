@@ -84,6 +84,25 @@ SvelteKit PWA za upravljanje uzgojem ptica (kavezi, parovi, ciklusi, zdravlje, g
 - **Genetička polja — opcije:** `genetika_polja_i18n.opcije_jezicima` — derived store `genetikaOpcijeDisplay` ✅
 - **Genetička polja — placeholderi:** `genetika_polja_i18n.placeholder_jezicima` — derived store `genetikaPlaceholderi` ✅
 
+### Audit i18n pokrivenosti po DB tabelama — ZAVRŠENO (2026-07-09)
+
+Pregledane sve tabele u `schema.ts` (`ciklusi`, `istorija`, `kavezi`, `parovi`, `ptice`, `sekcije`, `sezona`, `uzgajivacnice`, `vrsta_ptica`, `zdravlje`, `faze_ciklusa`) radi provjere koje kolone nose tekst vidljiv korisniku i da li im treba `nazivi_jezicima`-stil i18n. Zaključak:
+
+- **`vrsta_ptica.naziv`** i **`faze_ciklusa.naziv`** su jedine kolone kojima i18n treba i koje ga imaju — dijeljena referentna/taksonomska data, ista za sve korisnike aplikacije. Već potpuno riješeno (vidi gore).
+- **`ciklusi`, `kavezi`, `parovi`, `ptice`, `sekcije`, `sezona`, `uzgajivacnice`** — sve tekstualne kolone (`napomena`, `opis`, `boja`, `rezultati`, `adresa`, `telefon`, `naziv` sekcije/sezone/ptice...) su **lični unosi konkretnog korisnika o njegovim vlastitim podacima**, ne dijeljeni termini koje bi community prevodio — `nazivi_jezicima` pattern im ne odgovara ni teorijski.
+- **`istorija`** — tabela postoji od migracije 001, ali se **trenutno nigdje ne koristi u UI** (nema čitanja ni pisanja u aktivnom kodu). Ako se ikad implementira "pregled historije", `data_snapshot` treba čuvati pune `nazivi_jezicima` JSONB-ove iz izvora (ne već razriješen tekst) da bi historijski zapisi mogli biti lokalizovani naknadno.
+- Enumi (`status` na ciklusima/kavezima/parovima, `status_evidencije` na pticama, `tip` na zdravlju) ne trebaju DB i18n — rješavaju se statički kroz `$t`, što je i potvrđeno kao ispravan pattern.
+- Nekoliko kolona je otkriveno kao potpuno neaktivno/mrtvo (nikad se ne čita/piše u UI): `Kavez.napomena`, `Uzgajivacnica.napomena`, `VrstaPtica.naziv_latinskih_imena`, `VrstaPtica.podatci_inkubacija`.
+
+**Usput pronađeni i popravljeni propusti** (hardkodirani BS stringovi i jedan funkcionalni bug, van same DB i18n teme):
+
+- `KavezKartica.svelte` — hardkodiran "🥚 Čeka datum prvog jajeta" → `$t.kavezi.cekaDatumPrvogJajeta` (commit `6b27ea3`)
+- `ptice/+page.svelte` — `STATUS_OPCIJE` (labeli za `status_evidencije`) hardkodiran BS → `$t.statusPtica.kratko.*`, reaktivan (commit `82c22c4`)
+- `sezone` — default naziv sezone se snimao kao prevedeni tekst (`$t.sezona.nazivPlaceholder`) dok je prikaz poredio sa hardkodiranim BS obrascem `` `Sezona ${godina}` `` → korisnici na drugim jezicima su vidjeli suvišan/pogrešan badge uz naslov sezone. Ispravljeno: prazan naziv se sad snima kao `undefined` (commit `3cd7724`)
+- `stores/zdravlje.ts` — `TIP_OPCIJE` (tip zdravstvenog zapisa: bolest/preventiva/vakcinacija/zapažanje/ostalo) hardkodiran BS → `tipOpcije` derived store, `$t.zdravlje.tip.*` (commit `150c9d4`)
+
+Preostala poznata mjesta sa sličnim hardkodiranim stringovima (nisu popravljena, niska prioritet): `rodovnik-pdf.ts:198` i vjerovatno ostala 4 rodovnik PDF templata (`Tel:` prefiks mimo `rodovnikI18n` sistema); `admin/+page.svelte:753` (`vrsta.grupa` sirov prikaz) — admin-only, jedan BS-govoreći korisnik, nizak prioritet.
+
 ## Genetička polja — arhitektura
 
 Dva sistema (oba u upotrebi):
@@ -133,3 +152,4 @@ Klik na 💬 otvara `PrijedlogModal.svelte` (BS original, trenutni prijevod, pri
   - `'faza_ciklusa'` → `updateFazaNazivJezik()` (admin.ts) — merge-update jednog jezika u `nazivi_jezicima` JSONB preko Supabase, **radi svugdje** (i na Vercelu), nema fajl-write
   - `'vrsta_ptica'` → `updateVrstaNazivJezik()` (admin.ts) — isto, `vrsta_ptica.nazivi_jezicima`
 - **Auth za file-write endpoint:** klijent šalje `Authorization: Bearer <access_token>`; server verifikuje preko `supabase.auth.getUser(token)` + `isAdmin(email)` (nema service-role ključa, ne treba)
+- **Admin pregled prijedloga:** `PregledPrijedlogaModal.svelte` (commit `955a676`) — dugme "🔍 Pregledaj" na svakoj pending kartici u admin panelu otvara modal sa BS originalom (izveden preko `flattenTranslations()` za `izvor: 'i18n'`, ili direktno `termin_kljuc` za bazu), trenutnim prijevodom, prijedlogom i punim komentarom korisnika, plus Prihvati/Odbij dugmad koja zatvaraju modal nakon uspješne akcije
