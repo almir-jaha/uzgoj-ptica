@@ -268,7 +268,7 @@
 			<h2 class="h3 font-bold">
 				{#if $prikazanaSezona}
 					{$t.common.sezona} {$prikazanaSezona.godina}
-					{#if $prikazanaSezona.naziv && $prikazanaSezona.naziv !== `Sezona ${$prikazanaSezona.godina}`}
+					{#if $prikazanaSezona.naziv}
 						<span class="text-surface-400 font-normal text-lg">— {$prikazanaSezona.naziv}</span>
 					{/if}
 				{:else}
@@ -340,7 +340,7 @@
 				>
 					<span>
 						{sz.godina}
-						{#if sz.naziv && sz.naziv !== `Sezona ${sz.godina}`}
+						{#if sz.naziv}
 							<span class="text-surface-400 font-normal">— {sz.naziv}</span>
 						{/if}
 					</span>

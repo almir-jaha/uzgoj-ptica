@@ -72,7 +72,7 @@
 					user_id: userId,
 					uzgajivacnica_id: uzgajivacnicaId || undefined,
 					godina,
-					naziv: naziv.trim() || $t.sezona.nazivPlaceholder.replace('{godina}', String(godina)),
+					naziv: naziv.trim() || undefined,
 					broj_kaveza: ukupnoKaveza,
 					datum_pocetka: datumPocetka,
 					status: 'aktiva'
