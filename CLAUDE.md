@@ -161,3 +161,17 @@ Klik na 💬 otvara `PrijedlogModal.svelte` (BS original, trenutni prijevod, pri
   - `'vrsta_ptica'` → `updateVrstaNazivJezik()` (admin.ts) — isto, `vrsta_ptica.nazivi_jezicima`
 - **Auth za file-write endpoint:** klijent šalje `Authorization: Bearer <access_token>`; server verifikuje preko `supabase.auth.getUser(token)` + `isAdmin(email)` (nema service-role ključa, ne treba)
 - **Admin pregled prijedloga:** `PregledPrijedlogaModal.svelte` (commit `955a676`) — dugme "🔍 Pregledaj" na svakoj pending kartici u admin panelu otvara modal sa BS originalom (izveden preko `flattenTranslations()` za `izvor: 'i18n'`, ili direktno `termin_kljuc` za bazu), trenutnim prijevodom, prijedlogom i punim komentarom korisnika, plus Prihvati/Odbij dugmad koja zatvaraju modal nakon uspješne akcije
+
+## Demo podaci — `demo.sql` (za snimanje video uputstva korisnicima)
+
+Fajl `demo.sql` (root, **untracked u gitu**) — idempotentna PL/pgSQL skripta za demo korisnika, pokreće se preko `supabase db query --linked --file demo.sql`.
+
+- **Demo korisnik:** `almir_jahic@proton.me`, UUID `69fcb4dd-1bc7-407b-b7c5-018ddba7c2af` (već postoji u `auth.users`, kreiran 2026-05-29 — skripta ga NE kreira, samo puni podatke)
+- **Dvije uzgajivačnice:** "Demo ptice" (vrsta = Kanarinac pjevač, `vrsta_ptica.id` dinamički lookup po nazivu, **ne** hardkodiran UUID) i "Demo golubovi"
+- **Svaka uzgajivačnica:** 20 ptica (10M/10Ž), tekuća sezona ("Sezona 2026", status `aktiva`) sa 10 kaveza — **svi kavezi popunjeni** aktivnim parom/ciklusom (9× status `aktivan`, 1× `alarm` za demo te funkcije), nema praznih
+- Skripta na početku briše prethodne demo podatke ovog korisnika (`sezona`/`ptice`/`uzgajivacnice`, kaskadno i `kavezi`/`parovi`/`ciklusi`/`aktivnosti_ciklusa`) — sigurno se može ponovo pokrenuti prije svakog novog snimanja da se resetuje stanje
+
+**Poznati propusti u originalnoj verziji skripte (ispravljeno 2026-07-09), zapamtiti za slične seed skripte ubuduće:**
+1. Hardkodiran UUID za vrstu umjesto dinamičkog lookup-a po nazivu — lako se pukne kad se ID-evi razlikuju po okruženju/vremenu. Uvijek koristiti `(SELECT id FROM vrsta_ptica WHERE naziv = '...' LIMIT 1)`.
+2. `(CURRENT_DATE - N + X)::text` cast na `aktivnosti_ciklusa.datum` (kolona je `DATE`) puca sa `column "datum" is of type date but expression is of type text` kad se u istom `UNION ALL`/`VALUES` miješa sa `NULL` — nikad ne castati datumski izraz na `::text` kad cilja DATE kolonu.
+3. `vrsta_ptica` tabela ima više sličnih redova (npr. tri "kanarinac"-slična unosa: "Kanarinac / Fauna evrope...", "Kanarinac pjevač", "Tigrice") — provjeriti `SELECT id, naziv, grupa FROM vrsta_ptica` prije pisanja bilo koje seed/demo skripte da se ne pogodi pogrešan red.
